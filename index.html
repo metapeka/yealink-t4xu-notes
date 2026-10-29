@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Обзор — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=af3202f9">
+<link rel="stylesheet" href="assets/style.css?v=fe5c3133">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -147,6 +147,17 @@
 </tbody>
 </table>
 <p>Отсюда порядок: сначала донор и приём пакета, ключ — на следующем шаге.</p>
+<div class="mermaid">
+flowchart LR
+  M["MCU Holtek"] -->|"ключ по шине"| S["SoC RK3308H"]
+  S --> U["U-Boot:&lt;br/>слой ubifs crypto"]
+  U --> L["LEB 0 … 330"]
+  L --> F["UBIFS → rootfs"]
+  X1["в прошивке ключа нет"] -.-> U
+  X2["из MAC и серийника&lt;br/>не выводится"] -.-> U
+  X3["ключ появляется&lt;br/>только в рантайме"] -.-> M
+
+</div>
 <h2 id="_5">Что сделано</h2>
 <h3 id="_6">Формат пакета</h3>
 <p>Заголовок 128 Б, big-endian. Блоки: <code>version</code> (ELF), <code>rfs</code> (LZMA), <code>bootloader</code> (cypher3). Поле <code>cipher</code>: 0 — как есть, 1 — LZMA, 3 — cypher3, <code>0x83</code> — AES-256.</p>
@@ -154,8 +165,18 @@
 <h3 id="_7">Апдейтер</h3>
 <p><code>version.elf</code> из <code>108.86.14.4</code> <strong>байт в байт</strong> равен апдейтеру <code>108.86.0.118</code>: статическая сборка, крипто-импортов нет, проверяются только magic, CRC заголовка и блоков, размер распаковки.</p>
 <p>Следствие: подпись содержимого не проверяется, ключи для 86.x не нужны.</p>
+<div class="mermaid">
+flowchart LR
+  P["пакет .rom"] --> H{"magic и CRC&lt;br/>заголовка"}
+  H -->|"не сходится"| E["отказ:&lt;br/>ничего не пишется"]
+  H -->|"ок"| B{"CRC и размер&lt;br/>каждого блока"}
+  B -->|"не сходится"| E
+  B -->|"ок"| W["запись в /dev/mtdN&lt;br/>содержимым как есть"]
+  G["подпись содержимого&lt;br/>не проверяется"] -.-> W
+
+</div>
 <h3 id="_8">Слой ФС</h3>
-<p>Rootfs — UBI (PEB 128 КиБ, LEB 124 КиБ). Из 342 LEB <strong>324</strong> обёрнуты vendor-узлом <code>38 26 90 05</code>, 9 — обычные UBIFS-узлы, 6 — стёртые.</p>
+<p>Rootfs — UBI (PEB 128 КиБ, LEB 124 КиБ). Том <code>rootfs</code> — 331 LEB; у 315 из них первый узел начинается с vendor-заголовка <code>38 26 90 05</code>, остальные 16 такого заголовка не имеют.</p>
 <p>Ядро <code>/uImage</code> лежит в том же томе, то есть тоже внутри зашифрованной части.</p>
 <h3 id="_9">Эмулятор апдейтера</h3>
 <p>Собран запускаемый в Unicorn скелет: PIE грузится по адресам, импорты libc/OpenSSL подменяются хуками, вызывается любая функция.</p>
@@ -268,7 +289,11 @@
 </footer>
 </main>
 </div>
-
-<script src="assets/app.js?v=af3202f9" defer></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const light = document.documentElement.getAttribute('data-theme') === 'light';
+mermaid.initialize({ startOnLoad: true, theme: light ? 'default' : 'dark', themeVariables: { fontFamily: 'Segoe UI, sans-serif' } });
+</script>
+<script src="assets/app.js?v=fe5c3133" defer></script>
 </body>
 </html>

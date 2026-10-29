@@ -321,10 +321,62 @@ FUN_00082170(mmap + 0x100, 0x200, mmap[0x808])
 | userenv | 0x00300000 | 512 КиБ |
 | kernel | 0x00380000 | — |
 | **rfs** | **0x00380000** | **0x3780000 (55,5 МиБ)** |
-| cfg | 0x03B00000 | 0xCC0000 (12 МиБ) |
+| cfg | 0x03B00000 | 0xC00000 (12 МиБ) |
+| — | 0x04700000 | 0xC0000 (пусто) |
 | rfs2 | 0x047C0000 | 0x3780000 |
 | klog | 0x07F40000 | 0xC0000 |
 | back | 0x08000000 | конец флеша |
+
+<figure class="fig">
+<svg viewBox="0 0 960 320" width="100%" role="img" aria-label="Карта флеша 128 МиБ: ubl, uboot, env, userenv, rfs, cfg, rfs2, klog">
+  <g font-family="Segoe UI, sans-serif">
+    <text x="20" y="52" font-size="12" fill="var(--muted)">флеш целиком — 128 МиБ (mtdparts из U-Boot)</text>
+    <text x="920" y="52" font-size="11" fill="var(--muted)" text-anchor="end">klog 768 КиБ</text>
+
+    <rect x="20" y="64" width="7" height="44" fill="var(--accent)" fill-opacity="0.4" stroke="var(--line)"/>
+    <rect x="27" y="64" width="3.5" height="44" fill="var(--panel)" stroke="var(--line)"/>
+    <rect x="30.5" y="64" width="7" height="44" fill="var(--accent)" fill-opacity="0.4" stroke="var(--line)"/>
+    <rect x="37.5" y="64" width="3.5" height="44" fill="var(--accent)" fill-opacity="0.25" stroke="var(--line)"/>
+    <rect x="41" y="64" width="3.6" height="44" fill="var(--accent)" fill-opacity="0.25" stroke="var(--line)"/>
+    <rect x="44.6" y="64" width="390.2" height="44" fill="var(--accent)" fill-opacity="0.16" stroke="var(--accent)"/>
+    <rect x="434.8" y="64" width="84.4" height="44" fill="var(--card)" stroke="var(--line)"/>
+    <rect x="519.2" y="64" width="5.3" height="44" fill="var(--panel)" stroke="var(--line)"/>
+    <rect x="524.5" y="64" width="390.2" height="44" fill="var(--accent)" fill-opacity="0.08" stroke="var(--line)"/>
+    <rect x="914.7" y="64" width="5.3" height="44" fill="var(--warn)" fill-opacity="0.4" stroke="var(--line)"/>
+
+    <text x="239" y="90" font-size="13" fill="var(--fg)" text-anchor="middle">rfs · 55,5 МиБ · зашифрован</text>
+    <text x="477" y="90" font-size="12" fill="var(--fg)" text-anchor="middle">cfg · 12 МиБ</text>
+    <text x="719" y="90" font-size="13" fill="var(--fg)" text-anchor="middle">rfs2 · 55,5 МиБ · вторая копия</text>
+
+    <text x="20" y="132" font-size="11" fill="var(--muted)">первые 4 МиБ отсюда — ниже, увеличение ×32</text>
+    <text x="20" y="220" font-size="12" fill="var(--muted)">0 — 4 МиБ: загрузчик, его окружение и начало rootfs</text>
+
+    <rect x="20" y="232" width="225" height="52" fill="var(--accent)" fill-opacity="0.4" stroke="var(--line)"/>
+    <rect x="245" y="232" width="112.5" height="52" fill="var(--panel)" stroke="var(--line)"/>
+    <rect x="357.5" y="232" width="225" height="52" fill="var(--accent)" fill-opacity="0.4" stroke="var(--line)"/>
+    <rect x="582.5" y="232" width="112.5" height="52" fill="var(--accent)" fill-opacity="0.25" stroke="var(--line)"/>
+    <rect x="695" y="232" width="112.5" height="52" fill="var(--accent)" fill-opacity="0.25" stroke="var(--line)"/>
+    <rect x="807.5" y="232" width="112.5" height="52" fill="var(--accent)" fill-opacity="0.16" stroke="var(--accent)"/>
+
+    <text x="132" y="255" font-size="12" fill="var(--fg)" text-anchor="middle">ubl</text>
+    <text x="132" y="271" font-size="11" fill="var(--muted)" text-anchor="middle">1 МиБ</text>
+    <text x="470" y="255" font-size="12" fill="var(--fg)" text-anchor="middle">uboot</text>
+    <text x="470" y="271" font-size="11" fill="var(--muted)" text-anchor="middle">1 МиБ</text>
+    <text x="638" y="253" font-size="11" fill="var(--fg)" text-anchor="middle">env</text>
+    <text x="638" y="269" font-size="10" fill="var(--muted)" text-anchor="middle">512 КиБ</text>
+    <text x="751" y="253" font-size="11" fill="var(--fg)" text-anchor="middle">userenv</text>
+    <text x="751" y="269" font-size="10" fill="var(--muted)" text-anchor="middle">512 КиБ</text>
+    <text x="863" y="253" font-size="11" fill="var(--fg)" text-anchor="middle">rfs</text>
+    <text x="863" y="269" font-size="10" fill="var(--muted)" text-anchor="middle">зашифрован</text>
+
+    <text x="20" y="300" font-size="10" fill="var(--muted)">0x0</text>
+    <text x="357.5" y="300" font-size="10" fill="var(--muted)" text-anchor="middle">0x180000</text>
+    <text x="807.5" y="300" font-size="10" fill="var(--muted)" text-anchor="middle">0x380000</text>
+    <text x="920" y="300" font-size="10" fill="var(--muted)" text-anchor="end">0x400000</text>
+  </g>
+</svg>
+<figcaption>Пропорции настоящие: <code>rfs</code> и <code>rfs2</code> занимают по 55,5 МиБ из 128, поэтому первые мегабайты показаны крупно. Внутри <code>rfs</code> — 331 LEB, из них 315 начинаются с vendor-узла <code>38 26 90 05</code>.</figcaption>
+</figure>
 
 **[факт]** AES в коде есть и в апдейтере, и в U-Boot: сигнатура таблицы S-боксов `63 7c 77 7b …` встречается по одному разу в `version.elf`, `uboot.elf` и `boot2.bin`. Значит шифр программный, без крипто-движка.
 

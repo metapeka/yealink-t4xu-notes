@@ -83,6 +83,9 @@ em{color:var(--muted)}
 hr{border:0;border-top:1px solid var(--line);margin:32px 0}
 .mermaid{background:var(--mesh);border:1px solid var(--line);border-radius:12px;padding:18px;margin:20px 0;text-align:center;overflow-x:auto}
 .mermaid svg{max-width:100%;height:auto}
+.fig{margin:22px 0;padding:16px 16px 10px;background:var(--mesh);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+.fig svg{display:block;min-width:640px}
+.fig figcaption{margin-top:10px;font-size:13px;color:var(--muted);line-height:1.5}
 footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
 .mdlink{font-size:13px;color:var(--muted)}
 .pipe{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin:16px 0 0}
