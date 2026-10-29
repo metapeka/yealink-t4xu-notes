@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Что публикуем — Yealink T4xU</title>
+<link rel="stylesheet" href="assets/style.css?v=65949e7d">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></div>
+  <button class="navbtn" id="toggle-nav" type="button">Разделы</button>
+  <h4>Разделы</h4>
+  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="access.html">Что чем решается<small>какой способ что даёт и порядок шагов</small></a></li>
+    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
+    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li>
+    <li><a href="usb.html">USB и maskrom<small>как определить пины, дамп без паяльника</small></a></li>
+    <li><a href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li>
+    <li><a href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a></li>
+    <li><a href="security.html">Безопасность<small>изоляция, доступ, проверка после</small></a></li>
+    <li><a class="active" href="publish.html">Что публикуем<small>что выкладываем, что нет и почему</small></a></li></ul>
+  <div class="tools">
+    <button id="open-search" type="button">Поиск <kbd>Ctrl K</kbd></button>
+    <button id="toggle-theme" type="button">☾</button>
+  </div>
+  <h4>На странице</h4>
+  <div class="toc">
+<ul>
+<li><a href="#_2">Что изучаем</a></li>
+<li><a href="#_3">Что публикуем</a></li>
+<li><a href="#_4">Что не публикуем</a></li>
+<li><a href="#_5">Насколько это законно</a></li>
+<li><a href="#_6">Если ты правообладатель</a></li>
+</ul>
+</div>
+
+</aside>
+<div class="overlay" id="palette-wrap">
+  <div class="palette">
+    <input id="palette-input" type="text" placeholder="Страница или раздел…" autocomplete="off" spellcheck="false">
+    <ul id="palette-list"></ul>
+  </div>
+</div>
+<main>
+<h1 id="_1">Что мы публикуем и что изучаем</h1>
+<p>Коротко: публикуем <strong>свои заметки о разборе собственного аппарата</strong>, не публикуем <strong>чужие файлы и ключи</strong>.</p>
+<h2 id="_2">Что изучаем</h2>
+<ul>
+<li>Формат прошивочного пакета и логику апдейтера производителя.</li>
+<li>Как устроен загрузчик и слой шифрования файловой системы.</li>
+<li>Что нужно, чтобы вернуть аппарат в строй, если запись сорвалась.</li>
+</ul>
+<p>Цель — ремонт и совместимость собственного телефона, а не снятие защиты с чужого устройства. Устройство куплено, находится у нас, и все эксперименты идут на нём или на доноре.</p>
+<h2 id="_3">Что публикуем</h2>
+<table>
+<thead>
+<tr>
+<th>Публикуем</th>
+<th>Пример</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Свои тексты о формате и проверках</td>
+<td><code>FINDINGS</code>, <code>BRANCHES</code></td>
+</tr>
+<tr>
+<td>Свои инструменты разбора</td>
+<td><code>romtool.py</code>, <code>rebuild.py</code></td>
+</tr>
+<tr>
+<td>Схемы, таблицы решений, порядок шагов</td>
+<td>дашборд, «Что чем решается»</td>
+</tr>
+<tr>
+<td>Фотографии платы</td>
+<td>наклейки с серийными номерами размыты</td>
+</tr>
+<tr>
+<td>Хеши файлов для сверки</td>
+<td>sha256, размеры</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_4">Что не публикуем</h2>
+<table>
+<thead>
+<tr>
+<th>Не публикуем</th>
+<th>Почему</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Файлы прошивок производителя</td>
+<td>чужой объект авторского права</td>
+</tr>
+<tr>
+<td><code>version.elf</code>, <code>.pyd</code>, <code>chrome.dll</code> и прочие бинарники</td>
+<td>то же самое</td>
+</tr>
+<tr>
+<td>Ключи, дампы флеша, трейлеры</td>
+<td>это и есть снятие защиты</td>
+</tr>
+<tr>
+<td>MAC, phone ID, plate ID, номер со стикера</td>
+<td>персональные и учётные данные</td>
+</tr>
+<tr>
+<td>Готовые пакеты, собранные из чужой прошивки</td>
+<td>распространяли бы чужой код</td>
+</tr>
+<tr>
+<td>Пошаговое «как снять ключ конкретно с этой модели» до публикации метода</td>
+<td>риск для чужих устройств</td>
+</tr>
+</tbody>
+</table>
+<p>Правило простое: <strong>описание метода — да, чужой материал и готовые ключи — нет.</strong></p>
+<h2 id="_5">Насколько это законно</h2>
+<p>Не юридическая консультация, а рабочая позиция:</p>
+<ul>
+<li>Изучаем <strong>свой</strong> аппарат; в многих юрисдикциях это разрешено (ремонт, совместимость, исследование).</li>
+<li>Публикуем <strong>свои</strong> тексты и код, а не чужой дистрибутив.</li>
+<li>Не распространяем средства обхода защиты и не выкладываем ключи — это главное, что обычно попадает под запрет (в США — DMCA §1201, в РФ — ст. 1299 ГК о технических средствах защиты).</li>
+<li>Не призываем ломать чужие устройства и не публикуем ничего, что работает «в один клик» на чужой трубке.</li>
+</ul>
+<p>Риск остаётся в серой зоне: формально обход защиты для доступа к своей же прошивке может трактоваться по-разному. Поэтому публикуем осторожно: без ключей, без бинарников, с явной пометкой «факт / гипотеза».</p>
+<h2 id="_6">Если ты правообладатель</h2>
+<p>Открой issue в <a href="https://github.com/metapeka/yealink-t4xu-notes">репозитории</a> — спорный материал снимем. Мы не ставим целью публиковать чужой код, только собственный разбор.</p>
+<footer>
+<p class="mdlink">Исходник этой страницы: <a href="docs/PUBLISH.md">docs/PUBLISH.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
+</footer>
+</main>
+
+<script src="assets/app.js?v=65949e7d" defer></script>
+</body>
+</html>

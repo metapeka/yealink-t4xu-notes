@@ -33,6 +33,7 @@ PAGES = [
     ("NETWORK_FLASH", "network.html", "Прошивка по сети", "веб-интерфейс трубки, без UART"),
     ("REMOTE_ACCESS", "remote.html", "Удалённый доступ", "Tailscale: схема и два варианта"),
     ("SECURITY", "security.html", "Безопасность", "изоляция, доступ, проверка после"),
+    ("PUBLISH", "publish.html", "Что публикуем", "что выкладываем, что нет и почему"),
 ]
 
 REDACT = [
@@ -322,7 +323,7 @@ def pipeline_html():
         )
     return (
         '<div class="pipe">' + "".join(steps) + "</div>"
-        '<div class="forkline"><span>развилка после шага 5: как попасть в файловую систему</span></div>'
+        '<div class="forkline"><span>развилка на шаге 5: как попасть в файловую систему</span></div>'
         '<div class="branches">' + "".join(branches) + "</div>"
     )
 
