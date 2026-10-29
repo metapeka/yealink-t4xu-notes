@@ -80,6 +80,28 @@ hr{border:0;border-top:1px solid var(--line);margin:32px 0}
 .mermaid svg{max-width:100%;height:auto}
 footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
 .mdlink{font-size:13px;color:var(--muted)}
+.pipe{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin:16px 0 0}
+.stage{position:relative;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--line);border-radius:10px;padding:12px 13px 13px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:5px}
+.stage .num{font-size:11px;color:var(--muted);letter-spacing:.08em}
+.stage b{font-size:14px;font-weight:600;color:var(--fg);line-height:1.3}
+.stage .note{font-size:12px;color:var(--muted);line-height:1.45}
+.stage .pill{align-self:flex-start;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.stage.done{border-top-color:var(--ok)} .stage.done .pill{color:var(--ok);border-color:var(--ok)}
+.stage.now{border-top-color:var(--warn);box-shadow:0 0 0 1px var(--warn)} .stage.now .pill{color:var(--warn);border-color:var(--warn)}
+.stage.blocked{border-top-color:var(--bad)} .stage.blocked .pill{color:var(--bad);border-color:var(--bad)}
+.stage.current b{color:var(--warn)}
+.forkline{display:flex;align-items:center;gap:12px;margin:16px 0 8px;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.forkline::before,.forkline::after{content:"";height:1px;background:var(--line);flex:1}
+.branches{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.branch{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 13px;text-decoration:none;color:inherit;box-shadow:var(--shadow)}
+.branch:hover{border-color:var(--accent);background:var(--hover)}
+.branch .lt{grid-row:span 3;width:26px;height:26px;border-radius:7px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:650;color:var(--muted)}
+.branch b{font-size:13.5px;font-weight:600;color:var(--fg);line-height:1.3}
+.branch .pill{justify-self:start;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.branch .note{grid-column:2;font-size:12px;color:var(--muted);line-height:1.45}
+.branch.ok .lt{border-color:var(--ok);color:var(--ok)} .branch.ok .pill{color:var(--ok);border-color:var(--ok)}
+.branch.blocked .lt{border-color:var(--bad);color:var(--bad)} .branch.blocked .pill{color:var(--bad);border-color:var(--bad)}
+.branch.todo .lt{border-color:var(--warn);color:var(--warn)} .branch.todo .pill{color:var(--warn);border-color:var(--warn)}
 .tools{display:flex;gap:8px;margin:14px 0 0}
 .tools button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--card);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;cursor:pointer;font-family:inherit}
 .tools button:hover{color:var(--fg);border-color:var(--accent)}
@@ -263,6 +285,47 @@ APP_JS = """(function () {
 })();
 """
 
+STAGES = [
+    ("1", "Формат пакета", "done", "заголовок 0x80, блоки, CRC, LZMA / cypher3"),
+    ("2", "Пересборка", "done", "identity совпал: .118, .20, 86.14.4"),
+    ("3", "Пакет-проба", "done", "test_108.86.14.99.rom — меняется только строка версии"),
+    ("4", "Приём на трубке", "now", "нужен донор; версия должна быть выше текущей"),
+    ("5", "Доступ к ФС", "blocked", "нужен ключ, дамп или свой загрузчик"),
+    ("6", "Свои функции", "todo", "после доступа и ключа ФС"),
+]
+
+BRANCHES = [
+    ("A", "Эмулятор, офлайн", "todo", "готов к запуску: FUN_00082170 → DER → AES. Шанс ~50/50"),
+    ("B", "Дамп флеша", "blocked", "нужен человек с платой; свой U-Boot без ubifs crypto"),
+    ("C", "Старая прошивка ≤ 86.0.118", "ok", "пакет собран, но ФС остаётся зашифрованной"),
+    ("D", "Подмена rfs", "idea", "свой version.elf пишет раздел; загрузчик не проверен"),
+]
+
+STATE_LABEL = {"done": "готово", "now": "сейчас", "blocked": "блокер", "todo": "не начато", "ok": "применимо", "idea": "идея"}
+
+
+def pipeline_html():
+    steps = []
+    for num, title, state, note in STAGES:
+        cls = f"{state}" + (" current" if state == "now" else "")
+        steps.append(
+            f'<div class="stage {cls}"><span class="num">{num}</span>'
+            f'<b>{title}</b><span class="pill">{STATE_LABEL[state]}</span>'
+            f'<span class="note">{note}</span></div>'
+        )
+    branches = []
+    for letter, title, state, note in BRANCHES:
+        branches.append(
+            f'<a class="branch {state}" href="branches.html"><span class="lt">{letter}</span>'
+            f'<b>{title}</b><span class="pill">{STATE_LABEL[state]}</span>'
+            f'<span class="note">{note}</span></a>'
+        )
+    return (
+        '<div class="pipe">' + "".join(steps) + "</div>"
+        '<div class="forkline"><span>развилка после шага 5: как попасть в файловую систему</span></div>'
+        '<div class="branches">' + "".join(branches) + "</div>"
+    )
+
 def _asset_version():
     blob = (CSS + APP_JS).encode("utf-8")
     return hashlib.sha1(blob).hexdigest()[:8]
@@ -356,6 +419,8 @@ def render(md_text, md_name, active_page, title):
     mermaid_js = MERMAID_JS if blocks else ""
     if "<!-- TILES -->" in body:
         body = body.replace("<p><!-- TILES --></p>", tiles_html(active_page)).replace("<!-- TILES -->", tiles_html(active_page))
+    if "<!-- PIPELINE -->" in body:
+        body = body.replace("<p><!-- PIPELINE --></p>", pipeline_html()).replace("<!-- PIPELINE -->", pipeline_html())
     return TEMPLATE.format(
         ver=ASSET_VER,
         title=title,

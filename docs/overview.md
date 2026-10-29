@@ -11,6 +11,10 @@
   <a class="card" href="usb.html"><span class="k">Следующий шаг</span><span class="v">доступ</span><span class="s">сеть → UART → дамп / maskrom</span></a>
 </div>
 
+## Где мы сейчас
+
+<!-- PIPELINE -->
+
 ## Разделы
 
 <!-- TILES -->
