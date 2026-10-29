@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сниффинг шины — Yealink T4xU</title>
+<link rel="stylesheet" href="assets/style.css?v=af3202f9">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html" title="На главную">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></a>
+  <nav class="topnav"><a href="index.html">Обзор</a><a href="access.html">Пути</a><a href="findings.html">Находки</a><a href="branches.html">Ветки</a><a href="plan.html">План</a><a href="publish.html">Публикация</a><a href="sources.html">Источники</a></nav>
+  <div class="topact">
+    <button id="open-search" type="button" aria-label="Поиск">Поиск <kbd>Ctrl K</kbd></button>
+    <button id="toggle-theme" type="button" aria-label="Тема">☾</button>
+    <button class="navbtn" id="toggle-nav" type="button">Меню</button>
+  </div>
+</header>
+<div class="shell">
+<aside class="sidebar">
+  <h4>Разделы</h4>
+  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="access.html">Что чем решается<small>какой способ что даёт и порядок шагов</small></a></li>
+    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
+    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li>
+    <li><a href="usb.html">USB и maskrom<small>как определить пины, дамп без паяльника</small></a></li>
+    <li><a href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li>
+    <li><a href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a></li>
+    <li><a href="security.html">Безопасность<small>изоляция, доступ, проверка после</small></a></li>
+    <li><a href="publish.html">Что публикуем<small>что выкладываем, что нет и почему</small></a></li>
+    <li><a class="active" href="sniff.html">Сниффинг шины<small>снять ключ с платы без выпайки</small></a></li>
+    <li><a href="sources.html">Как делали другие<small>Synacktiv и WHY2025: сравнение методов</small></a></li></ul>
+  <h4>На странице</h4>
+  <div class="toc">
+<ul>
+<li><a href="#_1">Зачем</a></li>
+<li><a href="#_2">Что нужно</a></li>
+<li><a href="#_3">Где точки</a></li>
+<li><a href="#_4">Порядок</a></li>
+<li><a href="#_5">Как понять, что получилось</a></li>
+<li><a href="#_6">Что не делать</a></li>
+<li><a href="#_7">Если трафик не находится</a></li>
+</ul>
+</div>
+
+</aside>
+<div class="overlay" id="palette-wrap">
+  <div class="palette">
+    <input id="palette-input" type="text" placeholder="Страница или раздел…" autocomplete="off" spellcheck="false">
+    <ul id="palette-list"></ul>
+  </div>
+</div>
+<main>
+<h1 id="soc-mcu">Сниффинг шины SoC ↔ MCU</h1>
+<p>Отдельная страница про путь 1: снять ключ с платы, не выпаивая флеш.</p>
+<h2 id="_1">Зачем</h2>
+<p>Файловая система на флеше зашифрована: из 342 блоков 324 помечены magic <code>38 26 90 05</code>. Ключ не лежит в прошивке пакета — по данным доклада WHY2025 его выводит микроконтроллер: процессор отправляет значение, MCU возвращает результат, из ответов собирается ключ. Шина между ними нешифрованная, значит её можно слушать.</p>
+<p><strong>Что это даёт:</strong> штатный том расшифровывается, и мы правим файлы, не трогая загрузчик.</p>
+<h2 id="_2">Что нужно</h2>
+<table>
+<thead>
+<tr>
+<th>Предмет</th>
+<th>Зачем</th>
+<th>Заметка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Логический анализатор, 8 каналов</td>
+<td>слушать линии</td>
+<td>24 МГц хватает для UART; 100 МГц — запас</td>
+</tr>
+<tr>
+<td>Щупы с тонкими иглами</td>
+<td>цепляться к ножкам QFN</td>
+<td>без пайки, прижимом</td>
+</tr>
+<tr>
+<td>Мультиметр</td>
+<td>земля, питание, прозвонка</td>
+<td>режим прозвонки и вольтметр</td>
+</tr>
+<tr>
+<td>USB-UART переходник</td>
+<td>консоль, если найдётся UART</td>
+<td>3,3 В, не 5 В</td>
+</tr>
+<tr>
+<td>Макро-съёмка 10×</td>
+<td>прочитать маркировку U16</td>
+<td>телефон с макро или лупа</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">Где точки</h2>
+<p><img alt="U16, площадки рядом и четыре контакта" src="assets/mcu-sniff.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Точка</th>
+<th>Что это</th>
+<th>Уверенность</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>U16</strong> рядом с процессором</td>
+<td>кандидат в MCU, который выводит ключ</td>
+<td>[гипотеза] маркировка не читается</td>
+</tr>
+<tr>
+<td>Золотые площадки рядом с U16</td>
+<td>возможно, выведенные линии шины</td>
+<td>[гипотеза]</td>
+</tr>
+<tr>
+<td>4 контакта у U16 (3 круглых + 1 квадратный)</td>
+<td>кандидат на UART-консоль</td>
+<td>[гипотеза]</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_4">Порядок</h2>
+<ol>
+<li><strong>Общий провод.</strong> GND анализатора — на землю платы: экран разъёма или полигон у питания. Без общей земли сигнал бессмысленный.</li>
+<li><strong>Маркировка U16.</strong> Макро-снимок при 10×; по номеру найти даташит, в нём VDD, GND и выводы UART/SPI.</li>
+<li><strong>Прозвонка.</strong> Плата обесточена, мультиметр в режиме диодов: линия, которая звонится и на U16, и на процессор, — кандидат в шину.</li>
+<li><strong>Подключение.</strong> CH0 и CH1 на две найденные линии, порог 1,65 В, частота 24–100 МГц, запуск по включению питания.</li>
+<li><strong>Запись.</strong> Включить трубку и снять лог первых секунд загрузки.</li>
+<li><strong>Разбор.</strong> UART — байты видны сразу; SPI или I2C — сначала декодировать по CLK.</li>
+</ol>
+<h2 id="_5">Как понять, что получилось</h2>
+<ul>
+<li>В логе виден повторяющийся обмен: запрос от процессора и ответ MCU.</li>
+<li>По докладу ответы склеиваются в ключ; длина ключа — 32 байта под AES-256.</li>
+<li><strong>Проверка ключа офлайн:</strong> расшифровать первый блок <code>rootfs</code> и поискать сигнатуру узла UBIFS (<code>31 18 10 06</code>). Если структура читается — ключ верный.</li>
+</ul>
+<h2 id="_6">Что не делать</h2>
+<ul>
+<li>Не подавать 5 В: на плате 3,3 В.</li>
+<li>Не замыкать иглой соседние ножки QFN — можно уронить питание и получить кирпич.</li>
+<li>Не паять до проверки распиновки: достаточно прижать иглу к площадке.</li>
+</ul>
+<h2 id="_7">Если трафик не находится</h2>
+<ol>
+<li>Перебрать площадки рядом с U16 анализатором: линия с активностью при загрузке — кандидат.</li>
+<li>Проверить, не идёт ли обмен между процессором и другим чипом: возможно, MCU стоит не U16.</li>
+<li>Вернуться к пути 2 — свой загрузчик: <a href="usb.html">USB и maskrom</a>.</li>
+</ol>
+<p><strong>[гипотеза]</strong> Всё выше — методика, а не подтверждённая распиновка. Точные точки определяются за 15–20 минут с мультиметром и макро-снимком.</p>
+<p>Связанное: <a href="access.html">Что чем решается</a> · <a href="sources.html">Как делали другие</a> · <a href="usb.html">USB и maskrom</a>.</p>
+<footer>
+<p class="mdlink">Исходник этой страницы: <a href="docs/SNIFF.md">docs/SNIFF.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
+</footer>
+</main>
+</div>
+
+<script src="assets/app.js?v=af3202f9" defer></script>
+</body>
+</html>
