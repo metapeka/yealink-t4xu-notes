@@ -56,6 +56,7 @@
 <li><a href="#aes-2026-10-29">AES подтверждён по таблицам (2026-10-29)</a></li>
 <li><a href="#2026-10-29">Экстрактор: уточнения по заголовкам (2026-10-29)</a></li>
 <li><a href="#2026-10-29_1">Поиск готового ключа в прошивке: отрицательный (2026-10-29)</a></li>
+<li><a href="#rfs-2026-10-29_1">Как апдейтер пишет rfs (2026-10-29)</a></li>
 </ul>
 </div>
 
@@ -618,6 +619,11 @@ FUN_00082170(mmap + 0x100, 0x200, mmap[0x808])
 <p><strong>[факт]</strong> Ни один кандидат не дал сигнатуру узла UBIFS <code>31 18 10 06</code>. Строгий фильтр по 12 печатным символам подряд дал 18 совпадений — это шум: при таком объёме его и ожидается порядка десяти.</p>
 <p><strong>[вывод]</strong> Ключ не хранится в прошивке в готовом виде. Это согласуется с докладом WHY2025: ключ выводит MCU, а не код.</p>
 <p><strong>[инструмент]</strong> <code>tools/ubi_trykey.py</code> — проверка любого кандидата: расшифровывает LEB 0 в ECB, ищет <code>31 18 10 06</code> и выносит вердикт. Проверен на синтетическом случае (верный ключ → <code>MATCH</code>) и на заведомо неверном (→ <code>key rejected</code>).</p>
+<h2 id="rfs-2026-10-29_1">Как апдейтер пишет <code>rfs</code> (2026-10-29)</h2>
+<p><strong>[факт]</strong> Апдейтер работает с MTD напрямую: в строках есть <code>nand-raw</code>, <code>nand-oob</code>, <code>MTD Erase failure</code>, <code>MTD write failure</code>, <code>MTD writeoob failure</code>, обработка плохих блоков (<code>Skipping bad block at 0x%08x</code>), <code>MEMGETINFO</code>, <code>BLKGETSIZE64</code>, <code>MEMGETOOBSEL</code>.</p>
+<p><strong>[факт]</strong> Он стирает блок и пишет <strong>содержимое блока как есть</strong> на свой MTD-смещение: сообщения вида <code>erase write2, mtdoffset: 0x%08x</code>. Пере-шифрования ФС и форматирования тома в апдейтере нет.</p>
+<p><strong>[следствие]</strong> Значит <code>rfs</code> из пакета — это точная копия раздела: то, что мы собрали экстрактором, совпадает с тем, что окажется на флеше. Ветка D (свой <code>version.elf</code> пишет свою ФС) на уровне записи выполнима: преграда остаётся одна — прочитает ли загрузчик незашифрованный том.</p>
+<p><strong>[факт]</strong> AES в этом апдейтере не поддерживается: строка <code>ROM_BLK_CT_AES NOT support just now,reset to none!</code>. То есть блоки <code>0x83</code> на 86.14.4 не обрабатываются вовсе, и это подтверждает, что тяжёлая крипта V87 на нашей трубке не задействована.</p>
 <footer>
 <p class="mdlink">Исходник этой страницы: <a href="docs/FINDINGS.md">docs/FINDINGS.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
 </footer>
