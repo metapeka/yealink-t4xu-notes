@@ -123,8 +123,8 @@ def build_nav(active):
 def render(md_text, md_name, active_page, title):
     md = markdown.Markdown(extensions=["tables", "fenced_code", "toc"], extension_configs={"toc": {"toc_depth": "2-2"}})
     body = md.convert(md_text)
-    toc_html = md.toc
-    tocblock = f'<h4>На странице</h4>\n  <div class="toc"><ul>{toc_html}</ul></div>' if toc_html and len(toc_html) > 40 else ""
+    toc_html = md.toc or ""
+    tocblock = f'<h4>На странице</h4>\n  {toc_html}' if len(toc_html) > 80 else ""
     return TEMPLATE.format(
         title=title,
         nav=build_nav(active_page),
