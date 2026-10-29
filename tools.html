@@ -45,6 +45,7 @@
 <li><a href="#rebuildpy-cli">rebuild.py — воспроизводимая сборка (CLI)</a></li>
 <li><a href="#_1">Ограничения</a></li>
 <li><a href="#ubi_extractpy">ubi_extract.py</a></li>
+<li><a href="#ubi_trykeypy">ubi_trykey.py</a></li>
 </ul>
 </div>
 
@@ -151,6 +152,11 @@ python3 rebuild.py src.rom -o out.rom --replace bootloader=uboot_plain.bin
 <pre><code class="language-bash">python3 tools/ubi_extract.py old/108.86.0.118.rfs.bin --out /tmp/ubi_out
 </code></pre>
 <p>Проверено на <code>108.86.0.118</code>: 333 PEB, том <code>rootfs</code> — 331 LEB по <code>0x1F000</code>, служебный том <code>0x7FFFFFFF</code> — 2 LEB.</p>
+<h2 id="ubi_trykeypy">ubi_trykey.py</h2>
+<p>Проверяет кандидат ключа на собранном томе: расшифровывает LEB 0 в ECB и ищет сигнатуру узла UBIFS.</p>
+<pre><code class="language-bash">python3 tools/ubi_trykey.py /tmp/ubi_out/vol0.ubi_leb --key &lt;hex&gt;
+</code></pre>
+<p>Вердикт <code>MATCH</code> — ключ верный; <code>key rejected</code> — нет. Нужен <code>pycryptodome</code>.</p>
 <footer>
 <p class="mdlink">Исходник этой страницы: <a href="docs/TOOLS.md">docs/TOOLS.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
 </footer>

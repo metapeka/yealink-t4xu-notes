@@ -106,3 +106,13 @@ python3 tools/ubi_extract.py old/108.86.0.118.rfs.bin --out /tmp/ubi_out
 ```
 
 Проверено на `108.86.0.118`: 333 PEB, том `rootfs` — 331 LEB по `0x1F000`, служебный том `0x7FFFFFFF` — 2 LEB.
+
+## ubi_trykey.py
+
+Проверяет кандидат ключа на собранном томе: расшифровывает LEB 0 в ECB и ищет сигнатуру узла UBIFS.
+
+```bash
+python3 tools/ubi_trykey.py /tmp/ubi_out/vol0.ubi_leb --key <hex>
+```
+
+Вердикт `MATCH` — ключ верный; `key rejected` — нет. Нужен `pycryptodome`.
