@@ -51,6 +51,7 @@
 <li><a href="#11-2026-10-29">11. Эмулятор апдейтера: откуда берётся публичный ключ (2026-10-29)</a></li>
 <li><a href="#rfs-2026-10-29">Шифрование тома rfs измерено на пакете (2026-10-29)</a></li>
 <li><a href="#ubifs-crypto-2026-10-29">Слой ubifs crypto локализован, карта разделов флеша (2026-10-29)</a></li>
+<li><a href="#ubi-2026-10-29">Экстрактор UBI собран (2026-10-29)</a></li>
 </ul>
 </div>
 
@@ -591,6 +592,10 @@ FUN_00082170(mmap + 0x100, 0x200, mmap[0x808])
 <p><strong>[факт]</strong> AES в коде есть и в апдейтере, и в U-Boot: сигнатура таблицы S-боксов <code>63 7c 77 7b …</code> встречается по одному разу в <code>version.elf</code>, <code>uboot.elf</code> и <code>boot2.bin</code>. Значит шифр программный, без крипто-движка.</p>
 <p><strong>[факт]</strong> Блоки <code>bootloader</code> из пакетов после нашего разбора всё ещё не читаются: у <code>108.86.0.118</code> и <code>108.86.14.4</code> начало <code>bb 03 33 1d …</code>, энтропия высокая, сигнатур <code>LOADER</code>/<code>RKFW</code> нет. Настоящий образ загрузчика у нас есть отдельно — <code>boot2.bin</code> (начинается с <code>LOADER</code>).</p>
 <p><strong>[факт]</strong> В пакете <code>108.86.0.154</code> блока загрузчика нет вовсе: только <code>version</code> и <code>app</code> (другая модель/ветка).</p>
+<h2 id="ubi-2026-10-29">Экстрактор UBI собран (2026-10-29)</h2>
+<p><strong>[факт]</strong> <code>tools/ubi_extract.py</code> собирает тома из <code>rfs</code>-блока: на <code>108.86.0.118</code> разобрано 333 PEB, том <code>rootfs</code> — 331 LEB по <code>0x1F000</code> байт (315 с crypto-заголовком), плюс служебный том <code>0x7FFFFFFF</code> на 2 LEB. Выход: 42 029 056 байт.</p>
+<p><strong>[факт]</strong> LEB 0 начинается с <code>38 26 90 05</code> — то есть даже первый узел тома зашифрован, метаданных без ключа не получить.</p>
+<p><strong>[следствие]</strong> Когда появится ключ, разбор занимает минуты: распакованный том уже собирается, останется снять заголовки и отдать образ в <code>ubireader</code>/<code>ubifs</code>-парсер.</p>
 <footer>
 <p class="mdlink">Исходник этой страницы: <a href="docs/FINDINGS.md">docs/FINDINGS.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
 </footer>

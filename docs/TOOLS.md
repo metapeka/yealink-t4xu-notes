@@ -96,3 +96,13 @@ python3 rebuild.py src.rom -o out.rom --replace bootloader=uboot_plain.bin
 1. LZMA-поток пересобранного `rfs` не побайтово равен вендорскому (наш liblzma). Формат совместим (FORMAT_ALONE, dict 0x40000, lc3/lp0/pb2), но совместимость декодера проверяется только на устройстве.
 2. Хвост 512 Б не пересчитывается и не переподписывается — копируется.
 3. AES-256 (`cipher=0x83`) не реализован: ключ не найден.
+
+## ubi_extract.py
+
+Собирает тома из `rfs`-блока пакета или из дампа: разбирает EC/VID-заголовки, сортирует LEB по `lnum`, пишет по файлу на том.
+
+```bash
+python3 tools/ubi_extract.py old/108.86.0.118.rfs.bin --out /tmp/ubi_out
+```
+
+Проверено на `108.86.0.118`: 333 PEB, том `rootfs` — 331 LEB по `0x1F000`, служебный том `0x7FFFFFFF` — 2 LEB.
