@@ -63,7 +63,7 @@ rkdeveloptool rl 0 262144 out.bin
 
 ## Где что на плате
 
-![Плата SIP-T43UMV17B с разметкой](assets/board-annotated.png)
+![Плата SIP-T43UMV17B с разметкой](assets/board-annotated.jpg)
 
 | № | Что это | Уверенность |
 |---|---|---|
