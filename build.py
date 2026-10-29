@@ -162,6 +162,14 @@ def render(md_text, md_name, active_page, title):
     )
 
 
+def say(msg):
+    """Print without dying when stdout is a closed pipe (e.g. `| head`)."""
+    try:
+        print(msg, flush=True)
+    except (BrokenPipeError, OSError):
+        pass
+
+
 def main():
     (ROOT / "assets").mkdir(exist_ok=True)
     (ROOT / "assets" / "style.css").write_text(CSS.strip() + "\n", encoding="utf-8")
@@ -173,7 +181,7 @@ def main():
             continue
         src = PROJECT / f"{key}.md"
         if not src.exists():
-            print("missing source:", src)
+            say(f"missing source: {src}")
             continue
         DOCS_OUT.joinpath(f"{key}.md").write_text(redact(src.read_text(encoding="utf-8")), encoding="utf-8")
 
@@ -187,7 +195,7 @@ def main():
         text = md_path.read_text(encoding="utf-8")
         html = render(text, md_path.name, page, title)
         (ROOT / page).write_text(html, encoding="utf-8")
-        print(f"{page:18} <- docs/{md_path.name}  {len(html)} bytes")
+        say(f"{page:18} <- docs/{md_path.name}  {len(html)} bytes")
 
 
 if __name__ == "__main__":
