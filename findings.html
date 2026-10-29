@@ -579,12 +579,7 @@ FUN_00082170(mmap + 0x100, 0x200, mmap[0x808])
 <tr>
 <td>cfg</td>
 <td>0x03B00000</td>
-<td>0xC00000 (12 МиБ)</td>
-</tr>
-<tr>
-<td>—</td>
-<td>0x04700000</td>
-<td>0xC0000 (пусто)</td>
+<td>0xCC0000 (12,75 МиБ)</td>
 </tr>
 <tr>
 <td>rfs2</td>
@@ -615,13 +610,12 @@ FUN_00082170(mmap + 0x100, 0x200, mmap[0x808])
     <rect x="37.5" y="64" width="3.5" height="44" fill="var(--accent)" fill-opacity="0.25" stroke="var(--line)"/>
     <rect x="41" y="64" width="3.6" height="44" fill="var(--accent)" fill-opacity="0.25" stroke="var(--line)"/>
     <rect x="44.6" y="64" width="390.2" height="44" fill="var(--accent)" fill-opacity="0.16" stroke="var(--accent)"/>
-    <rect x="434.8" y="64" width="84.4" height="44" fill="var(--card)" stroke="var(--line)"/>
-    <rect x="519.2" y="64" width="5.3" height="44" fill="var(--panel)" stroke="var(--line)"/>
+    <rect x="434.8" y="64" width="89.6" height="44" fill="var(--card)" stroke="var(--line)"/>
     <rect x="524.5" y="64" width="390.2" height="44" fill="var(--accent)" fill-opacity="0.08" stroke="var(--line)"/>
     <rect x="914.7" y="64" width="5.3" height="44" fill="var(--warn)" fill-opacity="0.4" stroke="var(--line)"/>
 
     <text x="239" y="90" font-size="13" fill="var(--fg)" text-anchor="middle">rfs · 55,5 МиБ · зашифрован</text>
-    <text x="477" y="90" font-size="12" fill="var(--fg)" text-anchor="middle">cfg · 12 МиБ</text>
+    <text x="479" y="90" font-size="12" fill="var(--fg)" text-anchor="middle">cfg · 12,75 МиБ</text>
     <text x="719" y="90" font-size="13" fill="var(--fg)" text-anchor="middle">rfs2 · 55,5 МиБ · вторая копия</text>
 
     <text x="20" y="132" font-size="11" fill="var(--muted)">первые 4 МиБ отсюда — ниже, увеличение ×32</text>
@@ -651,7 +645,7 @@ FUN_00082170(mmap + 0x100, 0x200, mmap[0x808])
     <text x="920" y="300" font-size="10" fill="var(--muted)" text-anchor="end">0x400000</text>
   </g>
 </svg>
-<figcaption>Пропорции настоящие: <code>rfs</code> и <code>rfs2</code> занимают по 55,5 МиБ из 128, поэтому первые мегабайты показаны крупно. Внутри <code>rfs</code> — 331 LEB, из них 315 начинаются с vendor-узла <code>38 26 90 05</code>.</figcaption>
+<figcaption>Пропорции настоящие: <code>rfs</code> и <code>rfs2</code> занимают по 55,5 МиБ из 128, поэтому первые мегабайты показаны крупно. Единственный зазор — 0,5 МиБ перед <code>uboot</code>; остальные разделы стыкуются вплотную. Внутри <code>rfs</code> — 331 LEB, из них 315 начинаются с vendor-узла <code>38 26 90 05</code>. Раздел <code>kernel</code> в таблице указан с тем же смещением <code>0x380000</code>, что и <code>rfs</code>, и без размера — его граница не установлена, поэтому отдельным блоком он не нарисован.</figcaption>
 </figure>
 
 <p><strong>[факт]</strong> AES в коде есть и в апдейтере, и в U-Boot: сигнатура таблицы S-боксов <code>63 7c 77 7b …</code> встречается по одному разу в <code>version.elf</code>, <code>uboot.elf</code> и <code>boot2.bin</code>. Значит шифр программный, без крипто-движка.</p>

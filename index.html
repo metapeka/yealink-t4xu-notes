@@ -67,7 +67,7 @@
   <a class="card ok" href="findings.html"><span class="k">Формат пакета</span><span class="v">разобран</span><span class="s">распаковка и пересборка байт в байт</span></a>
   <a class="card warn" href="network.html"><span class="k">Пакет-проба</span><span class="v">собран</span><span class="s">ждёт трубку, чтобы проверить приём</span></a>
   <a class="card bad" href="access.html"><span class="k">Ключ ФС</span><span class="v">блокер</span><span class="s">слой ubifs crypto, ключ через Holtek</span></a>
-  <a class="card" href="access.html"><span class="k">Следующий шаг</span><span class="v">доступ</span><span class="s">UART → сниффинг шины → дамп</span></a>
+  <a class="card" href="access.html"><span class="k">Следующий шаг</span><span class="v">доступ</span><span class="s">UART → дамп с OOB → сниффинг</span></a>
 </div>
 
 <h2 id="_1">Где мы сейчас</h2>
@@ -176,7 +176,7 @@ flowchart LR
 
 </div>
 <h3 id="_8">Слой ФС</h3>
-<p>Rootfs — UBI (PEB 128 КиБ, LEB 124 КиБ). Том <code>rootfs</code> — 331 LEB; у 315 из них первый узел начинается с vendor-заголовка <code>38 26 90 05</code>, остальные 16 такого заголовка не имеют.</p>
+<p>Rootfs — UBI (PEB 128 КиБ, LEB 124 КиБ), цифры по пакету <code>108.86.0.118</code>. Том <code>rootfs</code> — 331 LEB; у 315 из них первый узел начинается с vendor-заголовка <code>38 26 90 05</code>, остальные 16 такого заголовка не имеют.</p>
 <p>Ядро <code>/uImage</code> лежит в том же томе, то есть тоже внутри зашифрованной части.</p>
 <h3 id="_9">Эмулятор апдейтера</h3>
 <p>Собран запускаемый в Unicorn скелет: PIE грузится по адресам, импорты libc/OpenSSL подменяются хуками, вызывается любая функция.</p>
