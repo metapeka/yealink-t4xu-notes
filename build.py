@@ -25,6 +25,7 @@ PAGES = [
     ("TOOLS", "tools.html", "TOOLS", "инструменты и проверки"),
     ("BRANCH_D", "branch-d.html", "BRANCH_D", "проект подмены rfs"),
     ("INSTRUCTION_DUMP", "instruction.html", "INSTRUCTION_DUMP", "инструкция для человека"),
+    ("USB_MASKROM", "usb.html", "USB и maskrom", "как определить пины, дамп без паяльника"),
 ]
 
 REDACT = [

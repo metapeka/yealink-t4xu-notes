@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USB и maskrom — Yealink T4xU</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></div>
+  <h4>Разделы</h4>
+  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
+    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li>
+    <li><a class="active" href="usb.html">USB и maskrom<small>как определить пины, дамп без паяльника</small></a></li></ul>
+  <h4>На странице</h4>
+  <div class="toc">
+<ul>
+<li><a href="#1-gnd">1. GND — прозвонкой</a></li>
+<li><a href="#2-vbus">2. VBUS — замером</a></li>
+<li><a href="#3-d-d-">3. D+ и D- — перебором</a></li>
+<li><a href="#4">4. Меры предосторожности</a></li>
+<li><a href="#5-maskrom">5. Режим maskrom: что попробовать</a></li>
+<li><a href="#6-maskrom">6. Если maskrom не заводится</a></li>
+</ul>
+</div>
+
+</aside>
+<main>
+<h1 id="usb-maskrom">USB-пины и режим maskrom</h1>
+<p>Как определить назначение четырёх контактов USB на плате и как попробовать снять дамп флеша <strong>без паяльника</strong> через режим maskrom SoC Rockchip.</p>
+<p><strong>[факт]</strong> SoC: <code>RK3308H</code>. Rockchip поддерживает загрузку в режиме maskrom по USB, при этом <code>rkdeveloptool</code> умеет читать и записывать флеш.</p>
+<h2 id="1-gnd">1. GND — прозвонкой</h2>
+<ul>
+<li>Плата <strong>выключена</strong>, мультиметр в режим прозвонки.</li>
+<li>Один щуп — на металл USB-разъёма, экран, или заведомо земляной полигон.</li>
+<li>Вторым щупом по контактам: тот, что звонится (≈0 Ом) — <strong>GND</strong>.</li>
+</ul>
+<h2 id="2-vbus">2. VBUS — замером</h2>
+<ul>
+<li>Плата включена, меряем каждый контакт относительно найденного GND.</li>
+<li><strong>≈5 В</strong> — питание (VBUS). С ним больше ничего не спутать.</li>
+<li>На остальных при включённой плате обычно 0…3.3 В, стабильных 5 В нет.</li>
+</ul>
+<h2 id="3-d-d-">3. D+ и D- — перебором</h2>
+<ul>
+<li>Остаются два контакта; это данные.</li>
+<li>Собрать одну комбинацию, подключить, посмотреть, перечисляется ли устройство.</li>
+<li>Не перечисляется — <strong>поменять местами</strong>. Перепутанные D+/D- не горят, просто не работают.</li>
+</ul>
+<h2 id="4">4. Меры предосторожности</h2>
+<ul>
+<li><strong>Никогда не подавать 5 В на D+/D-</strong>: сперва достоверно определить VBUS.</li>
+<li>Если трубка питается от своего адаптера, использовать кабель <strong>только для данных</strong> (VBUS не подключён) — иначе два источника питания на одной линии.</li>
+<li>Уровни на данных — 3.3 В, никаких 5-вольтовых переходников.</li>
+<li>Любые манипуляции с контактами — только при снятом питании, кроме самого замера напряжения.</li>
+</ul>
+<h2 id="5-maskrom">5. Режим maskrom: что попробовать</h2>
+<p>Порядок на ПК:</p>
+<pre><code class="language-bash"># 1. поставить rkdeveloptool (Linux/WSL с USB-пробросом или Linux-машина)
+# 2. выключить трубку, подключить USB к ПК
+# 3. перевести SoC в maskrom (кнопка/замыкание на плате + подача питания)
+lsusb | grep 2207        # Rockchip VID
+rkdeveloptool ld         # покажет, увидел ли загрузчик устройство
+</code></pre>
+<p>Если устройство видно:</p>
+<pre><code class="language-bash">rkdeveloptool rci        # сведения о чипе и флеше
+rkdeveloptool rl out.bin # чтение флеша целиком
+</code></pre>
+<p><strong>[гипотеза]</strong> Способ входа в maskrom на этой плате не проверен: у Rockchip это обычно кнопка восстановления, замыкание определённых контактов флеша или подача питания при подключённом USB. Если maskrom работает — дамп снимается по USB и <strong>выпаивать TSOP-48 не нужно</strong>.</p>
+<p><strong>[факт]</strong> Для maskrom не нужен ни UART, ни разборка дальше доступа к контактам.</p>
+<h2 id="6-maskrom">6. Если maskrom не заводится</h2>
+<p>Возврат к обычному пути: UART-лог → консоль U-Boot → дамп командами <code>nand read</code> + отдельно OOB → либо выпайка TSOP-48 с чтением в программаторе.</p>
+<p>Подробности — на странице <a href="instruction.html">Инструкция человеку</a>.</p>
+<footer>
+<p class="mdlink">Исходник этой страницы: <a href="docs/USB_MASKROM.md">docs/USB_MASKROM.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
+</footer>
+</main>
+</body>
+</html>

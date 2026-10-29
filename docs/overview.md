@@ -101,3 +101,4 @@ ver 108.86.14.4  crypto 0x3  len 0x23E29B0  tail 0
 - [TOOLS](tools.html) — инструменты и проверки
 - [BRANCH_D](branch-d.html) — проект подмены `rfs`
 - [INSTRUCTION_DUMP](instruction.html) — инструкция для человека с аппаратом
+- [USB и maskrom](usb.html) — как определить четыре контакта USB и попробовать дамп без паяльника
