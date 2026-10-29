@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Как делали другие — Yealink T4xU</title>
+<link rel="stylesheet" href="assets/style.css?v=af3202f9">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html" title="На главную">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></a>
+  <nav class="topnav"><a href="index.html">Обзор</a><a href="access.html">Пути</a><a href="findings.html">Находки</a><a href="branches.html">Ветки</a><a href="plan.html">План</a><a href="publish.html">Публикация</a><a class="active" href="sources.html">Источники</a></nav>
+  <div class="topact">
+    <button id="open-search" type="button" aria-label="Поиск">Поиск <kbd>Ctrl K</kbd></button>
+    <button id="toggle-theme" type="button" aria-label="Тема">☾</button>
+    <button class="navbtn" id="toggle-nav" type="button">Меню</button>
+  </div>
+</header>
+<div class="shell">
+<aside class="sidebar">
+  <h4>Разделы</h4>
+  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="access.html">Что чем решается<small>какой способ что даёт и порядок шагов</small></a></li>
+    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
+    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li>
+    <li><a href="usb.html">USB и maskrom<small>как определить пины, дамп без паяльника</small></a></li>
+    <li><a href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li>
+    <li><a href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a></li>
+    <li><a href="security.html">Безопасность<small>изоляция, доступ, проверка после</small></a></li>
+    <li><a href="publish.html">Что публикуем<small>что выкладываем, что нет и почему</small></a></li>
+    <li><a class="active" href="sources.html">Как делали другие<small>Synacktiv и WHY2025: сравнение методов</small></a></li></ul>
+  <h4>На странице</h4>
+  <div class="toc">
+<ul>
+<li><a href="#_2">Источники</a></li>
+<li><a href="#_3">Что совпало с нашим разбором</a></li>
+<li><a href="#_4">Что у них проще, чем у нас</a></li>
+<li><a href="#2025">Что берём из доклада 2025</a></li>
+<li><a href="#_5">Что меняется в плане</a></li>
+<li><a href="#_6">Проверить у себя</a></li>
+</ul>
+</div>
+
+</aside>
+<div class="overlay" id="palette-wrap">
+  <div class="palette">
+    <input id="palette-input" type="text" placeholder="Страница или раздел…" autocomplete="off" spellcheck="false">
+    <ul id="palette-list"></ul>
+  </div>
+</div>
+<main>
+<h1 id="_1">Как делали другие</h1>
+<p>Два публичных источника по той же цели — Yealink T4x. Сравнение с нашим разбором.</p>
+<h2 id="_2">Источники</h2>
+<table>
+<thead>
+<tr>
+<th>Источник</th>
+<th>Что разбирали</th>
+<th>Год</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.synacktiv.com/en/publications/no-grave-but-the-sip-reversing-a-voip-phone-firmware">«No grave but the SIP»</a> — Synacktiv, T. Pourcelot</td>
+<td>T4 series: формат ROM, cypher3/cypher4, YAFFS</td>
+<td>2019</td>
+</tr>
+<tr>
+<td><a href="https://www.youtube.com/watch?v=hIcnTBa8IEk">«Die Hardcoded»</a> — WHY2025, Y. A. и S. Gloor</td>
+<td>T44U: AES через MCU, RPS-облако</td>
+<td>2025</td>
+</tr>
+<tr>
+<td><a href="https://github.com/synacktiv/yealink_tools">synacktiv/yealink_tools</a></td>
+<td>публичные скрипты и kaitai-модели</td>
+<td>2019</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">Что совпало с нашим разбором</h2>
+<table>
+<thead>
+<tr>
+<th>Наше наблюдение</th>
+<th>Подтверждение</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Заголовок <code>0x80</code>, блоки, CRC</td>
+<td>Synacktiv описывает ту же структуру</td>
+</tr>
+<tr>
+<td><code>cypher3</code> = XOR, затем ADD, 256-битные ключи</td>
+<td><strong>ключи совпали побайтово</strong>: <code>75A467AF…09CC</code> (xor) и <code>82180D32…</code> (add)</td>
+</tr>
+<tr>
+<td>Апдейтер не проверяет подпись</td>
+<td>Synacktiv: «firmware is not signed», downgrade возможен</td>
+</tr>
+<tr>
+<td>Апдейтер работает от root</td>
+<td>прямо в докладе</td>
+</tr>
+<tr>
+<td>Пакет можно ставить только версией выше</td>
+<td>у Synacktiv — downgrade тоже возможен, у нас дилер пишет «возврат к v85 невозможен»</td>
+</tr>
+</tbody>
+</table>
+<p>Совпадение ключей — независимая проверка: наш <code>romtool.py</code> реализует ровно тот алгоритм, что опубликован в 2019, а не нашу выдумку.</p>
+<h2 id="_4">Что у них проще, чем у нас</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>У них (T4, 2019)</th>
+<th>У нас (T43U, 86.14.4)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Файловая система</td>
+<td>YAFFS2</td>
+<td>UBIFS внутри UBI</td>
+</tr>
+<tr>
+<td>Что зашифровано</td>
+<td>только <strong>заголовки</strong> по 512 Б, содержимое файлов открыто</td>
+<td><strong>каждый LEB целиком</strong>, magic <code>38 26 90 05</code></td>
+</tr>
+<tr>
+<td>Откуда ключ</td>
+<td>в коде ядра, <code>cypher3</code></td>
+<td>слой <code>ubifs crypto</code> в U-Boot, ключ через MCU</td>
+</tr>
+<tr>
+<td>Итог</td>
+<td>ФС собирается офлайн, ключ не нужен</td>
+<td>без ключа или дампа не собрать</td>
+</tr>
+</tbody>
+</table>
+<p>Вывод: у нас задача тяжелее, потому что Yealink между 2019 и 2021 ушёл от «шифруем заголовки» к «шифруем весь том и уводим ключ в железо».</p>
+<h2 id="2025">Что берём из доклада 2025</h2>
+<ol>
+<li><strong>Ключ добывается сниффингом, а не дампом.</strong> В T44U ключ AES выводится через MCU: CPU отправляет значение по шине, MCU возвращает результат, ответы склеиваются в ключ. Шина нешифрованная — достаточно логического анализатора. Это наш branch B, но на порядок дешевле: три-четыре провода вместо паяльника на NAND.</li>
+<li><strong>Тот же приём надёжен во времени:</strong> авторы доклада говорят, что «трюк с MCU» сохранился в новой модели, меняли только проверки.</li>
+<li><strong>Что Yealink успел закрыть:</strong> в новых прошивках появилась подпись апдейтера и secure boot с аппаратным корнем доверия. На 86.14.4 подписи нет — мы это проверили сами, и доклад объясняет, почему: закрывали позже.</li>
+<li><strong>Что не сработает у нас:</strong> их старый приём «пропатчить строку системной команды в апдейтере» — в нашем <code>version.elf</code> нет ни <code>system</code>, ни <code>sh -c</code>, вызовов оболочки нет. Значит нужен свой бинарь (ветка D), а не патч строки.</li>
+</ol>
+<h2 id="_5">Что меняется в плане</h2>
+<ul>
+<li>Ветку B делим: <strong>B1 — сниффинг шины SoC ↔ MCU</strong> (дешево, нужен анализатор), <strong>B2 — дамп флеша</strong> (дорого, страховка).</li>
+<li>Ветка D остаётся: подпись в 86.14.4 не проверяется, свой <code>version.elf</code> пройдёт.</li>
+<li>Ветка A (эмулятор) остаётся, но её ценность падает: в докладе сказано, что ключ выводит именно MCU, а не код в прошивке — офлайн-эмуляция упрётся в отсутствие ответов MCU.</li>
+</ul>
+<h2 id="_6">Проверить у себя</h2>
+<ul>
+<li>Сверить наш парсер с <code>yealink_rom.ksy</code> из их репозитория — формальная проверка формата.</li>
+<li>Найти на плате MCU (Holtek) и его шину с SoC: сначала по фото и даташиту, потом — щупом.</li>
+</ul>
+<footer>
+<p class="mdlink">Исходник этой страницы: <a href="docs/REFERENCES.md">docs/REFERENCES.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
+</footer>
+</main>
+</div>
+
+<script src="assets/app.js?v=af3202f9" defer></script>
+</body>
+</html>

@@ -10,7 +10,7 @@
 <body>
 <header class="topbar">
   <a class="brand" href="index.html" title="На главную">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></a>
-  <nav class="topnav"><a href="index.html">Обзор</a><a href="access.html">Пути</a><a href="findings.html">Находки</a><a class="active" href="branches.html">Ветки</a><a href="plan.html">План</a><a href="publish.html">Публикация</a></nav>
+  <nav class="topnav"><a href="index.html">Обзор</a><a href="access.html">Пути</a><a href="findings.html">Находки</a><a class="active" href="branches.html">Ветки</a><a href="plan.html">План</a><a href="publish.html">Публикация</a><a href="sources.html">Источники</a></nav>
   <div class="topact">
     <button id="open-search" type="button" aria-label="Поиск">Поиск <kbd>Ctrl K</kbd></button>
     <button id="toggle-theme" type="button" aria-label="Тема">☾</button>
@@ -32,7 +32,8 @@
     <li><a href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li>
     <li><a href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a></li>
     <li><a href="security.html">Безопасность<small>изоляция, доступ, проверка после</small></a></li>
-    <li><a href="publish.html">Что публикуем<small>что выкладываем, что нет и почему</small></a></li></ul>
+    <li><a href="publish.html">Что публикуем<small>что выкладываем, что нет и почему</small></a></li>
+    <li><a href="sources.html">Как делали другие<small>Synacktiv и WHY2025: сравнение методов</small></a></li></ul>
   <h4>На странице</h4>
   <div class="toc">
 <ul>
@@ -80,7 +81,8 @@
 <p><strong>Плюсы:</strong> даёт полный образ флеша и возможность записи — не зависит от успеха анализа кода, в отличие от ветки A.
 <strong>Ограничение:</strong> сам по себе дамп <code>ubifs crypto</code> не снимает. Чтобы править ФС, нужен либо <strong>патч U-Boot</strong> (его разбор сейчас blocked: образ PIC, 832 функции, 0 ссылок на строки), либо <strong>ключ Holtek</strong> через логический анализатор.
 <strong>Минусы:</strong> нужен человек с доступом к плате; риск кирпича при записи.
-<strong>Статус:</strong> ожидает человека и железа.</p>
+<strong>Порядок:</strong> B1 — снять ключ сниффингом шины SoC ↔ MCU (по докладу WHY2025 ключ выводит MCU в challenge-response, шина нешифрованная; нужен логический анализатор, паять NAND не надо); B2 — дамп флеша, если B1 не даёт ключ.</p>
+<p><strong>Статус:</strong> ожидает человека и железа.</p>
 <hr />
 <h2 id="c-860118">Ветка C — старая прошивка (≤ 86.0.118), без ключей</h2>
 <p><strong>Что можно:</strong> собрать пакет с <strong>структурными</strong> правками (версия, пересжатие, порядок блоков) — апдейтер <code>.118</code> проверяет только magic/CRC/размеры.

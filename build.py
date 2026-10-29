@@ -34,6 +34,7 @@ PAGES = [
     ("REMOTE_ACCESS", "remote.html", "Удалённый доступ", "Tailscale: схема и два варианта"),
     ("SECURITY", "security.html", "Безопасность", "изоляция, доступ, проверка после"),
     ("PUBLISH", "publish.html", "Что публикуем", "что выкладываем, что нет и почему"),
+    ("REFERENCES", "sources.html", "Как делали другие", "Synacktiv и WHY2025: сравнение методов"),
 ]
 
 REDACT = [
@@ -408,6 +409,7 @@ TOPNAV = [
     ("branches.html", "Ветки"),
     ("plan.html", "План"),
     ("publish.html", "Публикация"),
+    ("sources.html", "Источники"),
 ]
 
 
