@@ -69,8 +69,12 @@ lsusb | grep 2207        # Rockchip VID
 rkdeveloptool ld         # покажет, увидел ли загрузчик устройство
 </code></pre>
 <p>Если устройство видно:</p>
-<pre><code class="language-bash">rkdeveloptool rci        # сведения о чипе и флеше
-rkdeveloptool rl out.bin # чтение флеша целиком
+<pre><code class="language-bash">rkdeveloptool rci                  # сведения о чипе и флеше, в том числе ёмкость (Flash Size)
+rkdeveloptool rl 0 &lt;секторов&gt; out.bin
+</code></pre>
+<p><strong>Важно:</strong> у <code>rl</code> три обязательных аргумента — начальный сектор, число секторов и файл. Сектор 512 байт, поэтому число секторов = ёмкость флеша в байтах / 512.</p>
+<p>Пример: флеш на 128 МиБ = 134 217 728 байт → <code>134217728 / 512 = 262144</code>:</p>
+<pre><code class="language-bash">rkdeveloptool rl 0 262144 out.bin
 </code></pre>
 <p><strong>[гипотеза]</strong> Способ входа в maskrom на этой плате не проверен: у Rockchip это обычно кнопка восстановления, замыкание определённых контактов флеша или подача питания при подключённом USB. Если maskrom работает — дамп снимается по USB и <strong>выпаивать TSOP-48 не нужно</strong>.</p>
 <p><strong>[факт]</strong> Для maskrom не нужен ни UART, ни разборка дальше доступа к контактам.</p>
