@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Прошивка по сети — Yealink T4xU</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></div>
+  <h4>Разделы</h4>
+  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
+    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li>
+    <li><a href="usb.html">USB и maskrom<small>как определить пины, дамп без паяльника</small></a></li>
+    <li><a class="active" href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li></ul>
+  <h4>На странице</h4>
+  <div class="toc">
+<ul>
+<li><a href="#1">1. Узнать адрес трубки</a></li>
+<li><a href="#2-">2. Открыть веб-интерфейс</a></li>
+<li><a href="#3">3. Раздел обновления</a></li>
+<li><a href="#4">4. Требования к пакету</a></li>
+<li><a href="#5">5. Отдавать пакет с ПК</a></li>
+<li><a href="#6">6. Что нельзя делать без подготовки</a></li>
+<li><a href="#7">7. Сравнение с аппаратным путём</a></li>
+</ul>
+</div>
+
+</aside>
+<main>
+<h1 id="_1">Прошивка по сети, без паяльника</h1>
+<p>Пакет <code>.rom</code> заливается в трубку через её собственный веб-интерфейс. Ни UART, ни программатор для записи не нужны — они нужны только чтобы <strong>читать</strong> (дамп флеша, лог загрузки).</p>
+<h2 id="1">1. Узнать адрес трубки</h2>
+<ul>
+<li>На самой трубке: OK → Status → IPv4 (или в разделе Network).</li>
+<li>Либо в списке клиентов роутера, по MAC.</li>
+</ul>
+<h2 id="2-">2. Открыть веб-интерфейс</h2>
+<pre><code class="language-text">http://&lt;IP трубки&gt;
+</code></pre>
+<p>Логин по умолчанию — <code>admin</code>. Если пароль меняли, нужен он.</p>
+<h2 id="3">3. Раздел обновления</h2>
+<p><strong>[гипотеза]</strong> путь может отличаться по версиям ПО:</p>
+<ul>
+<li><code>Settings → Upgrade</code></li>
+<li>либо <code>Admin → Upgrade</code> / <code>Advanced → Firmware</code></li>
+</ul>
+<p>Там поле «файл прошивки» и кнопка загрузки. Выбираешь наш <code>.rom</code> и запускаешь.</p>
+<h2 id="4">4. Требования к пакету</h2>
+<ul>
+<li>Формат — тот же <code>.rom</code> (<code>T46U(T43U,...)-&lt;версия&gt;.rom</code>), пересобранный нашими инструментами.</li>
+<li><strong>Версия в пакете должна быть выше текущей</strong> — иначе интерфейс откажется ставить «старую прошивку». Сейчас на трубке <code>108.86.14.4</code>, значит в пакете — <code>108.86.14.99</code> и выше.</li>
+<li>Перед обновлением отключить Auto Provision и RPS, чтобы аппарат не поднялся сам на 87.x.</li>
+</ul>
+<h2 id="5">5. Отдавать пакет с ПК</h2>
+<p>Два способа:</p>
+<ol>
+<li><strong>Вручную</strong> — просто выбрать файл в веб-интерфейсе трубки.</li>
+<li><strong>Провижининг</strong> — отдать пакет по HTTP с ПК:</li>
+</ol>
+<pre><code class="language-bash">python -m http.server 8000 --bind 0.0.0.0 --directory /путь/к/пакету
+</code></pre>
+<p>и указать в настройках трубки URL прошивки на этот адрес.</p>
+<p><strong>[гипотеза]</strong> авто-провижининг Yealink ожидает конкретный формат имени файла и <code>.cfg</code>-описание; точный шаблон надо сверять по логу запросов трубки.</p>
+<h2 id="6">6. Что нельзя делать без подготовки</h2>
+<ul>
+<li>Прошивать рабочую трубку, не проверив пакет на доноре.</li>
+<li>Прошивать без возможности восстановления: при ошибке понадобится программатор.</li>
+</ul>
+<h2 id="7">7. Сравнение с аппаратным путём</h2>
+<table>
+<thead>
+<tr>
+<th>Задача</th>
+<th>Нужен паяльник / UART</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Залить наш пакет</td>
+<td>нет — сеть и веб-интерфейс</td>
+</tr>
+<tr>
+<td>Снять дамп флеша</td>
+<td>да (или maskrom по USB)</td>
+</tr>
+<tr>
+<td>Лог загрузки, консоль U-Boot</td>
+<td>UART, три провода без пайки</td>
+</tr>
+<tr>
+<td>Восстановление после неудачи</td>
+<td>да, программатор</td>
+</tr>
+</tbody>
+</table>
+<p>Порядок работ — <a href="plan.html">PLAN</a>, ветки — <a href="branches.html">BRANCHES</a>, что делать с аппаратом руками — <a href="instruction.html">Инструкция человеку</a>.</p>
+<footer>
+<p class="mdlink">Исходник этой страницы: <a href="docs/NETWORK_FLASH.md">docs/NETWORK_FLASH.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
+</footer>
+</main>
+</body>
+</html>

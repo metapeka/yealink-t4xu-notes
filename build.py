@@ -26,6 +26,7 @@ PAGES = [
     ("BRANCH_D", "branch-d.html", "BRANCH_D", "проект подмены rfs"),
     ("INSTRUCTION_DUMP", "instruction.html", "INSTRUCTION_DUMP", "инструкция для человека"),
     ("USB_MASKROM", "usb.html", "USB и maskrom", "как определить пины, дамп без паяльника"),
+    ("NETWORK_FLASH", "network.html", "Прошивка по сети", "веб-интерфейс трубки, без UART"),
 ]
 
 REDACT = [
