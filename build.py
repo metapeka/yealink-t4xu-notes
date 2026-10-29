@@ -48,9 +48,10 @@ CSS = """
 html[data-theme="light"]{--bg:#f7f8fb;--fg:#15181f;--muted:#5a6272;--card:#fff;--line:#dde2ea;--accent:#2563eb;--ok:#0f9d63;--warn:#b26b00;--bad:#c62828;--panel:#eef1f6;--hover:#e4e9f2;--active:#d9e3f7;--code:#f1f3f7;--mesh:#fff;--text2:#242a35;--h3:#333a47;--quote-bg:#fff7e6;--quote-fg:#6b4a00;--shadow:0 1px 2px rgba(16,24,40,.06)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;display:flex;min-height:100vh}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;display:block;min-height:100vh}
+.shell{display:flex;min-height:calc(100vh - 57px)}
 a{color:var(--accent)}
-.sidebar{width:280px;flex:0 0 280px;border-right:1px solid var(--line);padding:24px 20px;position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--panel)}
+.sidebar{width:280px;flex:0 0 280px;border-right:1px solid var(--line);padding:20px;position:sticky;top:57px;height:calc(100vh - 57px);overflow-y:auto;background:var(--panel)}
 .brand{font-weight:700;font-size:16px;margin:0 0 4px}
 .brand span{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:4px}
 .sidebar h4{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:24px 0 8px}
@@ -103,6 +104,17 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:v
 .branch.ok .lt{border-color:var(--ok);color:var(--ok)} .branch.ok .pill{color:var(--ok);border-color:var(--ok)}
 .branch.blocked .lt{border-color:var(--bad);color:var(--bad)} .branch.blocked .pill{color:var(--bad);border-color:var(--bad)}
 .branch.todo .lt{border-color:var(--warn);color:var(--warn)} .branch.todo .pill{color:var(--warn);border-color:var(--warn)}
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;height:57px;padding:0 20px;background:var(--panel);border-bottom:1px solid var(--line)}
+.topbar .brand{display:flex;align-items:baseline;gap:9px;text-decoration:none;color:var(--fg);font-weight:700;font-size:15px;white-space:nowrap}
+.topbar .brand span{font-weight:400;font-size:11.5px;color:var(--muted)}
+.topnav{display:flex;gap:2px;margin-left:6px;overflow-x:auto;scrollbar-width:none}
+.topnav::-webkit-scrollbar{display:none}
+.topnav a{font-size:13.5px;color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:7px;white-space:nowrap}
+.topnav a:hover{color:var(--fg);background:var(--hover)}
+.topnav a.active{color:var(--fg);background:var(--active);box-shadow:inset 0 -2px 0 var(--accent)}
+.topact{margin-left:auto;display:flex;gap:8px}
+.topact button{display:flex;align-items:center;gap:6px;background:var(--card);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:7px 11px;font:inherit;font-size:13px;cursor:pointer}
+.topact button:hover{color:var(--fg);border-color:var(--accent)}
 .tools{display:flex;gap:8px;margin:14px 0 0}
 .tools button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--card);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;cursor:pointer;font-family:inherit}
 .tools button:hover{color:var(--fg);border-color:var(--accent)}
@@ -136,18 +148,22 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:v
 .palette li b{font-weight:600}
 .palette li em{display:block;font-style:normal;font-size:12px;color:var(--muted)}
 .palette .empty{padding:18px;color:var(--muted);font-size:14px;text-align:center}
-.navbtn{display:none;width:100%;align-items:center;justify-content:space-between;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font:inherit;font-size:14px;cursor:pointer;margin:6px 0 0}
-.navbtn::after{content:"▾";color:var(--muted);font-size:11px}
-.sidebar.nav-open .navbtn::after{content:"▲"}
+.topact .navbtn{display:none}
 @media(max-width:860px){
-  body{flex-direction:column}
-  .sidebar{position:static;width:auto;flex:none;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .shell{flex-direction:column}
+  .topnav{display:none}
+  .topbar{padding:0 12px;gap:8px}
+  .topbar .brand span{display:none}
+  .topact kbd{display:none}
+  .sidebar{display:none;position:static;width:auto;flex:none;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .sidebar.nav-open{display:block}
   .sidebar ul{display:flex;flex-wrap:wrap;gap:6px}
   .sidebar a{padding:6px 10px}
   .sidebar a small{display:none}
   .toc{display:none}
   main{padding:24px}
-  .navbtn{display:flex}
+  .topact .navbtn{display:flex}
+  .navbtn::after{content:"▾";margin-left:6px;font-size:10px}
   .sidebar:not(.nav-open) ul{display:none}
   .sidebar:not(.nav-open) h4{display:none}
   .sidebar:not(.nav-open) .toc{display:none}
@@ -344,15 +360,19 @@ TEMPLATE = """<!DOCTYPE html>
 <script>try{{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}}catch(e){{}}</script>
 </head>
 <body>
+<header class="topbar">
+  <a class="brand" href="index.html" title="На главную">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></a>
+  <nav class="topnav">{topnav}</nav>
+  <div class="topact">
+    <button id="open-search" type="button" aria-label="Поиск">Поиск <kbd>Ctrl K</kbd></button>
+    <button id="toggle-theme" type="button" aria-label="Тема">☾</button>
+    <button class="navbtn" id="toggle-nav" type="button">Меню</button>
+  </div>
+</header>
+<div class="shell">
 <aside class="sidebar">
-  <div class="brand">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></div>
-  <button class="navbtn" id="toggle-nav" type="button">Разделы</button>
   <h4>Разделы</h4>
   <ul>{nav}</ul>
-  <div class="tools">
-    <button id="open-search" type="button">Поиск <kbd>Ctrl K</kbd></button>
-    <button id="toggle-theme" type="button">☾</button>
-  </div>
   {tocblock}
 </aside>
 <div class="overlay" id="palette-wrap">
@@ -367,6 +387,7 @@ TEMPLATE = """<!DOCTYPE html>
 <p class="mdlink">Исходник этой страницы: <a href="docs/{md}">docs/{md}</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
 </footer>
 </main>
+</div>
 {mermaid}
 <script src="assets/app.js?v={ver}" defer></script>
 </body>
@@ -378,6 +399,24 @@ def redact(text):
     for pat, repl in REDACT:
         text = re.sub(pat, repl, text)
     return text
+
+
+TOPNAV = [
+    ("index.html", "Обзор"),
+    ("access.html", "Пути"),
+    ("findings.html", "Находки"),
+    ("branches.html", "Ветки"),
+    ("plan.html", "План"),
+    ("publish.html", "Публикация"),
+]
+
+
+def build_topnav(active):
+    items = []
+    for page, label in TOPNAV:
+        cls = ' class="active"' if page == active else ""
+        items.append(f'<a{cls} href="{page}">{label}</a>')
+    return "".join(items)
 
 
 def build_nav(active):
@@ -425,6 +464,7 @@ def render(md_text, md_name, active_page, title):
     return TEMPLATE.format(
         ver=ASSET_VER,
         title=title,
+        topnav=build_topnav(active_page),
         nav=build_nav(active_page),
         tocblock=tocblock,
         body=body,

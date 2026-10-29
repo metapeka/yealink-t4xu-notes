@@ -4,13 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Удалённый доступ — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=65949e7d">
+<link rel="stylesheet" href="assets/style.css?v=af3202f9">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
+<header class="topbar">
+  <a class="brand" href="index.html" title="На главную">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></a>
+  <nav class="topnav"><a href="index.html">Обзор</a><a href="access.html">Пути</a><a href="findings.html">Находки</a><a href="branches.html">Ветки</a><a href="plan.html">План</a><a href="publish.html">Публикация</a></nav>
+  <div class="topact">
+    <button id="open-search" type="button" aria-label="Поиск">Поиск <kbd>Ctrl K</kbd></button>
+    <button id="toggle-theme" type="button" aria-label="Тема">☾</button>
+    <button class="navbtn" id="toggle-nav" type="button">Меню</button>
+  </div>
+</header>
+<div class="shell">
 <aside class="sidebar">
-  <div class="brand">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></div>
-  <button class="navbtn" id="toggle-nav" type="button">Разделы</button>
   <h4>Разделы</h4>
   <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
     <li><a href="access.html">Что чем решается<small>какой способ что даёт и порядок шагов</small></a></li>
@@ -25,10 +33,6 @@
     <li><a class="active" href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a></li>
     <li><a href="security.html">Безопасность<small>изоляция, доступ, проверка после</small></a></li>
     <li><a href="publish.html">Что публикуем<small>что выкладываем, что нет и почему</small></a></li></ul>
-  <div class="tools">
-    <button id="open-search" type="button">Поиск <kbd>Ctrl K</kbd></button>
-    <button id="toggle-theme" type="button">☾</button>
-  </div>
   <h4>На странице</h4>
   <div class="toc">
 <ul>
@@ -83,11 +87,12 @@ flowchart LR
 <p class="mdlink">Исходник этой страницы: <a href="docs/REMOTE_ACCESS.md">docs/REMOTE_ACCESS.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
 </footer>
 </main>
+</div>
 <script type="module">
 import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
 const light = document.documentElement.getAttribute('data-theme') === 'light';
 mermaid.initialize({ startOnLoad: true, theme: light ? 'default' : 'dark', themeVariables: { fontFamily: 'Segoe UI, sans-serif' } });
 </script>
-<script src="assets/app.js?v=65949e7d" defer></script>
+<script src="assets/app.js?v=af3202f9" defer></script>
 </body>
 </html>

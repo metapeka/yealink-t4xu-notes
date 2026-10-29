@@ -35,7 +35,7 @@
   var wrap = document.getElementById('palette-wrap');
   var input = document.getElementById('palette-input');
   var list = document.getElementById('palette-list');
-  var VER = '65949e7d';
+  var VER = 'af3202f9';
   var data = null, items = [], sel = 0;
 
   function load() {
