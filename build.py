@@ -5,6 +5,8 @@ Run from the repository root:  python build.py
 Sources: src/overview.md and docs/*.md (copied from the project with redaction).
 Output: index.html + one page per document + assets/style.css
 """
+import html
+import json
 import re
 import shutil
 from pathlib import Path
@@ -40,42 +42,79 @@ REDACT = [
 ]
 
 CSS = """
-:root{--bg:#0f1115;--fg:#e6e6e6;--muted:#9aa0a6;--card:#171a21;--line:#2a2f3a;--accent:#7aa2f7;--ok:#3ddc97;--warn:#ffb020;--bad:#ff5c5c}
+:root{--bg:#0f1115;--fg:#e6e6e6;--muted:#9aa0a6;--card:#171a21;--line:#2a2f3a;--accent:#7aa2f7;--ok:#3ddc97;--warn:#ffb020;--bad:#ff5c5c;--panel:#0c0e12;--hover:#151922;--active:#1b2130;--code:#11141a;--mesh:#12151c;--text2:#dfe3ea;--h3:#cfd6e4;--quote-bg:#1a1710;--quote-fg:#f0e2c4;--shadow:none}
+html[data-theme="light"]{--bg:#f7f8fb;--fg:#15181f;--muted:#5a6272;--card:#fff;--line:#dde2ea;--accent:#2563eb;--ok:#0f9d63;--warn:#b26b00;--bad:#c62828;--panel:#eef1f6;--hover:#e4e9f2;--active:#d9e3f7;--code:#f1f3f7;--mesh:#fff;--text2:#242a35;--h3:#333a47;--quote-bg:#fff7e6;--quote-fg:#6b4a00;--shadow:0 1px 2px rgba(16,24,40,.06)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;display:flex;min-height:100vh}
 a{color:var(--accent)}
-.sidebar{width:280px;flex:0 0 280px;border-right:1px solid var(--line);padding:24px 20px;position:sticky;top:0;height:100vh;overflow-y:auto;background:#0c0e12}
+.sidebar{width:280px;flex:0 0 280px;border-right:1px solid var(--line);padding:24px 20px;position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--panel)}
 .brand{font-weight:700;font-size:16px;margin:0 0 4px}
 .brand span{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:4px}
 .sidebar h4{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:24px 0 8px}
 .sidebar ul{list-style:none;margin:0;padding:0}
 .sidebar li{margin:2px 0}
 .sidebar a{display:block;text-decoration:none;color:var(--muted);padding:6px 8px;border-radius:6px;font-size:14px}
-.sidebar a:hover{color:var(--fg);background:#151922}
-.sidebar a.active{color:var(--fg);background:#1b2130;box-shadow:inset 2px 0 0 var(--accent)}
-.sidebar a small{display:block;font-size:11px;color:#6b7280;margin-top:1px}
+.sidebar a:hover{color:var(--fg);background:var(--hover)}
+.sidebar a.active{color:var(--fg);background:var(--active);box-shadow:inset 2px 0 0 var(--accent)}
+.sidebar a small{display:block;font-size:11px;color:var(--muted);margin-top:1px}
 .toc a{font-size:13px;padding:3px 8px}
 .toc ul ul a{padding-left:20px}
 main{flex:1;min-width:0;padding:40px 48px 96px;max-width:900px}
 h1{font-size:30px;margin:0 0 16px;line-height:1.25}
 h2{font-size:21px;margin:40px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
-h3{font-size:16px;margin:24px 0 8px;color:#cfd6e4}
-p,li{color:#dfe3ea}
+h3{font-size:16px;margin:24px 0 8px;color:var(--h3)}
+p,li{color:var(--text2)}
 table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
 th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
-code{background:#11141a;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:13.5px}
-pre{background:#11141a;border:1px solid var(--line);border-radius:8px;padding:14px;overflow:auto;font-size:13.5px}
+code{background:var(--code);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:13.5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:14px;overflow:auto;font-size:13.5px}
 pre code{border:0;padding:0;background:none}
-blockquote{margin:14px 0;padding:10px 16px;border-left:3px solid var(--warn);background:#1a1710;border-radius:0 8px 8px 0;color:#f0e2c4}
+blockquote{margin:14px 0;padding:10px 16px;border-left:3px solid var(--warn);background:var(--quote-bg);border-radius:0 8px 8px 0;color:var(--quote-fg)}
 img{max-width:100%;border-radius:10px;border:1px solid var(--line);display:block;margin:18px 0 6px}
 em{color:var(--muted)}
 hr{border:0;border-top:1px solid var(--line);margin:32px 0}
-.mermaid{background:#12151c;border:1px solid var(--line);border-radius:12px;padding:18px;margin:20px 0;text-align:center;overflow-x:auto}
+.mermaid{background:var(--mesh);border:1px solid var(--line);border-radius:12px;padding:18px;margin:20px 0;text-align:center;overflow-x:auto}
 .mermaid svg{max-width:100%;height:auto}
 footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
 .mdlink{font-size:13px;color:var(--muted)}
+.tools{display:flex;gap:8px;margin:14px 0 0}
+.tools button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--card);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;cursor:pointer;font-family:inherit}
+.tools button:hover{color:var(--fg);border-color:var(--accent)}
+.tools kbd{font-family:inherit;font-size:11px;border:1px solid var(--line);border-radius:4px;padding:0 4px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:20px 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent)}
+.card .k{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.card .v{display:block;font-size:16px;font-weight:650;margin:6px 0 2px;color:var(--fg)}
+.card .s{display:block;font-size:12.5px;color:var(--muted)}
+.card.ok .v{color:var(--ok)} .card.warn .v{color:var(--warn)} .card.bad .v{color:var(--bad)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:14px 0 8px}
+.tile{display:block;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;text-decoration:none;color:inherit;box-shadow:var(--shadow)}
+.tile:hover{border-color:var(--accent);background:var(--hover)}
+.tile b{display:block;font-size:14px;font-weight:600;color:var(--fg)}
+.tile span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+.gates{list-style:none;padding:0;margin:14px 0}
+.gates li{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.gates li:last-child{border-bottom:0}
+.gates .n{flex:0 0 22px;height:22px;border-radius:50%;border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted)}
+.gates li.done .n{border-color:var(--ok);color:var(--ok)}
+.gates li.now .n{border-color:var(--warn);color:var(--warn)}
+.gates .st{margin-left:auto;font-size:12px;color:var(--muted);white-space:nowrap}
+.overlay{position:fixed;inset:0;background:rgba(6,8,12,.62);display:none;align-items:flex-start;justify-content:center;padding:12vh 16px;z-index:50}
+.overlay.open{display:flex}
+.palette{width:min(680px,100%);background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.45);overflow:hidden}
+.palette input{width:100%;border:0;border-bottom:1px solid var(--line);background:var(--card);color:var(--fg);font:inherit;font-size:16px;padding:16px 18px;outline:none}
+.palette ul{list-style:none;margin:0;padding:6px;max-height:52vh;overflow-y:auto}
+.palette li{padding:9px 12px;border-radius:8px;cursor:pointer;font-size:14px}
+.palette li.sel{background:var(--active)}
+.palette li b{font-weight:600}
+.palette li em{display:block;font-style:normal;font-size:12px;color:var(--muted)}
+.palette .empty{padding:18px;color:var(--muted);font-size:14px;text-align:center}
+.navbtn{display:none;width:100%;align-items:center;justify-content:space-between;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font:inherit;font-size:14px;cursor:pointer;margin:6px 0 0}
+.navbtn::after{content:"▾";color:var(--muted);font-size:11px}
+.sidebar.nav-open .navbtn::after{content:"▲"}
 @media(max-width:860px){
   body{flex-direction:column}
   .sidebar{position:static;width:auto;flex:none;height:auto;border-right:0;border-bottom:1px solid var(--line)}
@@ -84,13 +123,124 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:v
   .sidebar a small{display:none}
   .toc{display:none}
   main{padding:24px}
+  .navbtn{display:flex}
+  .sidebar:not(.nav-open) ul{display:none}
+  .sidebar:not(.nav-open) h4{display:none}
+  .sidebar:not(.nav-open) .toc{display:none}
 }
 """
 
 MERMAID_JS = """<script type="module">
 import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { fontFamily: 'Segoe UI, sans-serif' } });
+const light = document.documentElement.getAttribute('data-theme') === 'light';
+mermaid.initialize({ startOnLoad: true, theme: light ? 'default' : 'dark', themeVariables: { fontFamily: 'Segoe UI, sans-serif' } });
 </script>"""
+
+APP_JS = """(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('toggle-theme');
+  function paint() {
+    var dark = root.getAttribute('data-theme') !== 'light';
+    btn.textContent = dark ? '\\u263E' : '\\u2600';
+    btn.title = dark ? '\\u0441\\u0432\\u0435\\u0442\\u043B\\u0430\\u044F \\u0442\\u0435\\u043C\\u0430' : '\\u0442\\u0451\\u043C\\u043D\\u0430\\u044F \\u0442\\u0435\\u043C\\u0430';
+  }
+  var navBtn = document.getElementById('toggle-nav');
+  if (navBtn) {
+    navBtn.addEventListener('click', function () {
+      document.querySelector('.sidebar').classList.toggle('nav-open');
+    });
+  }
+  if (btn) {
+    paint();
+    btn.addEventListener('click', function () {
+      var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      try { localStorage.setItem('theme', next); } catch (e) {}
+      location.reload();
+    });
+  }
+
+  var wrap = document.getElementById('palette-wrap');
+  var input = document.getElementById('palette-input');
+  var list = document.getElementById('palette-list');
+  var data = null, items = [], sel = 0;
+
+  function load() {
+    if (data) return;
+    data = [];
+    fetch('search.json').then(function (r) { return r.json(); }).then(function (j) { data = j; render(input.value); }).catch(function () {});
+  }
+  function openPalette() {
+    load();
+    wrap.classList.add('open');
+    input.value = '';
+    render('');
+    setTimeout(function () { input.focus(); }, 0);
+  }
+  function closePalette() { wrap.classList.remove('open'); }
+  function paintSel() {
+    var kids = list.children;
+    for (var i = 0; i < kids.length; i++) kids[i].classList.toggle('sel', i === sel);
+  }
+  function go(it) {
+    if (!it) return;
+    closePalette();
+    location.href = it.u;
+  }
+  function render(q) {
+    q = (q || '').trim().toLowerCase();
+    items = [];
+    (data || []).forEach(function (p) {
+      var hit = !q || p.t.toLowerCase().indexOf(q) >= 0 || p.d.toLowerCase().indexOf(q) >= 0;
+      if (hit) items.push({ u: p.u, t: p.t, s: p.d });
+      (p.h || []).forEach(function (h) {
+        if (q && h.t.toLowerCase().indexOf(q) >= 0) items.push({ u: p.u + '#' + h.a, t: h.t, s: p.t });
+      });
+    });
+    items = items.slice(0, 40);
+    sel = 0;
+    list.innerHTML = '';
+    if (!items.length) {
+      var empty = document.createElement('li');
+      empty.className = 'empty';
+      empty.textContent = '\\u043D\\u0438\\u0447\\u0435\\u0433\\u043E \\u043D\\u0435 \\u043D\\u0430\\u0439\\u0434\\u0435\\u043D\\u043E';
+      list.appendChild(empty);
+      return;
+    }
+    items.forEach(function (it) {
+      var li = document.createElement('li');
+      var b = document.createElement('b');
+      var em = document.createElement('em');
+      b.textContent = it.t;
+      em.textContent = it.s;
+      li.appendChild(b);
+      li.appendChild(em);
+      li.addEventListener('click', function () { go(it); });
+      list.appendChild(li);
+    });
+    paintSel();
+  }
+  if (wrap && input && list) {
+    document.getElementById('open-search').addEventListener('click', openPalette);
+    wrap.addEventListener('click', function (e) { if (e.target === wrap) closePalette(); });
+    input.addEventListener('input', function () { render(input.value); });
+    document.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && String(e.key).toLowerCase() === 'k') {
+        e.preventDefault();
+        openPalette();
+        return;
+      }
+      if (!wrap.classList.contains('open')) {
+        if (e.key === 'Escape') closePalette();
+        return;
+      }
+      if (e.key === 'Escape') { closePalette(); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); sel = Math.min(sel + 1, items.length - 1); paintSel(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); sel = Math.max(sel - 1, 0); paintSel(); }
+      else if (e.key === 'Enter') { e.preventDefault(); go(items[sel]); }
+    });
+  }
+})();
+"""
 
 TEMPLATE = """<!DOCTYPE html>
 <html lang="ru">
@@ -99,14 +249,26 @@ TEMPLATE = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title} — Yealink T4xU</title>
 <link rel="stylesheet" href="assets/style.css">
+<script>try{{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}}catch(e){{}}</script>
 </head>
 <body>
 <aside class="sidebar">
   <div class="brand">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></div>
+  <button class="navbtn" id="toggle-nav" type="button">Разделы</button>
   <h4>Разделы</h4>
   <ul>{nav}</ul>
+  <div class="tools">
+    <button id="open-search" type="button">Поиск <kbd>Ctrl K</kbd></button>
+    <button id="toggle-theme" type="button">☾</button>
+  </div>
   {tocblock}
 </aside>
+<div class="overlay" id="palette-wrap">
+  <div class="palette">
+    <input id="palette-input" type="text" placeholder="Страница или раздел…" autocomplete="off" spellcheck="false">
+    <ul id="palette-list"></ul>
+  </div>
+</div>
 <main>
 {body}
 <footer>
@@ -114,6 +276,7 @@ TEMPLATE = """<!DOCTYPE html>
 </footer>
 </main>
 {mermaid}
+<script src="assets/app.js" defer></script>
 </body>
 </html>
 """
@@ -131,6 +294,15 @@ def build_nav(active):
         cls = ' class="active"' if page == active else ""
         items.append(f'<li><a{cls} href="{page}">{title}<small>{desc}</small></a></li>')
     return "\n    ".join(items)
+
+
+def tiles_html(active):
+    parts = []
+    for key, page, title, desc in PAGES:
+        if page == active:
+            continue
+        parts.append(f'<a class="tile" href="{page}"><b>{title}</b><span>{desc}</span></a>')
+    return '<div class="tiles">' + "".join(parts) + "</div>"
 
 
 def render(md_text, md_name, active_page, title):
@@ -154,6 +326,8 @@ def render(md_text, md_name, active_page, title):
     toc_html = md.toc or ""
     tocblock = f'<h4>На странице</h4>\n  {toc_html}' if len(toc_html) > 80 else ""
     mermaid_js = MERMAID_JS if blocks else ""
+    if "<!-- TILES -->" in body:
+        body = body.replace("<p><!-- TILES --></p>", tiles_html(active_page)).replace("<!-- TILES -->", tiles_html(active_page))
     return TEMPLATE.format(
         title=title,
         nav=build_nav(active_page),
@@ -175,6 +349,7 @@ def say(msg):
 def main():
     (ROOT / "assets").mkdir(exist_ok=True)
     (ROOT / "assets" / "style.css").write_text(CSS.strip() + "\n", encoding="utf-8")
+    (ROOT / "assets" / "app.js").write_text(APP_JS.strip() + "\n", encoding="utf-8")
     DOCS_OUT.mkdir(exist_ok=True)
 
     # 1. copy project docs into docs/ with redaction
@@ -195,9 +370,22 @@ def main():
     for key, page, title, desc in PAGES:
         md_path = DOCS_OUT / f"{key}.md"
         text = md_path.read_text(encoding="utf-8")
-        html = render(text, md_path.name, page, title)
-        (ROOT / page).write_text(html, encoding="utf-8")
-        say(f"{page:18} <- docs/{md_path.name}  {len(html)} bytes")
+        page_html = render(text, md_path.name, page, title)
+        (ROOT / page).write_text(page_html, encoding="utf-8")
+        say(f"{page:18} <- docs/{md_path.name}  {len(page_html)} bytes")
+
+    # 4. search index for the Ctrl+K palette
+    entries = []
+    for key, page, title, desc in PAGES:
+        html_page = (ROOT / page).read_text(encoding="utf-8")
+        heads = []
+        for m in re.finditer(r'<h([23]) id="([^"]+)">(.*?)</h\1>', html_page, re.S):
+            text = html.unescape(re.sub(r"<[^>]+>", "", m.group(3))).strip()
+            if text:
+                heads.append({"a": m.group(2), "t": text})
+        entries.append({"u": page, "t": title, "d": desc, "h": heads})
+    (ROOT / "search.json").write_text(json.dumps(entries, ensure_ascii=False, indent=1), encoding="utf-8")
+    say(f"{'search.json':18} <- {len(entries)} pages, {sum(len(e['h']) for e in entries)} headings")
 
 
 if __name__ == "__main__":

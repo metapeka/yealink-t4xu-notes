@@ -4,6 +4,17 @@
 
 **Аппарат:** SIP-T43U · **ПО:** `108.86.14.4` · **SoC:** RK3308H · **Обновлено:** 2026-10-29
 
+<div class="cards">
+  <a class="card ok" href="findings.html"><span class="k">Формат пакета</span><span class="v">разобран</span><span class="s">распаковка и пересборка байт в байт</span></a>
+  <a class="card warn" href="network.html"><span class="k">Пакет-проба</span><span class="v">собран</span><span class="s">ждёт трубку, чтобы проверить приём</span></a>
+  <a class="card bad" href="access.html"><span class="k">Ключ ФС</span><span class="v">блокер</span><span class="s">слой ubifs crypto, ключ через Holtek</span></a>
+  <a class="card" href="usb.html"><span class="k">Следующий шаг</span><span class="v">доступ</span><span class="s">сеть → UART → дамп / maskrom</span></a>
+</div>
+
+## Разделы
+
+<!-- TILES -->
+
 ## Статус одной таблицей
 
 | Направление | Состояние | Комментарий |

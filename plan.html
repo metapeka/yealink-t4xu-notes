@@ -5,10 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PLAN — Yealink T4xU</title>
 <link rel="stylesheet" href="assets/style.css">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
 <aside class="sidebar">
   <div class="brand">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></div>
+  <button class="navbtn" id="toggle-nav" type="button">Разделы</button>
   <h4>Разделы</h4>
   <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
     <li><a href="access.html">Что чем решается<small>какой способ что даёт и порядок шагов</small></a></li>
@@ -22,6 +24,10 @@
     <li><a href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li>
     <li><a href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a></li>
     <li><a href="security.html">Безопасность<small>изоляция, доступ, проверка после</small></a></li></ul>
+  <div class="tools">
+    <button id="open-search" type="button">Поиск <kbd>Ctrl K</kbd></button>
+    <button id="toggle-theme" type="button">☾</button>
+  </div>
   <h4>На странице</h4>
   <div class="toc">
 <ul>
@@ -37,6 +43,12 @@
 </div>
 
 </aside>
+<div class="overlay" id="palette-wrap">
+  <div class="palette">
+    <input id="palette-input" type="text" placeholder="Страница или раздел…" autocomplete="off" spellcheck="false">
+    <ul id="palette-list"></ul>
+  </div>
+</div>
 <main>
 <h1 id="t4xu">План работ с трубкой (T4xU) — последовательность и гейты</h1>
 <p>Сводка веток и памятка для человека с трубкой — <code>BRANCHES.md</code>.</p>
@@ -205,5 +217,6 @@
 </footer>
 </main>
 
+<script src="assets/app.js" defer></script>
 </body>
 </html>
