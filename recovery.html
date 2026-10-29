@@ -91,6 +91,7 @@
 <h2 id="_3">Что нужно иметь заранее</h2>
 <ul>
 <li><strong>Дамп всех разделов</strong> флеша и его sha256 — минимум <code>uboot</code>, <code>env</code>, <code>rfs</code>, <code>cfg</code>.</li>
+<li><strong>Дамп вместе с OOB (spare-зоной).</strong> Апдейтер пишет и запасную область (<code>nand-oob</code>, <code>MTD writeoob failure</code>), поэтому образ без OOB неполный: <code>nand dump</code> в U-Boot по умолчанию OOB не отдаёт, нужен отдельный проход (<code>nand read.raw</code> или <code>nand dump.oob</code>).</li>
 <li><strong>UART</strong> на 3 провода и переходник 3,3 В — иначе первый уровень недоступен.</li>
 <li><strong>USB-кабель</strong> и <code>rkdeveloptool</code> на машине — для второго уровня.</li>
 <li><strong>План разметки</strong>: смещения из <code>mtdparts</code> (см. «USB и maskrom»), чтобы писать в правильные места.</li>
@@ -110,7 +111,7 @@
 <li>Прозвонить питание: 3,3 В на тестовых точках, земля на экране.</li>
 <li>Подключить UART, снять полный лог загрузки в файл.</li>
 <li>Войти в консоль U-Boot, записать <code>printenv</code> и <code>mtdparts</code>.</li>
-<li>Снять дамп каждого раздела по <code>mtdparts</code>, сохранить с именами.</li>
+<li>Снять дамп каждого раздела по <code>mtdparts</code>, сохранить с именами — <strong>и отдельно OOB</strong> (<code>nand read.raw</code>), иначе образ неполный.</li>
 <li>Посчитать sha256 каждого раздела и записать в файл.</li>
 <li>Проверить, что дамп открывается нашими инструментами (<code>ubi_extract.py</code>).</li>
 <li>Только после этого — пробная запись пакета.</li>
