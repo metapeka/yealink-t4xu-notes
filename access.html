@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Что чем решается — Yealink T4xU</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></div>
+  <h4>Разделы</h4>
+  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a class="active" href="access.html">Что чем решается<small>какой способ что даёт и порядок шагов</small></a></li>
+    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
+    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li>
+    <li><a href="usb.html">USB и maskrom<small>как определить пины, дамп без паяльника</small></a></li>
+    <li><a href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li>
+    <li><a href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a></li>
+    <li><a href="security.html">Безопасность<small>изоляция, доступ, проверка после</small></a></li></ul>
+  <h4>На странице</h4>
+  <div class="toc">
+<ul>
+<li><a href="#_2">Матрица: что даёт каждый способ</a></li>
+<li><a href="#_3">Порядок и гейты</a></li>
+<li><a href="#_4">Ответ коротко</a></li>
+</ul>
+</div>
+
+</aside>
+<main>
+<h1 id="_1">Что чем решается</h1>
+<p>Короткая карта: какой способ доступа что даёт и в каком порядке идти. Здесь же ответ на вопрос «нужен ли UART и дамп, если есть сеть».</p>
+<div class="mermaid">
+flowchart TD
+  N["Есть сеть до трубки"] --> F["Залить пакет-пробу&lt;br/>(только версия)"]
+  F -->|принят| P["Скан портов&lt;br/>попытка шелла через провижининг"]
+  F -->|не принят| STOP["Стоп: нужен донор"]
+  P -->|шелл есть| K["Ключ ФС / /dev/mem"]
+  P -->|шелла нет| U["UART: лог и консоль U-Boot"]
+  U --> D["Дамп / maskrom&lt;br/>страховка и восстановление"]
+
+</div>
+<h2 id="_2">Матрица: что даёт каждый способ</h2>
+<table>
+<thead>
+<tr>
+<th>Способ</th>
+<th>Залить пакет</th>
+<th>Лог загрузки</th>
+<th>Ключ ФС</th>
+<th>Восстановление после кирпича</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Сеть (веб-интерфейс)</td>
+<td>да</td>
+<td>нет</td>
+<td>нет</td>
+<td>нет</td>
+</tr>
+<tr>
+<td>Шелл через провижининг <strong>[гипотеза]</strong></td>
+<td>да</td>
+<td>частично</td>
+<td>возможно</td>
+<td>нет</td>
+</tr>
+<tr>
+<td>UART (3 провода)</td>
+<td>нет</td>
+<td>да</td>
+<td>нет</td>
+<td>нет</td>
+</tr>
+<tr>
+<td>Дамп / maskrom</td>
+<td>нет</td>
+<td>—</td>
+<td>да</td>
+<td>да</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">Порядок и гейты</h2>
+<ol>
+<li><strong>Сеть: залить пакет-пробу.</strong> Гейт: пакет принят → идём дальше; не принят → стоп, нужен донор.</li>
+<li><strong>Сеть: скан портов и попытка шелла.</strong> Гейт: шелл есть → читаем ключ, UART не нужен.</li>
+<li><strong>UART.</strong> Если шелла нет: лог загрузки и консоль U-Boot. Гейт: консоль отвечает → дамп командами без паяльника.</li>
+<li><strong>Дамп / maskrom.</strong> Когда нужен ключ ФС или восстановление после неудачной записи.</li>
+</ol>
+<h2 id="_4">Ответ коротко</h2>
+<ul>
+<li>Для проверки приёма пакета — <strong>сети достаточно</strong>, UART и дамп не нужны.</li>
+<li>Для своих файлов в ФС — <strong>нужен ключ</strong>, а его сеть не отдаёт.</li>
+<li>Дамп — это ещё и страховка: если запись сорвётся, без него трубку не поднять.</li>
+</ul>
+<p>Связанное: <a href="network.html">Прошивка по сети</a> · <a href="usb.html">USB и maskrom</a> · <a href="branches.html">Ветки</a> · <a href="plan.html">Порядок работ</a>.</p>
+<footer>
+<p class="mdlink">Исходник этой страницы: <a href="docs/ACCESS_MAP.md">docs/ACCESS_MAP.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
+</footer>
+</main>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { fontFamily: 'Segoe UI, sans-serif' } });
+</script>
+</body>
+</html>

@@ -19,6 +19,7 @@ SRC = ROOT / "src"
 # name in docs/ -> (page file, sidebar title, short description)
 PAGES = [
     ("overview", "index.html", "Обзор", "статус, что сделано, что осталось"),
+    ("ACCESS_MAP", "access.html", "Что чем решается", "какой способ что даёт и порядок шагов"),
     ("FINDINGS", "findings.html", "FINDINGS", "что установлено: факт / гипотеза"),
     ("BRANCHES", "branches.html", "BRANCHES", "ветки и памятка по аппарату"),
     ("PLAN", "plan.html", "PLAN", "порядок работ и гейты"),
