@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Восстановление — Yealink T4xU</title>
+<link rel="stylesheet" href="assets/style.css?v=af3202f9">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html" title="На главную">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></a>
+  <nav class="topnav"><a href="index.html">Обзор</a><a href="access.html">Пути</a><a href="findings.html">Находки</a><a href="branches.html">Ветки</a><a href="plan.html">План</a><a href="publish.html">Публикация</a><a href="sources.html">Источники</a></nav>
+  <div class="topact">
+    <button id="open-search" type="button" aria-label="Поиск">Поиск <kbd>Ctrl K</kbd></button>
+    <button id="toggle-theme" type="button" aria-label="Тема">☾</button>
+    <button class="navbtn" id="toggle-nav" type="button">Меню</button>
+  </div>
+</header>
+<div class="shell">
+<aside class="sidebar">
+  <h4>Разделы</h4>
+  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="access.html">Что чем решается<small>какой способ что даёт и порядок шагов</small></a></li>
+    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
+    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li>
+    <li><a href="usb.html">USB и maskrom<small>как определить пины, дамп без паяльника</small></a></li>
+    <li><a class="active" href="recovery.html">Восстановление<small>три уровня поломки и чек-лист донора</small></a></li>
+    <li><a href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li>
+    <li><a href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a></li>
+    <li><a href="security.html">Безопасность<small>изоляция, доступ, проверка после</small></a></li>
+    <li><a href="publish.html">Что публикуем<small>что выкладываем, что нет и почему</small></a></li>
+    <li><a href="sniff.html">Сниффинг шины<small>снять ключ с платы без выпайки</small></a></li>
+    <li><a href="sources.html">Как делали другие<small>Synacktiv и WHY2025: сравнение методов</small></a></li></ul>
+  <h4>На странице</h4>
+  <div class="toc">
+<ul>
+<li><a href="#_1">Золотое правило</a></li>
+<li><a href="#_2">Три уровня поломки</a></li>
+<li><a href="#_3">Что нужно иметь заранее</a></li>
+<li><a href="#_4">Порядок при сбое</a></li>
+<li><a href="#-_1">Чек-лист для донора</a></li>
+<li><a href="#_5">Чего не делать</a></li>
+</ul>
+</div>
+
+</aside>
+<div class="overlay" id="palette-wrap">
+  <div class="palette">
+    <input id="palette-input" type="text" placeholder="Страница или раздел…" autocomplete="off" spellcheck="false">
+    <ul id="palette-list"></ul>
+  </div>
+</div>
+<main>
+<h1 id="-">Восстановление и чек-лист для донора</h1>
+<p>Что делать, если трубка перестала загружаться, и что подготовить до первой записи.</p>
+<h2 id="_1">Золотое правило</h2>
+<p><strong>Сначала дамп, потом записи.</strong> Любая запись без снятого образа — рулетка: откатить будет нечем. Дамп снимается один раз и лежит рядом, пока идут эксперименты.</p>
+<h2 id="_2">Три уровня поломки</h2>
+<table>
+<thead>
+<tr>
+<th>Уровень</th>
+<th>Признак</th>
+<th>Чем поднимать</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>экран не грузится, но U-Boot живой (виден лог на UART)</td>
+<td>консоль U-Boot: перезапись раздела <code>rfs</code> или <code>kernel</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>лога нет, устройство определяется по USB как Rockchip</td>
+<td>maskrom: <code>rkdeveloptool</code> пишет разделы из дампа</td>
+</tr>
+<tr>
+<td>3</td>
+<td>ничего не определяется</td>
+<td>выпайка TSOP-48, программатор, побайтовая запись</td>
+</tr>
+</tbody>
+</table>
+<p>Снизу вверх это не работает: если U-Boot убит, консоль уже не поможет.</p>
+<h2 id="_3">Что нужно иметь заранее</h2>
+<ul>
+<li><strong>Дамп всех разделов</strong> флеша и его sha256 — минимум <code>uboot</code>, <code>env</code>, <code>rfs</code>, <code>cfg</code>.</li>
+<li><strong>UART</strong> на 3 провода и переходник 3,3 В — иначе первый уровень недоступен.</li>
+<li><strong>USB-кабель</strong> и <code>rkdeveloptool</code> на машине — для второго уровня.</li>
+<li><strong>План разметки</strong>: смещения из <code>mtdparts</code> (см. «USB и maskrom»), чтобы писать в правильные места.</li>
+</ul>
+<h2 id="_4">Порядок при сбое</h2>
+<ol>
+<li><strong>Не выключать и не дёргать питание</strong> — дать 5 минут: часть обновлений доводит запись в фоне.</li>
+<li><strong>Снять лог UART.</strong> Если строки идут — это уровень 1.</li>
+<li><strong>Проверить, что отвечает U-Boot.</strong> Если консоль живая, не трогать <code>ubl</code> и <code>env</code>: перезаписать только сломанный раздел.</li>
+<li><strong>Если лога нет</strong> — подключить USB и посмотреть, видит ли система устройство в режиме maskrom.</li>
+<li><strong>Если не видит</strong> — выпаивать NAND и читать программатором; заодно сравнить с дампом, чтобы понять, что именно испортилось.</li>
+</ol>
+<h2 id="-_1">Чек-лист для донора</h2>
+<ol>
+<li>Сфотографировать плату целиком и крупно все чипы — маркировки пригодятся.</li>
+<li>Снять наклейку с NAND <strong>после</strong> фотографии: под ней маркировка флеша.</li>
+<li>Прозвонить питание: 3,3 В на тестовых точках, земля на экране.</li>
+<li>Подключить UART, снять полный лог загрузки в файл.</li>
+<li>Войти в консоль U-Boot, записать <code>printenv</code> и <code>mtdparts</code>.</li>
+<li>Снять дамп каждого раздела по <code>mtdparts</code>, сохранить с именами.</li>
+<li>Посчитать sha256 каждого раздела и записать в файл.</li>
+<li>Проверить, что дамп открывается нашими инструментами (<code>ubi_extract.py</code>).</li>
+<li>Только после этого — пробная запись пакета.</li>
+<li>После записи снять лог и сравнить с исходным.</li>
+<li>Сохранить оба дампа: до и после.</li>
+<li>Записать, что именно менялось, — чтобы следующий шаг начинался с фактов.</li>
+</ol>
+<h2 id="_5">Чего не делать</h2>
+<ul>
+<li>Не писать <code>ubl</code> (первый загрузчик) — его восстановление требует maskrom или программатора.</li>
+<li>Не стирать <code>env</code> и <code>userenv</code>: там настройки, и без них трубка встретит пустотой.</li>
+<li>Не проверять пакет сразу на рабочей трубке.</li>
+<li>Не стирать блоки «на всякий случай»: каждый лишний шаг — новый риск.</li>
+</ul>
+<p>Связанное: <a href="usb.html">USB и maskrom</a> · <a href="sniff.html">Сниффинг шины</a> · <a href="access.html">Что чем решается</a>.</p>
+<footer>
+<p class="mdlink">Исходник этой страницы: <a href="docs/RECOVERY.md">docs/RECOVERY.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
+</footer>
+</main>
+</div>
+
+<script src="assets/app.js?v=af3202f9" defer></script>
+</body>
+</html>
