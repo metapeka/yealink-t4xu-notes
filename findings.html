@@ -50,6 +50,7 @@
 <li><a href="#10-10886144-2026-10-29">10. Прошивка трубки 108.86.14.4 (2026-10-29)</a></li>
 <li><a href="#11-2026-10-29">11. Эмулятор апдейтера: откуда берётся публичный ключ (2026-10-29)</a></li>
 <li><a href="#rfs-2026-10-29">Шифрование тома rfs измерено на пакете (2026-10-29)</a></li>
+<li><a href="#ubifs-crypto-2026-10-29">Слой ubifs crypto локализован, карта разделов флеша (2026-10-29)</a></li>
 </ul>
 </div>
 
@@ -523,6 +524,73 @@ FUN_00082170(mmap + 0x100, 0x200, mmap[0x808])
 <p><strong>[факт]</strong> Перед зашифрованными данными лежит открытый служебный заголовок: после <code>38 26 90 05</code> идут поля вида <code>sqnum</code> / <code>len</code> / тип узла и метки времени (<code>0x633550 83</code> — октябрь 2022). То есть метаданные читаются, содержимое — нет.</p>
 <p><strong>[следствие]</strong> Ключ обязателен: читать файлы из пакета без него нельзя. И тот же пакет годится для <strong>проверки</strong> добытого ключа офлайн — шифротекст уже есть.</p>
 <p><strong>[инструмент]</strong> <code>tools/ubi_probe.py</code> — классификация PEB, поиск повторов блоков, энтропия, поиск утечек plaintext.</p>
+<h2 id="ubifs-crypto-2026-10-29">Слой <code>ubifs crypto</code> локализован, карта разделов флеша (2026-10-29)</h2>
+<p><strong>[факт]</strong> Строка <code>ubifs crypto invalid magic=0x%8x</code> лежит в загрузчике: файл <code>old/boot2.bin</code>, смещение <code>0x480c8</code>; в <code>uboot.elf</code> та же строка по виртуальному адресу <code>0x580c8</code>. То есть проверка слоя — в U-Boot, а не в ядре и не в апдейтере.</p>
+<p><strong>[факт]</strong> В том же образе найдена таблица разделов (<code>mtdparts=rk_nand:...</code>), флеш 128 МиБ:</p>
+<table>
+<thead>
+<tr>
+<th>Раздел</th>
+<th>Смещение</th>
+<th>Размер</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ubl</td>
+<td>0x00000000</td>
+<td>1 МиБ</td>
+</tr>
+<tr>
+<td>uboot</td>
+<td>0x00180000</td>
+<td>1 МиБ</td>
+</tr>
+<tr>
+<td>env</td>
+<td>0x00280000</td>
+<td>512 КиБ</td>
+</tr>
+<tr>
+<td>userenv</td>
+<td>0x00300000</td>
+<td>512 КиБ</td>
+</tr>
+<tr>
+<td>kernel</td>
+<td>0x00380000</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>rfs</strong></td>
+<td><strong>0x00380000</strong></td>
+<td><strong>0x3780000 (55,5 МиБ)</strong></td>
+</tr>
+<tr>
+<td>cfg</td>
+<td>0x03B00000</td>
+<td>0xCC0000 (12 МиБ)</td>
+</tr>
+<tr>
+<td>rfs2</td>
+<td>0x047C0000</td>
+<td>0x3780000</td>
+</tr>
+<tr>
+<td>klog</td>
+<td>0x07F40000</td>
+<td>0xC0000</td>
+</tr>
+<tr>
+<td>back</td>
+<td>0x08000000</td>
+<td>конец флеша</td>
+</tr>
+</tbody>
+</table>
+<p><strong>[факт]</strong> AES в коде есть и в апдейтере, и в U-Boot: сигнатура таблицы S-боксов <code>63 7c 77 7b …</code> встречается по одному разу в <code>version.elf</code>, <code>uboot.elf</code> и <code>boot2.bin</code>. Значит шифр программный, без крипто-движка.</p>
+<p><strong>[факт]</strong> Блоки <code>bootloader</code> из пакетов после нашего разбора всё ещё не читаются: у <code>108.86.0.118</code> и <code>108.86.14.4</code> начало <code>bb 03 33 1d …</code>, энтропия высокая, сигнатур <code>LOADER</code>/<code>RKFW</code> нет. Настоящий образ загрузчика у нас есть отдельно — <code>boot2.bin</code> (начинается с <code>LOADER</code>).</p>
+<p><strong>[факт]</strong> В пакете <code>108.86.0.154</code> блока загрузчика нет вовсе: только <code>version</code> и <code>app</code> (другая модель/ветка).</p>
 <footer>
 <p class="mdlink">Исходник этой страницы: <a href="docs/FINDINGS.md">docs/FINDINGS.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
 </footer>
