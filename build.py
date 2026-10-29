@@ -307,16 +307,15 @@ STAGES = [
     ("1", "Формат пакета", "done", "заголовок 0x80, блоки, CRC, LZMA / cypher3"),
     ("2", "Пересборка", "done", "identity совпал: .118, .20, 86.14.4"),
     ("3", "Пакет-проба", "done", "test_108.86.14.99.rom — меняется только строка версии"),
-    ("4", "Приём на трубке", "now", "нужен донор; версия должна быть выше текущей"),
-    ("5", "Доступ к ФС", "blocked", "нужен ключ, дамп или свой загрузчик"),
-    ("6", "Свои функции", "todo", "после доступа и ключа ФС"),
+    ("4", "Гейт 1: приём пакета", "now", "открыт по разбору; нужен донор для проверки"),
+    ("5", "Гейт 2: доступ к ФС", "blocked", "ключ или свой загрузчик — два пути ниже"),
+    ("6", "Своя прошивка", "todo", "правки, свои файлы, свои модули"),
 ]
 
 BRANCHES = [
-    ("A", "Эмулятор, офлайн", "todo", "готов к запуску: FUN_00082170 → DER → AES. Шанс ~50/50"),
-    ("B", "Дамп флеша", "blocked", "нужен человек с платой; свой U-Boot без ubifs crypto"),
-    ("C", "Старая прошивка ≤ 86.0.118", "ok", "пакет собран, но ФС остаётся зашифрованной"),
-    ("D", "Подмена rfs", "idea", "свой version.elf пишет раздел; загрузчик не проверен"),
+    ("1", "Ключ ФС (сниффинг MCU)", "todo", "шина SoC ↔ MCU: анализатор и 3–4 щупа, паять не надо"),
+    ("2", "Свой загрузчик", "blocked", "убрать ubifs crypto: консоль U-Boot, дамп или maskrom"),
+    ("3", "Свой version.elf", "idea", "пишет rfs своим апдейтером; имеет смысл только после пути 2"),
 ]
 
 STATE_LABEL = {"done": "готово", "now": "сейчас", "blocked": "блокер", "todo": "не начато", "ok": "применимо", "idea": "идея"}
@@ -334,13 +333,13 @@ def pipeline_html():
     branches = []
     for letter, title, state, note in BRANCHES:
         branches.append(
-            f'<a class="branch {state}" href="branches.html"><span class="lt">{letter}</span>'
+            f'<a class="branch {state}" href="access.html"><span class="lt">{letter}</span>'
             f'<b>{title}</b><span class="pill">{STATE_LABEL[state]}</span>'
             f'<span class="note">{note}</span></a>'
         )
     return (
         '<div class="pipe">' + "".join(steps) + "</div>"
-        '<div class="forkline"><span>развилка на шаге 5: как попасть в файловую систему</span></div>'
+        '<div class="forkline"><span>два пути через гейт 2 — ведут к одной цели</span></div>'
         '<div class="branches">' + "".join(branches) + "</div>"
     )
 

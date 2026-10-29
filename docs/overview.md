@@ -8,7 +8,7 @@
   <a class="card ok" href="findings.html"><span class="k">Формат пакета</span><span class="v">разобран</span><span class="s">распаковка и пересборка байт в байт</span></a>
   <a class="card warn" href="network.html"><span class="k">Пакет-проба</span><span class="v">собран</span><span class="s">ждёт трубку, чтобы проверить приём</span></a>
   <a class="card bad" href="access.html"><span class="k">Ключ ФС</span><span class="v">блокер</span><span class="s">слой ubifs crypto, ключ через Holtek</span></a>
-  <a class="card" href="usb.html"><span class="k">Следующий шаг</span><span class="v">доступ</span><span class="s">сеть → UART → дамп / maskrom</span></a>
+  <a class="card" href="access.html"><span class="k">Следующий шаг</span><span class="v">доступ</span><span class="s">UART → сниффинг шины → дамп</span></a>
 </div>
 
 ## Где мы сейчас
