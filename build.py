@@ -27,6 +27,7 @@ PAGES = [
     ("INSTRUCTION_DUMP", "instruction.html", "INSTRUCTION_DUMP", "инструкция для человека"),
     ("USB_MASKROM", "usb.html", "USB и maskrom", "как определить пины, дамп без паяльника"),
     ("NETWORK_FLASH", "network.html", "Прошивка по сети", "веб-интерфейс трубки, без UART"),
+    ("REMOTE_ACCESS", "remote.html", "Удалённый доступ", "Tailscale: схема и два варианта"),
 ]
 
 REDACT = [
@@ -69,6 +70,8 @@ blockquote{margin:14px 0;padding:10px 16px;border-left:3px solid var(--warn);bac
 img{max-width:100%;border-radius:10px;border:1px solid var(--line);display:block;margin:18px 0 6px}
 em{color:var(--muted)}
 hr{border:0;border-top:1px solid var(--line);margin:32px 0}
+.mermaid{background:#12151c;border:1px solid var(--line);border-radius:12px;padding:18px;margin:20px 0;text-align:center;overflow-x:auto}
+.mermaid svg{max-width:100%;height:auto}
 footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
 .mdlink{font-size:13px;color:var(--muted)}
 @media(max-width:860px){
@@ -81,6 +84,11 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:v
   main{padding:24px}
 }
 """
+
+MERMAID_JS = """<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { fontFamily: 'Segoe UI, sans-serif' } });
+</script>"""
 
 TEMPLATE = """<!DOCTYPE html>
 <html lang="ru">
@@ -103,6 +111,7 @@ TEMPLATE = """<!DOCTYPE html>
 <p class="mdlink">Исходник этой страницы: <a href="docs/{md}">docs/{md}</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
 </footer>
 </main>
+{mermaid}
 </body>
 </html>
 """
@@ -123,16 +132,33 @@ def build_nav(active):
 
 
 def render(md_text, md_name, active_page, title):
+    # pull mermaid blocks out before markdown (their syntax is not markdown-safe)
+    blocks = []
+
+    def stash(m):
+        blocks.append(m.group(1))
+        return f"\n\nMERMAIDBLOCK{len(blocks)-1}END\n\n"
+
+    md_text = re.sub(r"^```mermaid\n(.*?)^```\s*$", stash, md_text, flags=re.S | re.M)
+
     md = markdown.Markdown(extensions=["tables", "fenced_code", "toc"], extension_configs={"toc": {"toc_depth": "2-2"}})
     body = md.convert(md_text)
+
+    for i, code in enumerate(blocks):
+        escaped = code.replace("&", "&amp;").replace("<", "&lt;")
+        body = body.replace(f"<p>MERMAIDBLOCK{i}END</p>", f'<div class="mermaid">\n{escaped}\n</div>')
+        body = body.replace(f"MERMAIDBLOCK{i}END", f'<div class="mermaid">\n{escaped}\n</div>')
+
     toc_html = md.toc or ""
     tocblock = f'<h4>На странице</h4>\n  {toc_html}' if len(toc_html) > 80 else ""
+    mermaid_js = MERMAID_JS if blocks else ""
     return TEMPLATE.format(
         title=title,
         nav=build_nav(active_page),
         tocblock=tocblock,
         body=body,
         md=md_name,
+        mermaid=mermaid_js,
     )
 
 

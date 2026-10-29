@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Удалённый доступ — Yealink T4xU</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></div>
+  <h4>Разделы</h4>
+  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
+    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li>
+    <li><a href="usb.html">USB и maskrom<small>как определить пины, дамп без паяльника</small></a></li>
+    <li><a href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li>
+    <li><a class="active" href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a></li></ul>
+  <h4>На странице</h4>
+  <div class="toc">
+<ul>
+<li><a href="#a">Вариант A — подсетевой маршрут</a></li>
+<li><a href="#b-">Вариант B — только веб-интерфейс</a></li>
+<li><a href="#_2">Чего не делать</a></li>
+</ul>
+</div>
+
+</aside>
+<main>
+<h1 id="_1">Удалённый доступ к трубке</h1>
+<p>Трубка Tailscale не умеет — в tailnet входит <strong>ПК рядом с ней</strong>, и уже через него я достаю трубку.</p>
+<div class="mermaid">
+flowchart LR
+  P["Трубка T43U&lt;br/>192.168.x.y"] --- B["ПК человека&lt;br/>192.168.x.z"]
+  B -->|"Tailscale: subnet route"| T["Эта машина&lt;br/>100.108.127.76"]
+  B -.->|"Tailscale: serve через socat"| T
+  T --> W["Я: curl / браузер"]
+
+</div>
+<h2 id="a">Вариант A — подсетевой маршрут</h2>
+<p>Доступ ко всей его сети, трубка по обычному IP.</p>
+<ul>
+<li>Он: <code>tailscale up --advertise-routes=192.168.x.0/24</code></li>
+<li>Владелец tailnet: Approve маршрута в админке</li>
+<li>Здесь: уже <code>RouteAll: true</code>, ничего делать не нужно</li>
+<li>Проверка: <code>ping 192.168.x.y</code> → <code>curl -I http://192.168.x.y</code></li>
+</ul>
+<h2 id="b-">Вариант B — только веб-интерфейс</h2>
+<p>Уже, но безопаснее: виден один порт трубки.</p>
+<ul>
+<li>Он: <code>socat TCP-LISTEN:8080,fork TCP:192.168.x.y:80</code></li>
+<li>Он: <code>tailscale serve --bg http://127.0.0.1:8080</code></li>
+<li>Я: открываю <code>https://&lt;узел&gt;.ts.net</code></li>
+<li><strong><code>funnel</code> нельзя</strong> — это публичный интернет</li>
+</ul>
+<h2 id="_2">Чего не делать</h2>
+<ul>
+<li>Не давать чужому человеку свой аккаунт Tailscale — достаточно <strong>Share node</strong>.</li>
+<li>Не выставлять веб-интерфейс трубки в интернет.</li>
+<li>Сменить пароль <code>admin</code> до любого проброса.</li>
+<li>Auto Provision и RPS — выключены.</li>
+</ul>
+<footer>
+<p class="mdlink">Исходник этой страницы: <a href="docs/REMOTE_ACCESS.md">docs/REMOTE_ACCESS.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
+</footer>
+</main>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { fontFamily: 'Segoe UI, sans-serif' } });
+</script>
+</body>
+</html>

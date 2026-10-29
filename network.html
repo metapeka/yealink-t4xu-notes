@@ -18,7 +18,8 @@
     <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
     <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li>
     <li><a href="usb.html">USB и maskrom<small>как определить пины, дамп без паяльника</small></a></li>
-    <li><a class="active" href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li></ul>
+    <li><a class="active" href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li>
+    <li><a href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a></li></ul>
   <h4>На странице</h4>
   <div class="toc">
 <ul>
@@ -102,20 +103,12 @@
 </tbody>
 </table>
 <h2 id="8">8. Удалённый доступ к трубке</h2>
-<p>Если аппарат стоит у другого человека, а работать нужно с этой машины:</p>
-<p><strong>Подсеть через Tailscale (предпочтительно).</strong> На его ПК:</p>
-<pre><code class="language-bash">tailscale up --advertise-routes=192.168.1.0/24 --ssh
-</code></pre>
-<p>Маршрут подтвердить в админке Tailscale; на рабочей машине тоже <code>tailscale up</code>. После этого трубка доступна по своему обычному IP.</p>
-<p><strong>Мост только к веб-интерфейсу.</strong> <code>tailscale serve</code> по умолчанию проксирует на локальный адрес узла, поэтому сначала проброс порта:</p>
-<pre><code class="language-bash">socat TCP-LISTEN:8080,fork TCP:&lt;IP трубки&gt;:80
-tailscale serve --bg http://127.0.0.1:8080
-</code></pre>
-<p><strong>Важно:</strong> только <code>serve</code> (внутри tailnet). <code>funnel</code> выставляет веб-интерфейс телефона в открытый интернет — так делать нельзя. Пароль <code>admin</code> по умолчанию сменить до любого проброса.</p>
+<p>Схема, два варианта (подсетевой маршрут и мост через <code>socat</code>) и ограничения — на отдельной странице <a href="remote.html">Удалённый доступ</a>.</p>
 <p>Порядок работ — <a href="plan.html">PLAN</a>, ветки — <a href="branches.html">BRANCHES</a>, что делать с аппаратом руками — <a href="instruction.html">Инструкция человеку</a>.</p>
 <footer>
 <p class="mdlink">Исходник этой страницы: <a href="docs/NETWORK_FLASH.md">docs/NETWORK_FLASH.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
 </footer>
 </main>
+
 </body>
 </html>
