@@ -28,6 +28,7 @@ PAGES = [
     ("USB_MASKROM", "usb.html", "USB и maskrom", "как определить пины, дамп без паяльника"),
     ("NETWORK_FLASH", "network.html", "Прошивка по сети", "веб-интерфейс трубки, без UART"),
     ("REMOTE_ACCESS", "remote.html", "Удалённый доступ", "Tailscale: схема и два варианта"),
+    ("SECURITY", "security.html", "Безопасность", "изоляция, доступ, проверка после"),
 ]
 
 REDACT = [
