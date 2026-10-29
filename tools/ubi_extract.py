@@ -38,7 +38,7 @@ def parse_peb(blob, i, peb_size):
     vol_type = vid[5]
     vol_id = struct.unpack_from(">I", vid, 8)[0]
     lnum = struct.unpack_from(">I", vid, 12)[0]
-    data_size = struct.unpack_from(">I", vid, 24)[0]
+    data_size = struct.unpack_from(">I", vid, 20)[0]
     return {
         "peb": i, "ec": ec, "vol_type": vol_type, "vol_id": vol_id,
         "lnum": lnum, "size": data_size, "data_off": data_off,
@@ -75,15 +75,32 @@ def main():
         vols.setdefault(r["vol_id"], []).append(r)
 
     for vol_id, blocks in sorted(vols.items()):
-        blocks.sort(key=lambda b: b["lnum"])
+        # Yealink strips VID headers: every data block comes back with lnum=0.
+        # Then the physical order is the only order we have, so keep it.
+        zeroed = all(b["lnum"] == 0 for b in blocks)
+        blocks.sort(key=lambda b: (b["lnum"], b["peb"]))
         crypto = sum(1 for b in blocks if b["data"][:4] == CRYPTO)
         leb_len = max(len(b["data"]) for b in blocks)
-        print(f"vol {vol_id}: lebs={len(blocks)} leb_size={leb_len:#x} crypto={crypto}")
+        note = " lnum zeroed by vendor, order = PEB order" if zeroed else ""
+        print(f"vol {vol_id}: lebs={len(blocks)} leb_size={leb_len:#x} crypto={crypto}{note}")
+
+        sizes = {b["size"] for b in blocks}
+        if sizes != {0}:
+            gaps = [i for i in range(max(b["lnum"] for b in blocks) + 1)
+                    if i not in {b["lnum"] for b in blocks}]
+            if gaps:
+                print(f"  leak: {len(gaps)} missing lnum(s), padding with 0xFF")
 
         path = os.path.join(args.out, f"vol{vol_id}.ubi_leb")
         with open(path, "wb") as fh:
-            for b in blocks:
-                fh.write(b["data"])
+            if zeroed or sizes == {0}:
+                for b in blocks:
+                    fh.write(b["data"])
+            else:
+                by_num = {b["lnum"]: b for b in blocks}
+                for i in range(max(by_num) + 1):
+                    b = by_num.get(i)
+                    fh.write(b["data"] if b else b"\xff" * leb_len)
 
         # sanity: does the first logical block look like a UBIFS node once the
         # crypto header is skipped?
