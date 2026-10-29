@@ -449,6 +449,14 @@ def main():
     (ROOT / "assets" / "app.js").write_text(js_text, encoding="utf-8")
     (ROOT / "assets" / "ver.txt").write_text(ASSET_VER + "\n", encoding="utf-8")
     DOCS_OUT.mkdir(exist_ok=True)
+    # 0. our own analysis scripts, published as text (no vendor binaries)
+    tools_src = PROJECT / "tools"
+    tools_dst = ROOT / "tools"
+    if tools_src.is_dir():
+        tools_dst.mkdir(exist_ok=True)
+        for f in sorted(tools_src.glob("*.py")):
+            shutil.copyfile(f, tools_dst / f.name)
+        say(f"{'tools/':18} <- {len(list(tools_dst.glob('*.py')))} scripts")
 
     # 1. copy project docs into docs/ with redaction
     for key, page, title, desc in PAGES:
