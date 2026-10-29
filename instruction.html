@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INSTRUCTION_DUMP — Yealink T4xU</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></div>
+  <h4>Разделы</h4>
+  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
+    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
+    <li><a class="active" href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li></ul>
+  <h4>На странице</h4>
+  <div class="toc"><ul><div class="toc">
+<ul>
+<li><a href="#0">0. Сначала — не дать обновиться</a></li>
+<li><a href="#1-5">1. Что снять в первую очередь (5 минут, ничего не разбирая)</a></li>
+<li><a href="#2-uart-">2. UART-лог (самое ценное)</a></li>
+<li><a href="#3-hit-any-key-to-stop-autoboot">3. Если в логе есть Hit any key to stop autoboot</a></li>
+<li><a href="#4-tsop48">4. Если консоли нет — программатор / TSOP48</a></li>
+<li><a href="#5">5. Что прислать</a></li>
+<li><a href="#6">6. Чего не делать</a></li>
+<li><a href="#7">7. Что будет дальше с этими данными</a></li>
+</ul>
+</div>
+</ul></div>
+</aside>
+<main>
+<h1 id="_1">Инструкция человеку с доступом к трубке</h1>
+<p>Коротко. Всё, что нужно, — снять данные с аппарата и ничего не менять.</p>
+<h2 id="0">0. Сначала — не дать обновиться</h2>
+<ul>
+<li>Не подключать к сети провайдера / отключить Auto Provision и RPS.</li>
+<li>Уже стоит <code>108.86.14.4</code> — это нормальная база, выше не обновлять.</li>
+</ul>
+<h2 id="1-5">1. Что снять в первую очередь (5 минут, ничего не разбирая)</h2>
+<ul>
+<li>Экран: OK → Status — фото <strong>Firmware Version</strong> и <strong>Hardware Version</strong> (уже есть: <code>108.86.14.4</code>, T43U).</li>
+<li>Веб: узнать IP трубки, открыть <code>http://IP</code>, логин <code>admin</code> → <strong>Status</strong> → прислать скриншот.</li>
+</ul>
+<h2 id="2-uart-">2. UART-лог (самое ценное)</h2>
+<ul>
+<li>Найти на плате UART-пятаки (рядом с SoC, обычно 3–4 контакта).</li>
+<li><strong>Уровни 3.3 В</strong>, не 5 В: 5-вольтовый TX в SoC может выжечь вывод. Проверить переключатель на адаптере до подключения.</li>
+<li>Подключить USB-UART: <strong>115200 8N1</strong>, GND общий, TX/RX наоборот.</li>
+<li>Включить трубку и записать лог с нуля до конца загрузки.</li>
+<li>Прислать лог целиком, даже если там мусор.</li>
+</ul>
+<h2 id="3-hit-any-key-to-stop-autoboot">3. Если в логе есть <code>Hit any key to stop autoboot</code></h2>
+<p>Остановить загрузку и снять через консоль:</p>
+<ul>
+<li><code>mtdparts</code> — прислать вывод целиком (нужны точные offset/size разделов);</li>
+<li><code>nand info</code> — прислать (тип чипа, размер страницы, OOB);</li>
+<li>дампы: <strong><code>nand read</code> берёт только main area, OOB снимается отдельно</strong> (<code>nand read.oob</code> / <code>mtd dump</code>). Без OOB образ для сборки не годится.</li>
+</ul>
+<h2 id="4-tsop48">4. Если консоли нет — программатор / TSOP48</h2>
+<blockquote>
+<p><strong>Не паять до подтверждения.</strong> Сначала §2 и §3 — лог и консоль, там дамп снимается без паяльника. Выпайка — только после того, как пришлёте фото маркировки и мы подтвердим модель чипа. TSOP-48 определён по фото; под наклейкой может оказаться не NAND.</p>
+</blockquote>
+<p>По фото платы: SoC <code>RK3308H</code> (маркировка <code>NFAUK0901B 2228</code>), а единственный кандидат в NAND — <strong>большая микросхема в TSOP-48</strong> по центру-снизу, под белой наклейкой <code>54 T43U(V2) ... *********-*******</code> (пины сверху и снизу, ~24+24).</p>
+<ul>
+<li><strong>Снять наклейку</strong> (это просто лейбл) и сфотографировать лазерную маркировку чипа крупно — по ней определяем модель, ёмкость и организацию страниц/OOB.</li>
+<li>Клипса на TSOP-48 ненадёжна: только <strong>выпайка + TSOP48-адаптер</strong> (или программатор с таким сокетом).</li>
+<li>Читать <strong>в raw-режиме, вместе с OOB</strong> (spare area), целиком, на всю ёмкость чипа.</li>
+<li><strong>Питание.</strong> Плата обесточена (шнур вынут). Чип запитывает программатор — <strong>3.3 В</strong>, не 5 В. Питать одновременно от платы и от программатора нельзя.</li>
+<li>Снять <strong>дважды</strong> и сравнить SHA-256 — так отсекается ошибка чтения.</li>
+<li>Если маркировка окажется SPI NAND (8 ног, SOP8/WSON) — можно пробовать клипсу, иначе только выпайка.</li>
+</ul>
+<h2 id="5">5. Что прислать</h2>
+<ol>
+<li>Фото маркировки чипа и фото платы.</li>
+<li>UART-лог загрузки.</li>
+<li>Вывод <code>mtdparts</code> и <code>nand info</code> (если консоль доступна).</li>
+<li>Дамп(ы) + SHA-256 обоих чтений.</li>
+</ol>
+<h2 id="6">6. Чего не делать</h2>
+<ul>
+<li>Не прошивать, не стирать, не обновлять, не запускать «восстановление».</li>
+<li>Не выпаивать чип, пока не подтверждена модель по фото маркировки.</li>
+<li>Не отрывать чип, если читается клипсой.</li>
+<li>Питание при чтении клипсой — выключено, плата не под напряжением.</li>
+</ul>
+<h2 id="7">7. Что будет дальше с этими данными</h2>
+<ul>
+<li>Из дампа достаём загрузчик и раздел <code>rfs</code> → снимаем слой <code>ubifs crypto</code> → правки ФС и свои функции.</li>
+<li>Из UART-лога узнаём, как U-Boot реагирует на незашифрованную ФС (это решает, нужен ли патч загрузчика).</li>
+</ul>
+<footer>
+<p class="mdlink">Исходник этой страницы: <a href="docs/INSTRUCTION_DUMP.md">docs/INSTRUCTION_DUMP.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
+</footer>
+</main>
+</body>
+</html>

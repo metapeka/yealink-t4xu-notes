@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TOOLS — Yealink T4xU</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></div>
+  <h4>Разделы</h4>
+  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
+    <li><a class="active" href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
+    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li></ul>
+  <h4>На странице</h4>
+  <div class="toc"><ul><div class="toc">
+<ul>
+<li><a href="#romtoolpy">romtool.py — чтение</a></li>
+<li><a href="#rompackpy">rompack.py — пересборка «как есть»</a></li>
+<li><a href="#romblockpy">romblock.py — послойное кодирование</a></li>
+<li><a href="#rombuildpy">rombuild.py — сборка с заменой блоков</a></li>
+<li><a href="#rebuildpy-cli">rebuild.py — воспроизводимая сборка (CLI)</a></li>
+<li><a href="#_1">Ограничения</a></li>
+</ul>
+</div>
+</ul></div>
+</aside>
+<main>
+<h1 id="rom-yealink-t4xu">Инструменты разбора ROM Yealink T4xU</h1>
+<p>Каталог: <code>E:\0ai\yealink_t4xu\tools</code> (рабочая копия — WSL <code>~/re/samples/yealink-t4xu</code>).
+Требуется Python 3 + <code>pycryptodome</code> не нужен; нужен только <code>lzma</code> (stdlib) и <code>zlib</code> (stdlib).</p>
+<h2 id="romtoolpy">romtool.py — чтение</h2>
+<pre><code class="language-bash">python3 romtool.py old/108.86.0.118.rom old/108.86.0.154.rom
+</code></pre>
+<p>Печатает: версию, crypto_type, <code>length</code>, размер хвоста, таблицу блоков (offset, total, length, type, cipher).</p>
+<p>API:</p>
+<pre><code class="language-python">from romtool import hdr, blocks, c3
+H = hdr(data)            # поля заголовка ROM
+bl, end = blocks(data)   # список блоков + конец цепочки
+plain = c3(wire)         # расшифровка cypher3 (одна операция)
+</code></pre>
+<h2 id="rompackpy">rompack.py — пересборка «как есть»</h2>
+<pre><code class="language-bash">python3 rompack.py old/108.86.0.118.rom /tmp/rt.rom
+</code></pre>
+<p>Собирает ROM из исходных байтов, пересчитывает <code>length</code> = сумма <code>block_total</code> и <code>header_crc</code> = zlib CRC32 по 0x80 с обнулённым полем. Хвост копируется как есть.
+Проверка: выход должен совпасть с входом байт в байт (для <code>.118</code> и <code>.20</code> — совпадает).</p>
+<h2 id="romblockpy">romblock.py — послойное кодирование</h2>
+<pre><code class="language-bash">python3 romblock.py old/108.86.0.118.rom
+</code></pre>
+<p>Для каждого блока: <code>decode</code> (внешний cypher3 + внутренний слой по <code>cipher</code>) и <code>encode</code> обратно; печатает, совпал ли результат с оригиналом.</p>
+<ul>
+<li><code>cipher=0</code> — совпадает;</li>
+<li><code>cipher=3</code> — совпадает;</li>
+<li><code>cipher=1</code> — <strong>не совпадает</strong> (другой liblzma), но <code>decode(encode(x)) == x</code>.</li>
+</ul>
+<h2 id="rombuildpy">rombuild.py — сборка с заменой блоков</h2>
+<pre><code class="language-python">import rombuild
+from romtool import blocks
+
+d = open('old/108.86.0.118.rom','rb').read()
+bl,_ = blocks(d)
+b = [x for x in bl if x['name']=='bootloader'][0]
+plain = rombuild.inner_dec(d[b['off']+0x80 : b['off']+0x80+b['length']], b['cipher'])
+plain = plain[:0x100] + bytes([plain[0x100]^0xff]) + plain[0x101:]
+out = rombuild.build(d, {'bootloader': plain})
+open('/tmp/mod.rom','wb').write(out)
+</code></pre>
+<p>Правила внутри <code>build</code>:
+- неизменённые блоки копируются побайтово (гарантия идентичности);
+- изменённый блок: внутренний слой по <code>cipher</code> → <code>block_total = align32(0x80+len)</code> → паддинг нулями → внешний cypher3 на весь блок;
+- <code>length</code> заголовка блока = длина тела, <code>header_crc</code> блока пересчитывается;
+- заголовок ROM: <code>length</code> = сумма totals, <code>header_crc</code> пересчитывается;
+- хвост (если есть) переносится без изменений.</p>
+<p>Проверка после сборки:</p>
+<pre><code class="language-python">from romtool import blocks
+bl2,_ = blocks(out)          # таблица блоков читается
+# payload: rombuild.inner_dec(out[off+0x80:...], cipher) == plain
+</code></pre>
+<h2 id="rebuildpy-cli">rebuild.py — воспроизводимая сборка (CLI)</h2>
+<pre><code class="language-bash">python3 rebuild.py old/108.86.0.118.rom -o out.rom
+python3 rebuild.py old/108.86.0.118.rom -o out.rom --version 108.86.0.119
+python3 rebuild.py src.rom -o out.rom --replace bootloader=uboot_plain.bin
+</code></pre>
+<p>Печатает размер, версию, <code>length</code>, хвост, CRC заголовка и каждого блока, SHA-256 результата.</p>
+<p>Проверено (2026-10-29):</p>
+<table>
+<thead>
+<tr>
+<th>сборка</th>
+<th>SHA-256</th>
+<th>результат</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.118</code> без изменений</td>
+<td><code>ff0945…14d2a7</code></td>
+<td>совпадает с исходником</td>
+</tr>
+<tr>
+<td><code>.118</code> + версия <code>108.86.0.119</code></td>
+<td><code>16e7fff6…2a1deaf9</code></td>
+<td>совпадает с ранее собранным артефактом</td>
+</tr>
+<tr>
+<td><code>.20</code> + версия <code>108.87.0.21</code></td>
+<td><code>c3771f89…fa87b2b9</code></td>
+<td>совпадает, хвост 512 Б сохранён</td>
+</tr>
+</tbody>
+</table>
+<p>То есть сборка детерминирована: один и тот же вход → один и тот же файл.</p>
+<h2 id="_1">Ограничения</h2>
+<ol>
+<li>LZMA-поток пересобранного <code>rfs</code> не побайтово равен вендорскому (наш liblzma). Формат совместим (FORMAT_ALONE, dict 0x40000, lc3/lp0/pb2), но совместимость декодера проверяется только на устройстве.</li>
+<li>Хвост 512 Б не пересчитывается и не переподписывается — копируется.</li>
+<li>AES-256 (<code>cipher=0x83</code>) не реализован: ключ не найден.</li>
+</ol>
+<footer>
+<p class="mdlink">Исходник этой страницы: <a href="docs/TOOLS.md">docs/TOOLS.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
+</footer>
+</main>
+</body>
+</html>

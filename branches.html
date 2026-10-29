@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BRANCHES — Yealink T4xU</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></div>
+  <h4>Разделы</h4>
+  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a class="active" href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
+    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li></ul>
+  <h4>На странице</h4>
+  <div class="toc"><ul><div class="toc">
+<ul>
+<li><a href="#_2">Кратко: что решает исход</a></li>
+<li><a href="#a">Ветка A — эмулятор (без железа)</a></li>
+<li><a href="#b">Ветка B — дамп флеша (с железом)</a></li>
+<li><a href="#c-860118">Ветка C — старая прошивка (≤ 86.0.118), без ключей</a></li>
+<li><a href="#d-rfs">Ветка D — подмена rfs без вендорского формата (идея, не проверено)</a></li>
+<li><a href="#2026-10-29">Факты об устройстве (2026-10-29)</a></li>
+<li><a href="#_3">Памятка человеку с трубкой</a></li>
+<li><a href="#_4">Что уже готово</a></li>
+<li><a href="#_5">Критерий выбора</a></li>
+</ul>
+</div>
+</ul></div>
+</aside>
+<main>
+<h1 id="_1">Ветки разработки и памятка по трубке</h1>
+<p><strong>Публичная версия (GitHub Pages):</strong> https://metapeka.github.io/yealink-t4xu-notes/ · репозиторий: https://github.com/metapeka/yealink-t4xu-notes</p>
+<p>Дата: 2026-10-29. Связанные документы: <code>FINDINGS.md</code> (что найдено), <code>PLAN.md</code> (порядок работ и гейты), <code>TOOLS.md</code> (инструменты).</p>
+<hr />
+<h2 id="_2">Кратко: что решает исход</h2>
+<p>Пакет заливает <strong>апдейтер, который уже стоит в трубке</strong>. Содержимое rootfs защищено слоем <code>ubifs crypto</code> (315 из 331 LEB), а вложенный ROM 87.x — AES-256, ключ которого берётся из 512-байтного трейлера через RSA.</p>
+<p>Отсюда три ветки.</p>
+<hr />
+<h2 id="a">Ветка A — эмулятор (без железа)</h2>
+<p><strong>Цель:</strong> получить публичный ключ RSA, из него AES-ключ, расшифровать <code>0x83</code> и достать kernel/rootfs 87.x.</p>
+<p><strong>Как:</strong> выполнить <code>FUN_00082170</code> из <code>version.elf</code> в Unicorn, ROM подставить как память, перехватить <code>BIO_new_mem_buf</code> → забрать готовый 550-байтный DER. Хуки: <code>SHA1/256/512</code>, <code>memcpy/memset</code>, OpenSSL.</p>
+<p><strong>Выход:</strong> <code>AES_key = RSA_public_decrypt(трейлер)[0:32]</code> → 3 блока вложенного ROM → ФС.</p>
+<p><strong>Плюсы:</strong> трубка не нужна, всё офлайн.
+<strong>Минусы:</strong> если в деривации участвует Holtek — не сработает.
+<strong>Шанс:</strong> ~50/50 (три гипотезы о расположении блоба уже проверены и не сработали).
+<strong>Статус:</strong> готово к запуску, не начато.</p>
+<hr />
+<h2 id="b">Ветка B — дамп флеша (с железом)</h2>
+<p><strong>Цель:</strong> получить полный образ флеша, поставить свой U-Boot без <code>ubifs crypto</code>/<code>secure boot check</code>, затем свободно править rootfs.</p>
+<p><strong>Что даёт:</strong> U-Boot, env, разметку, ФС в crypto-виде; возможность записать патченный загрузчик.
+<strong>Чего не даёт:</strong> ключ Holtek (но с патченным U-Boot он не нужен).</p>
+<p><strong>Плюсы:</strong> даёт полный образ флеша и возможность записи — не зависит от успеха анализа кода, в отличие от ветки A.
+<strong>Ограничение:</strong> сам по себе дамп <code>ubifs crypto</code> не снимает. Чтобы править ФС, нужен либо <strong>патч U-Boot</strong> (его разбор сейчас blocked: образ PIC, 832 функции, 0 ссылок на строки), либо <strong>ключ Holtek</strong> через логический анализатор.
+<strong>Минусы:</strong> нужен человек с доступом к плате; риск кирпича при записи.
+<strong>Статус:</strong> ожидает человека и железа.</p>
+<hr />
+<h2 id="c-860118">Ветка C — старая прошивка (≤ 86.0.118), без ключей</h2>
+<p><strong>Что можно:</strong> собрать пакет с <strong>структурными</strong> правками (версия, пересжатие, порядок блоков) — апдейтер <code>.118</code> проверяет только magic/CRC/размеры.
+<strong>Чего нельзя:</strong> добавить свой код в ФС — она всё равно в <code>ubifs crypto</code>, загрузчик её не прочитает.
+<strong>Итог:</strong> проверка приёма пакета и подготовка, но «свои функции» требуют <code>rfs</code> в vendor-формате.
+<strong>Статус:</strong> <strong>[факт]</strong> для трубки на <code>108.86.14.4</code> маршрут применим (апдейтер байт в байт равен <code>.118</code>); пакет-проба <code>test_108.86.14.99.rom</code> собран.</p>
+<hr />
+<h2 id="d-rfs">Ветка D — подмена <code>rfs</code> без вендорского формата (идея, не проверено)</h2>
+<p>Подробности, порядок проверки и ограничения — <code>BRANCH_D.md</code>.</p>
+<p><strong>[факт]</strong> Блок <code>version</code> — обычный ELF (<code>cipher 0</code>), а апдейтер не проверяет ни подписи, ни ключей: только magic, CRC, размеры. Значит в пакет можно положить <strong>свой</strong> бинарь <code>version</code>.</p>
+<p><strong>Что это даёт:</strong> свой апдейтер сам пишет в раздел <code>rfs</code> что угодно и в любом формате — вендорский <code>ubifs crypto</code> воспроизводить не нужно (это снимает необходимость ключа Holtek для правок ФС).</p>
+<p><strong>Что остаётся:</strong> загрузчик. В U-Boot есть проверка <code>ubifs crypto invalid magic=0x%8x</code>.
+<strong>[гипотеза]</strong> если слой включается по magic <code>38 26 90 05</code> в каждом LEB, то обычный (plaintext) UBIFS он прочитает без патча загрузчика.
+<strong>[риск]</strong> если слой обязателен или включён <code>secure boot check</code> — аппарат не загрузится. Проверять только на доноре.</p>
+<p><strong>Почему это не дешевле ветки B:</strong> ядро <code>/uImage</code> лежит в том же томе <code>rootfs</code>, а он зашифрован — без ключа Holtek или дампа флеша загружаемый образ не собрать. Ветка D упрощает только механику записи (не нужен свой апдейтер), но не зависимость.</p>
+<hr />
+<h2 id="2026-10-29">Факты об устройстве (2026-10-29)</h2>
+<ul>
+<li><strong>[факт]</strong> Модель <strong>SIP-T43U</strong>, прошивка <strong>108.86.14.4</strong>, сборка <code>107.1.0.0.3.1.0</code>, MAC <code>24:9A:D8:**:**:**</code>, phone ID <code>2022********</code>, plate ID <code>2208SN******</code>. Плата <code>SIP-T43UMV17B</code>, дата <code>2021-11-12</code>, SoC <strong>RK3308H</strong>, рядом DDR3 и SPI NAND.</li>
+<li><strong>[факт]</strong> Пакет <code>108.86.14.4</code> скачан с сайта дилера (<code>atsvtule.ru</code>), sha256 <code>c7c3f779…</code>; структура как у <code>86.0.118</code>: три блока (<code>version</code>/<code>rfs</code>/<code>bootloader</code>), <code>crypto 0x3</code>, <strong>трейлера 512 Б нет</strong>.</li>
+<li><strong>[факт]</strong> <code>version.elf</code> из <code>108.86.14.4</code> <strong>байт в байт</strong> равен <code>version.elf</code> из <code>108.86.0.118</code> (sha256 <code>0ccc8614…</code>), статически слинкован, крипто-импортов нет, только <code>invalid rom hdr crc</code> / <code>invalid blk hdr crc</code> / <code>unpack size invalid</code>.</li>
+<li><strong>[следствие]</strong> Маршрут «без ключей» на этой трубке <strong>жив</strong>: её апдейтер не проверяет RSA/AES.</li>
+<li><strong>[факт]</strong> Пересборка <code>108.86.14.4</code> identity-совпала побайтово; собран пакет-проба <code>old/test_108.86.14.99.rom</code> (только строка версии, sha256 <code>0d9f221a…</code>).</li>
+<li><strong>[факт]</strong> На сайте дилера указано: «при установке на ТА возврат к v85 невозможен» — то есть откат ограничен снизу; ставить пробу надо с версией <strong>выше</strong> текущей.</li>
+</ul>
+<hr />
+<h2 id="_3">Памятка человеку с трубкой</h2>
+<p><strong>Сначала — не дать обновиться.</strong> Не подключать к сети провайдера / отключить Auto Provision и RPS. На 87.x откат запрещён, и V86-маршрут пропадёт.</p>
+<p><strong>Потом — снять версию.</strong> OK → Status → <strong>Firmware Version</strong> и <strong>Hardware Version</strong>. Если <code>108.86.0.80</code> — это V3, сказать сразу.</p>
+<p><strong>Если снимаем дамп:</strong></p>
+<ol>
+<li>Лог загрузки по UART (115200), с момента включения. Прислать целиком + фото платы и маркировку NAND.</li>
+<li>Если в логе есть <code>Hit any key to stop autoboot</code> — консоль доступна, дамп снимается командами.</li>
+<li><strong>Важно:</strong> <code>nand read</code> читает только main area, <strong>без OOB</strong>. OOB снимать отдельно (<code>nand read.oob</code> / <code>mtd dump</code>), иначе образ неполный и для сборки не годится.</li>
+<li>Прислать вывод <strong><code>mtdparts</code></strong> — точные offset/size разделов.</li>
+<li>Без консоли — программатор: chip-off или SOIC-8 клипса, чтение в raw-режиме <strong>вместе с OOB</strong>.</li>
+<li>Снять <strong>дважды</strong>, сверить SHA-256, размер должен совпасть с ёмкостью чипа.</li>
+</ol>
+<p><strong>Чего не делать до нашего «ок»:</strong> не прошивать, не стирать, не обновлять, не запускать «восстановление».</p>
+<p><strong>Что прислать:</strong> лог загрузки, два дампа + хеши, фото маркировки чипа, вывод <code>mtdparts</code>.</p>
+<hr />
+<h2 id="_4">Что уже готово</h2>
+<ul>
+<li>Формат ROM, CRC, cypher3, <code>cipher</code> 0/1/3/0x83 — разобрано.</li>
+<li>Пересборка: <code>.118</code> и <code>.20</code> байт в байт, версии-бампы детерминированы.</li>
+<li>Апдейтер 87.0.20: проверки содержимого нет; трейлер = ключевой блоб для AES-256.</li>
+<li>U-Boot извлечён, <code>mtdparts</code>, <code>secure boot check</code>, <code>ubifs crypto</code>, Holtek — найдены.</li>
+<li>Rootfs <code>.118</code>: UBI/UBIFS, crypto-слой подтверждён.</li>
+</ul>
+<h2 id="_5">Критерий выбора</h2>
+<table>
+<thead>
+<tr>
+<th>условие</th>
+<th>ветка</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>хотим без железа и готовы к 50/50</td>
+<td><strong>A</strong> (эмулятор)</td>
+</tr>
+<tr>
+<td>есть человек с паяльником/программатором</td>
+<td><strong>B</strong> (дамп; далее патч U-Boot или ключ Holtek)</td>
+</tr>
+<tr>
+<td>на трубке ≤ 86.0.118 и нужен только пакет</td>
+<td><strong>C</strong>, но без правок ФС</td>
+</tr>
+</tbody>
+</table>
+<footer>
+<p class="mdlink">Исходник этой страницы: <a href="docs/BRANCHES.md">docs/BRANCHES.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
+</footer>
+</main>
+</body>
+</html>

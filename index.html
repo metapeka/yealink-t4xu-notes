@@ -3,176 +3,192 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Yealink T4xU — разбор прошивки</title>
-<style>
-:root{--bg:#0f1115;--fg:#e6e6e6;--muted:#9aa0a6;--card:#171a21;--line:#2a2f3a;--ok:#3ddc97;--warn:#ffb020;--bad:#ff5c5c;--accent:#7aa2f7}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-a{color:var(--accent)}
-header{padding:48px 24px 24px;border-bottom:1px solid var(--line)}
-main{max-width:980px;margin:0 auto;padding:0 24px 80px}
-h1{font-size:32px;margin:0 0 8px}
-h2{font-size:22px;margin:48px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
-h3{font-size:17px;margin:24px 0 8px}
-p,li{color:var(--fg)}
-.muted{color:var(--muted)}
-.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
-.badge{border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px;color:var(--muted);background:var(--card)}
-.badge b{color:var(--fg);font-weight:600}
-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px}
-th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-th{color:var(--muted);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
-code{background:#11141a;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:14px}
-pre{background:#11141a;border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto;font-size:14px}
-pre code{border:0;padding:0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:12px 0}
-.ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
-.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:6px;border:1px solid var(--line);color:var(--muted);margin-right:6px}
-.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
-figure{margin:16px 0}
-img{max-width:100%;border-radius:10px;border:1px solid var(--line);display:block}
-figcaption{color:var(--muted);font-size:13px;margin-top:6px}
-ol.steps{counter-reset:s;list-style:none;padding:0}
-ol.steps>li{counter-increment:s;position:relative;padding:12px 0 12px 48px;border-bottom:1px solid var(--line)}
-ol.steps>li::before{content:counter(s);position:absolute;left:0;top:12px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#0f1115;font-weight:700;display:flex;align-items:center;justify-content:center}
-nav{position:sticky;top:0;background:rgba(15,17,21,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:10px 24px;display:flex;gap:16px;flex-wrap:wrap;font-size:14px;z-index:5}
-nav a{text-decoration:none;color:var(--muted)}
-nav a:hover{color:var(--fg)}
-</style>
+<title>Обзор — Yealink T4xU</title>
+<link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-<header>
-<h1>Yealink T4xU — разбор прошивки и путь к своим функциям</h1>
-<p class="muted">Рабочие заметки: что разобрано, что проверено, что осталось и что должен сделать человек с аппаратом.</p>
-<div class="badges">
-<span class="badge">аппарат <b>SIP-T43U</b></span>
-<span class="badge">ПО <b>108.86.14.4</b></span>
-<span class="badge">SoC <b>RK3308H</b></span>
-<span class="badge">обновлено <b>2026-10-29</b></span>
+<aside class="sidebar">
+  <div class="brand">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></div>
+  <h4>Разделы</h4>
+  <ul><li><a class="active" href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
+    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li></ul>
+  <h4>На странице</h4>
+  <div class="toc"><ul><div class="toc">
+<ul>
+<li><a href="#_1">Статус одной таблицей</a></li>
+<li><a href="#_2">Что сделано</a></li>
+<li><a href="#_7">Что осталось и почему стоим</a></li>
+<li><a href="#_8">Как устроен пакет</a></li>
+<li><a href="#_9">Инструкция человеку с аппаратом</a></li>
+<li><a href="#_10">Ветки</a></li>
+<li><a href="#_11">Документы</a></li>
+</ul>
 </div>
-</header>
-
-<nav>
-<a href="#status">Статус</a>
-<a href="#done">Что сделано</a>
-<a href="#left">Что осталось</a>
-<a href="#format">Формат пакета</a>
-<a href="#human">Инструкция человеку</a>
-<a href="#branches">Ветки</a>
-<a href="#docs">Документы</a>
-</nav>
-
+</ul></div>
+</aside>
 <main>
-
-<h2 id="status">Статус одной таблицей</h2>
+<h1 id="yealink-t4xu">Yealink T4xU — разбор прошивки</h1>
+<p>Рабочие заметки: что разобрано, что проверено, что осталось и что должен сделать человек с аппаратом.</p>
+<p><strong>Аппарат:</strong> SIP-T43U · <strong>ПО:</strong> <code>108.86.14.4</code> · <strong>SoC:</strong> RK3308H · <strong>Обновлено:</strong> 2026-10-29</p>
+<h2 id="_1">Статус одной таблицей</h2>
 <table>
-<tr><th>Направление</th><th>Состояние</th><th>Комментарий</th></tr>
-<tr><td>Формат ROM-пакета</td><td class="ok">готово</td><td>разбор, распаковка, правка, пересборка байт в байт</td></tr>
-<tr><td>Апдейтер трубки</td><td class="ok">готово</td><td>проверяет только magic / CRC / размеры, ключей нет</td></tr>
-<tr><td>Пакет-проба (только версия)</td><td class="ok">собран</td><td>ждёт аппарат для проверки приёма</td></tr>
-<tr><td>Содержимое rootfs</td><td class="bad">заблокировано</td><td>слой <code>ubifs crypto</code>, ключ через MCU Holtek</td></tr>
-<tr><td>Свои функции в прошивке</td><td class="bad">заблокировано</td><td>нужен ключ ФС либо дамп флеша</td></tr>
-<tr><td>V87 (AES-256)</td><td class="warn">не нужно</td><td>на трубке 86.x, тяжёлая крипта V87 не задействована</td></tr>
+<thead>
+<tr>
+<th>Направление</th>
+<th>Состояние</th>
+<th>Комментарий</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Формат ROM-пакета</td>
+<td>готово</td>
+<td>разбор, распаковка, правка, пересборка байт в байт</td>
+</tr>
+<tr>
+<td>Апдейтер трубки</td>
+<td>готово</td>
+<td>проверяет только magic / CRC / размеры, ключей нет</td>
+</tr>
+<tr>
+<td>Пакет-проба (только версия)</td>
+<td>собран</td>
+<td>ждёт аппарат для проверки приёма</td>
+</tr>
+<tr>
+<td>Содержимое rootfs</td>
+<td>заблокировано</td>
+<td>слой <code>ubifs crypto</code>, ключ через MCU Holtek</td>
+</tr>
+<tr>
+<td>Свои функции в прошивке</td>
+<td>заблокировано</td>
+<td>нужен ключ ФС либо дамп флеша</td>
+</tr>
+<tr>
+<td>V87 (AES-256)</td>
+<td>не нужно</td>
+<td>на трубке 86.x, тяжёлая крипта V87 не задействована</td>
+</tr>
+</tbody>
 </table>
-
-<h2 id="done">Что сделано</h2>
-<div class="grid">
-<div class="card">
-<h3>Формат пакета</h3>
-<p>Заголовок 128 Б, big-endian. Блоки: <code>version</code> (ELF), <code>rfs</code> (LZMA), <code>bootloader</code> (cypher3). Поля <code>cipher</code>: 0 — как есть, 1 — LZMA, 3 — cypher3, 0x83 — AES-256.</p>
-<p class="muted">Проверено: пересборка <code>86.0.118</code>, <code>87.0.20</code> и <code>86.14.4</code> совпадает с оригиналом побайтово.</p>
-</div>
-<div class="card">
-<h3>Апдейтер</h3>
-<p><code>version.elf</code> из <code>108.86.14.4</code> <b>байт в байт</b> равен апдейтеру <code>108.86.0.118</code>: статическая сборка, крипто-импортов нет, проверяются только magic, CRC заголовка и блоков, размер распаковки.</p>
-<p class="muted">Следствие: подпись содержимого не проверяется, ключи для 86.x не нужны.</p>
-</div>
-<div class="card">
-<h3>Слой ФС</h3>
-<p>Rootfs — UBI (PEB 128 КиБ, LEB 124 КиБ). Из 342 LEB <b>324</b> обёрнуты vendor-узлом <code>38 26 90 05</code>, 9 — обычные UBIFS-узлы, 6 — стёртые.</p>
-<p class="muted">Ядро <code>/uImage</code> лежит в том же томе, то есть тоже внутри зашифрованной части.</p>
-</div>
-<div class="card">
-<h3>Эмулятор апдейтера</h3>
+<h2 id="_2">Что сделано</h2>
+<h3 id="_3">Формат пакета</h3>
+<p>Заголовок 128 Б, big-endian. Блоки: <code>version</code> (ELF), <code>rfs</code> (LZMA), <code>bootloader</code> (cypher3). Поле <code>cipher</code>: 0 — как есть, 1 — LZMA, 3 — cypher3, <code>0x83</code> — AES-256.</p>
+<p>Проверено: пересборка <code>86.0.118</code>, <code>87.0.20</code> и <code>86.14.4</code> совпадает с оригиналом побайтово.</p>
+<h3 id="_4">Апдейтер</h3>
+<p><code>version.elf</code> из <code>108.86.14.4</code> <strong>байт в байт</strong> равен апдейтеру <code>108.86.0.118</code>: статическая сборка, крипто-импортов нет, проверяются только magic, CRC заголовка и блоков, размер распаковки.</p>
+<p>Следствие: подпись содержимого не проверяется, ключи для 86.x не нужны.</p>
+<h3 id="_5">Слой ФС</h3>
+<p>Rootfs — UBI (PEB 128 КиБ, LEB 124 КиБ). Из 342 LEB <strong>324</strong> обёрнуты vendor-узлом <code>38 26 90 05</code>, 9 — обычные UBIFS-узлы, 6 — стёртые.</p>
+<p>Ядро <code>/uImage</code> лежит в том же томе, то есть тоже внутри зашифрованной части.</p>
+<h3 id="_6">Эмулятор апдейтера</h3>
 <p>Собран запускаемый в Unicorn скелет: PIE грузится по адресам, импорты libc/OpenSSL подменяются хуками, вызывается любая функция.</p>
-<p class="muted">Показал для V87: публичный ключ выводится из памяти устройства (<code>/dev/mem</code>), а не из пакета.</p>
-</div>
-</div>
-
-<h2 id="left">Что осталось и почему стоим</h2>
+<p>Показал для V87: публичный ключ выводится из памяти устройства (<code>/dev/mem</code>), а не из пакета.</p>
+<h2 id="_7">Что осталось и почему стоим</h2>
 <table>
-<tr><th>Задача</th><th>Блокер</th><th>Чем снимается</th></tr>
-<tr><td>Проверить приём пересобранного пакета</td><td>нужен аппарат, на котором допустим кирпич</td><td>донорский T43U / T46U</td></tr>
-<tr><td>Правка содержимого ФС</td><td>слой <code>ubifs crypto</code></td><td>ключ Holtek или дамп флеша</td></tr>
-<tr><td>Загружаемый образ со своими функциями</td><td>нет ни ФС, ни ядра в открытом виде</td><td>то же самое</td></tr>
-<tr><td>Нужен ли патч загрузчика</td><td>неизвестно, как U-Boot реагирует на незашифрованную ФС</td><td>UART-лог с аппарата</td></tr>
+<thead>
+<tr>
+<th>Задача</th>
+<th>Блокер</th>
+<th>Чем снимается</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Проверить приём пересобранного пакета</td>
+<td>нужен аппарат, на котором допустим кирпич</td>
+<td>донорский T43U / T46U</td>
+</tr>
+<tr>
+<td>Правка содержимого ФС</td>
+<td>слой <code>ubifs crypto</code></td>
+<td>ключ Holtek или дамп флеша</td>
+</tr>
+<tr>
+<td>Загружаемый образ со своими функциями</td>
+<td>нет ни ФС, ни ядра в открытом виде</td>
+<td>то же самое</td>
+</tr>
+<tr>
+<td>Нужен ли патч загрузчика</td>
+<td>неизвестно, как U-Boot реагирует на незашифрованную ФС</td>
+<td>UART-лог с аппарата</td>
+</tr>
+</tbody>
 </table>
-
-<h2 id="format">Как устроен пакет</h2>
+<h2 id="_8">Как устроен пакет</h2>
 <pre><code>ver 108.86.14.4  crypto 0x3  len 0x23E29B0  tail 0
   version     off 0x80      len 0x9CB50    cipher 0   ← ELF-программа
   rfs         off 0x9CC50   len 0x22E5CDC  cipher 1   ← LZMA → UBI
-  bootloader  off 0x23829B0 len 0x60000    cipher 3   ← cypher3 → LOADER + U-Boot</code></pre>
-<p class="muted">Апдейтер пишет блоки прямо в <code>/dev/mtdN</code>; слой шифрования ФС создаётся не им, а приходит готовым в пакете.</p>
-
-<h2 id="human">Инструкция человеку с аппаратом</h2>
-<p class="muted">Порядок важен: сначала то, что ничего не ломает.</p>
-
-<ol class="steps">
-<li><b>Не дать обновиться.</b> Не подключать к сети провайдера, отключить Auto Provision и RPS. Сейчас на трубке <code>108.86.14.4</code> — это рабочая база.</li>
-<li><b>Снять версию.</b> OK → Status: <i>Firmware Version</i> и <i>Hardware Version</i>. Либо веб: <code>http://IP</code> → <code>admin</code> → Status.</li>
-<li><b>UART-лог.</b> Найти пятаки UART у SoC, подключить USB-UART на <b>3.3 В</b>, 115200 8N1, GND общий. Включить трубку и записать лог с нуля.</li>
-<li><b>Если в логе есть <code>Hit any key to stop autoboot</code></b> — остановить загрузку и снять вывод <code>mtdparts</code> и <code>nand info</code>, затем дамп. <b><code>nand read</code> берёт только main area, OOB снимается отдельно.</b></li>
-<li><b>Если консоли нет</b> — снять наклейку с микросхемы и сфотографировать маркировку. <b>Ничего не выпаивать до подтверждения модели.</b></li>
-<li><b>Снять дважды</b> и сравнить SHA-256 — так отсекается ошибка чтения.</li>
+  bootloader  off 0x23829B0 len 0x60000    cipher 3   ← cypher3 → LOADER + U-Boot
+</code></pre>
+<p>Апдейтер пишет блоки прямо в <code>/dev/mtdN</code>; слой шифрования ФС создаётся не им, а приходит готовым в пакете.</p>
+<h2 id="_9">Инструкция человеку с аппаратом</h2>
+<p>Порядок важен: сначала то, что ничего не ломает. Подробно — на странице <a href="instruction.html">Инструкция человеку</a>.</p>
+<ol>
+<li><strong>Не дать обновиться.</strong> Не подключать к сети провайдера, отключить Auto Provision и RPS.</li>
+<li><strong>Снять версию.</strong> OK → Status: <em>Firmware Version</em> и <em>Hardware Version</em>.</li>
+<li><strong>UART-лог.</strong> USB-UART <strong>3.3 В</strong>, 115200 8N1, GND общий.</li>
+<li><strong>Если есть <code>Hit any key to stop autoboot</code></strong> — снять <code>mtdparts</code>, <code>nand info</code> и дамп; OOB снимается отдельно.</li>
+<li><strong>Если консоли нет</strong> — фото маркировки чипа; ничего не выпаивать до подтверждения модели.</li>
+<li><strong>Снять дважды</strong> и сравнить SHA-256.</li>
 </ol>
-
-<figure>
-<img src="assets/board.jpg" alt="Плата SIP-T43UMV17B">
-<figcaption>Плата T43U: RK3308H слева, микросхема памяти по центру под наклейкой (наклейка размыта).</figcaption>
-</figure>
-
-<div class="grid">
-<figure>
-<img src="assets/soc.jpg" alt="RK3308H">
-<figcaption>SoC <code>RK3308H</code>, маркировка <code>NFAUK0901B 2228</code>.</figcaption>
-</figure>
-<figure>
-<img src="assets/nand.jpg" alt="Микросхема памяти">
-<figcaption>Кандидат в NAND — TSOP-48 (пины сверху и снизу). Маркировку закрывает наклейка.</figcaption>
-</figure>
-</div>
-
-<div class="card">
-<h3>Чего не делать</h3>
-<ul>
-<li>Не прошивать, не стирать, не обновлять, не запускать «восстановление».</li>
-<li>Не выпаивать чип, пока не подтверждена модель по фото маркировки.</li>
-<li>UART — только 3.3 В: 5-вольтовый TX может выжечь вывод SoC.</li>
-<li>При чтении программатором плата обесточена; питать от платы и программатора одновременно нельзя.</li>
-</ul>
-</div>
-
-<h2 id="branches">Ветки</h2>
+<p><img alt="Плата SIP-T43UMV17B" src="assets/board.jpg" /></p>
+<p><em>Плата T43U: RK3308H слева, микросхема памяти по центру под наклейкой (наклейка размыта).</em></p>
+<p><img alt="RK3308H" src="assets/soc.jpg" /></p>
+<p><em>SoC <code>RK3308H</code>, маркировка <code>NFAUK0901B 2228</code>.</em></p>
+<p><img alt="Микросхема памяти" src="assets/nand.jpg" /></p>
+<p><em>Кандидат в NAND — TSOP-48 (пины сверху и снизу). Маркировку закрывает наклейка.</em></p>
+<h2 id="_10">Ветки</h2>
 <table>
-<tr><th>Ветка</th><th>Что даёт</th><th>Зависимость</th></tr>
-<tr><td><b>A</b> — эмулятор</td><td>ключ V87 из кода апдейтера</td><td>блоб из <code>/dev/mem</code> с устройства</td></tr>
-<tr><td><b>B</b> — дамп флеша</td><td>полный образ, патч U-Boot</td><td>аппарат, программатор, риск кирпича</td></tr>
-<tr><td><b>C</b> — пакет без ключей</td><td>пересборка, смена версии, приём пакета</td><td>только аппарат для проверки</td></tr>
-<tr><td><b>D</b> — подмена <code>rfs</code></td><td>свои файлы в ФС без vendor-формата</td><td>ключ Holtek или дамп (ядро тоже в ФС)</td></tr>
+<thead>
+<tr>
+<th>Ветка</th>
+<th>Что даёт</th>
+<th>Зависимость</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A</strong> — эмулятор</td>
+<td>ключ V87 из кода апдейтера</td>
+<td>блоб из <code>/dev/mem</code> с устройства</td>
+</tr>
+<tr>
+<td><strong>B</strong> — дамп флеша</td>
+<td>полный образ, патч U-Boot</td>
+<td>аппарат, программатор, риск кирпича</td>
+</tr>
+<tr>
+<td><strong>C</strong> — пакет без ключей</td>
+<td>пересборка, смена версии, приём пакета</td>
+<td>только аппарат для проверки</td>
+</tr>
+<tr>
+<td><strong>D</strong> — подмена <code>rfs</code></td>
+<td>свои файлы в ФС без vendor-формата</td>
+<td>ключ Holtek или дамп (ядро тоже в ФС)</td>
+</tr>
+</tbody>
 </table>
-
-<h2 id="docs">Документы</h2>
+<h2 id="_11">Документы</h2>
 <ul>
-<li><a href="docs/FINDINGS.md">FINDINGS.md</a> — что установлено, с пометками «факт / гипотеза»</li>
-<li><a href="docs/BRANCHES.md">BRANCHES.md</a> — ветки и памятка по аппарату</li>
-<li><a href="docs/PLAN.md">PLAN.md</a> — порядок работ и гейты</li>
-<li><a href="docs/TOOLS.md">TOOLS.md</a> — инструменты и проверки</li>
-<li><a href="docs/BRANCH_D.md">BRANCH_D.md</a> — проект подмены <code>rfs</code></li>
-<li><a href="docs/INSTRUCTION_DUMP.md">INSTRUCTION_DUMP.md</a> — инструкция для человека с аппаратом</li>
+<li><a href="findings.html">FINDINGS</a> — что установлено, с пометками «факт / гипотеза»</li>
+<li><a href="branches.html">BRANCHES</a> — ветки и памятка по аппарату</li>
+<li><a href="plan.html">PLAN</a> — порядок работ и гейты</li>
+<li><a href="tools.html">TOOLS</a> — инструменты и проверки</li>
+<li><a href="branch-d.html">BRANCH_D</a> — проект подмены <code>rfs</code></li>
+<li><a href="instruction.html">INSTRUCTION_DUMP</a> — инструкция для человека с аппаратом</li>
 </ul>
-<p class="muted">Пометки в документах: <span class="tag">факт</span> проверено на данных или коде, <span class="tag">гипотеза</span> требует проверки.</p>
-
+<footer>
+<p class="mdlink">Исходник этой страницы: <a href="docs/overview.md">docs/overview.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
+</footer>
 </main>
 </body>
 </html>

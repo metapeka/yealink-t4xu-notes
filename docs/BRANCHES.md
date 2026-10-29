@@ -1,5 +1,7 @@
 # Ветки разработки и памятка по трубке
 
+**Публичная версия (GitHub Pages):** https://metapeka.github.io/yealink-t4xu-notes/ · репозиторий: https://github.com/metapeka/yealink-t4xu-notes
+
 Дата: 2026-10-29. Связанные документы: `FINDINGS.md` (что найдено), `PLAN.md` (порядок работ и гейты), `TOOLS.md` (инструменты).
 
 ---
