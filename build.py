@@ -145,6 +145,14 @@ APP_JS = """(function () {
     btn.textContent = dark ? '\\u263E' : '\\u2600';
     btn.title = dark ? '\\u0441\\u0432\\u0435\\u0442\\u043B\\u0430\\u044F \\u0442\\u0435\\u043C\\u0430' : '\\u0442\\u0451\\u043C\\u043D\\u0430\\u044F \\u0442\\u0435\\u043C\\u0430';
   }
+  try {
+    var keep = sessionStorage.getItem('theme-scroll');
+    if (keep !== null) {
+      sessionStorage.removeItem('theme-scroll');
+      window.addEventListener('load', function () { setTimeout(function () { window.scrollTo(0, parseInt(keep, 10) || 0); }, 60); });
+    }
+  } catch (e) {}
+
   var navBtn = document.getElementById('toggle-nav');
   if (navBtn) {
     navBtn.addEventListener('click', function () {
@@ -155,7 +163,10 @@ APP_JS = """(function () {
     paint();
     btn.addEventListener('click', function () {
       var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-      try { localStorage.setItem('theme', next); } catch (e) {}
+      try {
+        sessionStorage.setItem('theme-scroll', String(window.scrollY));
+        localStorage.setItem('theme', next);
+      } catch (e) {}
       location.reload();
     });
   }
