@@ -24,12 +24,13 @@
   var wrap = document.getElementById('palette-wrap');
   var input = document.getElementById('palette-input');
   var list = document.getElementById('palette-list');
+  var VER = '88cb2ed6';
   var data = null, items = [], sel = 0;
 
   function load() {
     if (data) return;
     data = [];
-    fetch('search.json').then(function (r) { return r.json(); }).then(function (j) { data = j; render(input.value); }).catch(function () {});
+    fetch('search.json?v=' + VER).then(function (r) { return r.json(); }).then(function (j) { data = j; render(input.value); }).catch(function () {});
   }
   function openPalette() {
     load();
@@ -57,6 +58,14 @@
       (p.h || []).forEach(function (h) {
         if (q && h.t.toLowerCase().indexOf(q) >= 0) items.push({ u: p.u + '#' + h.a, t: h.t, s: p.t });
       });
+      if (q && !hit && p.b) {
+        var at = p.b.toLowerCase().indexOf(q);
+        if (at >= 0) {
+          var from = Math.max(0, at - 45);
+          var snip = (from > 0 ? '…' : '') + p.b.slice(from, at + q.length + 55).trim() + '…';
+          items.push({ u: p.u, t: p.t, s: snip });
+        }
+      }
     });
     items = items.slice(0, 40);
     sel = 0;

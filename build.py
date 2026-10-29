@@ -5,6 +5,7 @@ Run from the repository root:  python build.py
 Sources: src/overview.md and docs/*.md (copied from the project with redaction).
 Output: index.html + one page per document + assets/style.css
 """
+import hashlib
 import html
 import json
 import re
@@ -162,12 +163,13 @@ APP_JS = """(function () {
   var wrap = document.getElementById('palette-wrap');
   var input = document.getElementById('palette-input');
   var list = document.getElementById('palette-list');
+  var VER = '__VER__';
   var data = null, items = [], sel = 0;
 
   function load() {
     if (data) return;
     data = [];
-    fetch('search.json').then(function (r) { return r.json(); }).then(function (j) { data = j; render(input.value); }).catch(function () {});
+    fetch('search.json?v=' + VER).then(function (r) { return r.json(); }).then(function (j) { data = j; render(input.value); }).catch(function () {});
   }
   function openPalette() {
     load();
@@ -195,6 +197,14 @@ APP_JS = """(function () {
       (p.h || []).forEach(function (h) {
         if (q && h.t.toLowerCase().indexOf(q) >= 0) items.push({ u: p.u + '#' + h.a, t: h.t, s: p.t });
       });
+      if (q && !hit && p.b) {
+        var at = p.b.toLowerCase().indexOf(q);
+        if (at >= 0) {
+          var from = Math.max(0, at - 45);
+          var snip = (from > 0 ? '\u2026' : '') + p.b.slice(from, at + q.length + 55).trim() + '\u2026';
+          items.push({ u: p.u, t: p.t, s: snip });
+        }
+      }
     });
     items = items.slice(0, 40);
     sel = 0;
@@ -242,13 +252,20 @@ APP_JS = """(function () {
 })();
 """
 
+def _asset_version():
+    blob = (CSS + APP_JS).encode("utf-8")
+    return hashlib.sha1(blob).hexdigest()[:8]
+
+
+ASSET_VER = _asset_version()
+
 TEMPLATE = """<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title} — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/style.css?v={ver}">
 <script>try{{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}}catch(e){{}}</script>
 </head>
 <body>
@@ -276,7 +293,7 @@ TEMPLATE = """<!DOCTYPE html>
 </footer>
 </main>
 {mermaid}
-<script src="assets/app.js" defer></script>
+<script src="assets/app.js?v={ver}" defer></script>
 </body>
 </html>
 """
@@ -329,6 +346,7 @@ def render(md_text, md_name, active_page, title):
     if "<!-- TILES -->" in body:
         body = body.replace("<p><!-- TILES --></p>", tiles_html(active_page)).replace("<!-- TILES -->", tiles_html(active_page))
     return TEMPLATE.format(
+        ver=ASSET_VER,
         title=title,
         nav=build_nav(active_page),
         tocblock=tocblock,
@@ -348,8 +366,11 @@ def say(msg):
 
 def main():
     (ROOT / "assets").mkdir(exist_ok=True)
-    (ROOT / "assets" / "style.css").write_text(CSS.strip() + "\n", encoding="utf-8")
-    (ROOT / "assets" / "app.js").write_text(APP_JS.strip() + "\n", encoding="utf-8")
+    css_text = CSS.strip() + "\n"
+    js_text = APP_JS.strip().replace("__VER__", ASSET_VER) + "\n"
+    (ROOT / "assets" / "style.css").write_text(css_text, encoding="utf-8")
+    (ROOT / "assets" / "app.js").write_text(js_text, encoding="utf-8")
+    (ROOT / "assets" / "ver.txt").write_text(ASSET_VER + "\n", encoding="utf-8")
     DOCS_OUT.mkdir(exist_ok=True)
 
     # 1. copy project docs into docs/ with redaction
@@ -383,7 +404,9 @@ def main():
             text = html.unescape(re.sub(r"<[^>]+>", "", m.group(3))).strip()
             if text:
                 heads.append({"a": m.group(2), "t": text})
-        entries.append({"u": page, "t": title, "d": desc, "h": heads})
+        plain = html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"<pre.*?</pre>|<div class=\"mermaid\".*?</div>", " ", html_page, flags=re.S)))
+        plain = re.sub(r"\s+", " ", plain).strip()[:8000]
+        entries.append({"u": page, "t": title, "d": desc, "h": heads, "b": plain})
     (ROOT / "search.json").write_text(json.dumps(entries, ensure_ascii=False, indent=1), encoding="utf-8")
     say(f"{'search.json':18} <- {len(entries)} pages, {sum(len(e['h']) for e in entries)} headings")
 
