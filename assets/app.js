@@ -80,7 +80,7 @@
   var wrap = document.getElementById('palette-wrap');
   var input = document.getElementById('palette-input');
   var list = document.getElementById('palette-list');
-  var VER = '67fe2086';
+  var VER = 'c8e8afbd';
   var data = null, items = [], sel = 0;
 
   function load() {

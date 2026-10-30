@@ -45,14 +45,15 @@ details.logentry > *:not(summary){margin-top:10px}
 .toc ul ul a{padding-left:20px}
 main{flex:1;min-width:0;padding:40px 48px 96px;max-width:900px}
 h1{font-size:30px;margin:0 0 16px;line-height:1.25}
-h2{font-size:21px;margin:40px 0 12px;padding-bottom:8px;padding-left:12px;border-bottom:1px solid var(--line);box-shadow:inset 3px 0 0 var(--accent);scroll-margin-top:72px;border-radius:2px 0 0 0}
-h3{font-size:16px;margin:24px 0 8px;color:var(--h3);scroll-margin-top:72px}
+h2{font-size:21px;margin:40px 0 12px;padding-bottom:8px;padding-left:12px;border-bottom:1px solid var(--line);box-shadow:inset 3px 0 0 var(--accent);border-radius:2px 0 0 0}
+h3{font-size:16px;margin:24px 0 8px;color:var(--h3)}
+[id]{scroll-margin-top:72px}
 p,li{color:var(--text2)}
 /* таблицы: карточка со скроллом на узких экранах, зебра для таблиц с шапкой */
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px;margin:14px 0;background:var(--card);box-shadow:var(--shadow)}
 .tw table{margin:0;border-collapse:collapse;width:100%;font-size:14px}
 .tw th,.tw td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-.tw th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em;background:var(--panel);border-bottom:1px solid var(--border)}
+.tw th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em;background:var(--panel);border-bottom:1px solid var(--line)}
 .tw tbody tr:last-child td{border-bottom:0}
 .tw table:has(thead) tbody tr:nth-child(even) td{background:color-mix(in srgb, var(--panel) 55%, transparent)}
 .tw td code{word-break:break-all;font-size:12.5px}
