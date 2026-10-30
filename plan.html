@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>План — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=58b4357a">
+<link rel="stylesheet" href="assets/style.css?v=67fe2086">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -85,7 +85,7 @@
 <p><strong>Гейт 0:</strong> известна версия на трубке и есть донор. Иначе дальше нет смысла.</p>
 <hr />
 <h2 id="1">1. Ветвление по версии</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Версия на трубке</th>
@@ -105,7 +105,7 @@
 <td>tool-блок 87.0.20 содержимое не проверяет, но проверка может быть в библиотеках rootfs или в U-Boot</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <hr />
 <h2 id="2-a-860118">2. Маршрут A (телефон ≤ 86.0.118)</h2>
 <h3 id="a1">A1. Контроль</h3>
@@ -193,7 +193,7 @@
 <hr />
 <h2 id="2026-10-30">Состояние на 2026-10-30: офлайн закрыт</h2>
 <p>Все работы, которые можно сделать без трубки, закончены: 15 задач, открытых нет. Оставшиеся шесть упираются в аппарат.</p>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Заблокировано</th>
@@ -233,7 +233,7 @@
 <td>ключ V87 (нам не нужен)</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>Два вопроса закрыты не до конца</strong> и решатся первым контактом:</p>
 <ol>
 <li>Режим тома — гипотеза ECB; подтверждается расшифровкой LEB 0 реальным ключом (<code>tools/ubi_trykey.py</code>).</li>
@@ -242,7 +242,7 @@
 <p><strong>Порядок при появлении доступа:</strong> UART и полный лог → дамп всех разделов вместе с OOB → сниффинг шины → только затем пробная запись пакета.</p>
 <h2 id="7">7. Текущий статус</h2>
 <p>Таблица актуальна на 2026-10-30. Историю до 29.10 см. в <code>FINDINGS.md</code>.</p>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>пункт</th>
@@ -287,13 +287,15 @@
 <td><strong>ожидание</strong>: единственное, что осталось</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <footer>
 <p class="mdlink">Исходник этой страницы: <a href="docs/PLAN.md">docs/PLAN.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
 </footer>
 </main>
 </div>
+<div id="progress"></div>
+<button id="to-top" type="button" aria-label="Наверх">↑</button>
 
-<script src="assets/app.js?v=58b4357a" defer></script>
+<script src="assets/app.js?v=67fe2086" defer></script>
 </body>
 </html>

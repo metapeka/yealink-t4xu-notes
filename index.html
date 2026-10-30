@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Обзор — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=58b4357a">
+<link rel="stylesheet" href="assets/style.css?v=67fe2086">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -86,7 +86,7 @@
 <div class="tiles"><a class="tile" href="safety.html"><b>Чего нельзя делать</b><span>запреты и предупреждения при работе с платой</span></a><a class="tile" href="access.html"><b>Что чем решается</b><span>какой способ что даёт и порядок шагов</span></a><a class="tile" href="findings.html"><b>Находки</b><span>что установлено: факт / гипотеза</span></a><a class="tile" href="branches.html"><b>Ветки</b><span>ветки и памятка по аппарату</span></a><a class="tile" href="plan.html"><b>План</b><span>порядок работ и гейты</span></a><a class="tile" href="tools.html"><b>Инструменты</b><span>инструменты и проверки</span></a><a class="tile" href="usb.html"><b>USB и maskrom</b><span>как определить пины, дамп без паяльника</span></a><a class="tile" href="sniff.html"><b>Сниффинг шины</b><span>снять ключ с платы без выпайки</span></a><a class="tile" href="network.html"><b>Прошивка по сети</b><span>веб-интерфейс трубки, без UART</span></a><a class="tile" href="recovery.html"><b>Восстановление</b><span>три уровня поломки и чек-лист донора</span></a><a class="tile" href="remote.html"><b>Удалённый доступ</b><span>Tailscale: схема и два варианта</span></a><a class="tile" href="security.html"><b>Безопасность</b><span>изоляция, доступ, проверка после</span></a><a class="tile" href="branch-d.html"><b>BRANCH_D — подмена rfs</b><span>проект подмены rfs</span></a><a class="tile" href="instruction.html"><b>Инструкция человеку</b><span>инструкция для человека с аппаратом</span></a><a class="tile" href="publish.html"><b>Что публикуем</b><span>что выкладываем, что нет и почему</span></a><a class="tile" href="sources.html"><b>Как делали другие</b><span>Synacktiv и WHY2025: сравнение методов</span></a></div>
 
 <h2 id="_3">Статус одной таблицей</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Направление</th>
@@ -131,9 +131,9 @@
 <td>на трубке 86.x, тяжёлая крипта V87 не задействована</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h2 id="_4">Где какой ключ нужен</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Что делаем</th>
@@ -154,7 +154,7 @@
 <td><strong>да</strong> — RSA → AES-256, ключ из памяти устройства</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p>Отсюда порядок: сначала донор и приём пакета, ключ — на следующем шаге.</p>
 <div class="mermaid">
 flowchart LR
@@ -191,7 +191,7 @@ flowchart LR
 <p>Собран запускаемый в Unicorn скелет: PIE грузится по адресам, импорты libc/OpenSSL подменяются хуками, вызывается любая функция.</p>
 <p>Показал для V87: публичный ключ выводится из памяти устройства (<code>/dev/mem</code>), а не из пакета.</p>
 <h2 id="_10">Что осталось и почему стоим</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Задача</th>
@@ -221,7 +221,7 @@ flowchart LR
 <td>UART-лог с аппарата</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h2 id="_11">Как устроен пакет</h2>
 <pre><code>ver 108.86.14.4  crypto 0x3  len 0x23E29B0  tail 0
   version     off 0x80      len 0x9CB50    cipher 0   ← ELF-программа
@@ -242,7 +242,7 @@ flowchart LR
 <h2 id="_13">Плата</h2>
 <figure><img src="assets/board.jpg" alt="Плата SIP-T43UMV17B" width="420"><figcaption>Плата T43U: RK3308H слева, микросхема памяти по центру под наклейкой (наклейка размыта)</figcaption></figure>
 
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th></th>
@@ -259,9 +259,9 @@ flowchart LR
 <td><em>Кандидат в NAND — TSOP-48, маркировку закрывает наклейка</em></td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h2 id="_14">Ветки</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Ветка</th>
@@ -291,17 +291,19 @@ flowchart LR
 <td>ключ Holtek или дамп (ядро тоже в ФС)</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <footer>
 <p class="mdlink">Исходник этой страницы: <a href="docs/overview.md">docs/overview.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
 </footer>
 </main>
 </div>
+<div id="progress"></div>
+<button id="to-top" type="button" aria-label="Наверх">↑</button>
 <script type="module">
 import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
 const light = document.documentElement.getAttribute('data-theme') === 'light';
 mermaid.initialize({ startOnLoad: true, theme: light ? 'default' : 'dark', themeVariables: { fontFamily: 'Segoe UI, sans-serif' } });
 </script>
-<script src="assets/app.js?v=58b4357a" defer></script>
+<script src="assets/app.js?v=67fe2086" defer></script>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Что чем решается — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=58b4357a">
+<link rel="stylesheet" href="assets/style.css?v=67fe2086">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -85,7 +85,7 @@ flowchart LR
 </div>
 <p>Оба пути ведут к одной цели и различаются только тем, что даёт доступ: ключ или свой загрузчик.</p>
 <h2 id="_2">Что реально ведёт к результату</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Путь</th>
@@ -114,10 +114,10 @@ flowchart LR
 <td><span class="chip hypo">гипотеза</span></td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p>Пути 1 и 2 — альтернативы: либо ключ к существующему тому, либо свой загрузчик вместо штатного. Путь 3 не самостоятельный — он лишь упрощает запись.</p>
 <h2 id="_3">Что не ведёт к результату само по себе</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Способ</th>
@@ -142,7 +142,7 @@ flowchart LR
 <td>трубка его примет, но при загрузке ФС не прочитает</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h2 id="_4">Порядок</h2>
 <ol>
 <li><strong>UART</strong> — самый дешёвый вход: консоль загрузчика, лог, возможность выгрузки. <span class="chip hypo">гипотеза</span> выгрузка NAND по сети из U-Boot — зависит от сборки, у нас её ещё не проверили; если нет, останется медленный слив через последовательный порт.</li>
@@ -156,11 +156,13 @@ flowchart LR
 </footer>
 </main>
 </div>
+<div id="progress"></div>
+<button id="to-top" type="button" aria-label="Наверх">↑</button>
 <script type="module">
 import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
 const light = document.documentElement.getAttribute('data-theme') === 'light';
 mermaid.initialize({ startOnLoad: true, theme: light ? 'default' : 'dark', themeVariables: { fontFamily: 'Segoe UI, sans-serif' } });
 </script>
-<script src="assets/app.js?v=58b4357a" defer></script>
+<script src="assets/app.js?v=67fe2086" defer></script>
 </body>
 </html>

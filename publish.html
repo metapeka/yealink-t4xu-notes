@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Что публикуем — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=58b4357a">
+<link rel="stylesheet" href="assets/style.css?v=67fe2086">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -74,7 +74,7 @@
 </ul>
 <p>Цель — ремонт и совместимость собственного телефона, а не снятие защиты с чужого устройства. Устройство куплено, находится у нас, и все эксперименты идут на нём или на доноре.</p>
 <h2 id="_3">Что публикуем</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Публикуем</th>
@@ -103,9 +103,9 @@
 <td>sha256, размеры</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h2 id="_4">Что не публикуем</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Не публикуем</th>
@@ -142,7 +142,7 @@
 <td>риск для чужих устройств</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p>Правило простое: <strong>описание метода — да, чужой материал и готовые ключи — нет.</strong></p>
 <p>Отдельно про константы: в <code>tools/</code> лежат ключи <code>cypher3</code> (<code>75A467AF…</code>, <code>82180D32…</code>). Они опубликованы Synacktiv ещё в 2019 году и описывают только формат пакета, а не защиту данных на устройстве. Публикуем их как часть формата. Ключ файловой системы и ключ MCU — никогда, даже если получим.</p>
 <h2 id="_5">Насколько это законно</h2>
@@ -161,7 +161,9 @@
 </footer>
 </main>
 </div>
+<div id="progress"></div>
+<button id="to-top" type="button" aria-label="Наверх">↑</button>
 
-<script src="assets/app.js?v=58b4357a" defer></script>
+<script src="assets/app.js?v=67fe2086" defer></script>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Как делали другие — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=58b4357a">
+<link rel="stylesheet" href="assets/style.css?v=67fe2086">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -69,7 +69,7 @@
 <h1 id="_1">Как делали другие</h1>
 <p>Два публичных источника по той же цели — Yealink T4x. Сравнение с нашим разбором.</p>
 <h2 id="_2">Источники</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Источник</th>
@@ -94,9 +94,9 @@
 <td>2019</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h2 id="_3">Что совпало с нашим разбором</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Наше наблюдение</th>
@@ -125,10 +125,10 @@
 <td>у Synacktiv — downgrade тоже возможен, у нас дилер пишет «возврат к v85 невозможен»</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p>Совпадение ключей — независимая проверка: наш <code>romtool.py</code> реализует ровно тот алгоритм, что опубликован в 2019, а не нашу выдумку.</p>
 <h2 id="_4">Что у них проще, чем у нас</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th></th>
@@ -158,7 +158,7 @@
 <td>без ключа или дампа не собрать</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p>Вывод: у нас задача тяжелее, потому что Yealink между 2019 и 2021 ушёл от «шифруем заголовки» к «шифруем весь том и уводим ключ в железо».</p>
 <h2 id="_5">О чём доклад по частям</h2>
 <ul>
@@ -195,7 +195,9 @@
 </footer>
 </main>
 </div>
+<div id="progress"></div>
+<button id="to-top" type="button" aria-label="Наверх">↑</button>
 
-<script src="assets/app.js?v=58b4357a" defer></script>
+<script src="assets/app.js?v=67fe2086" defer></script>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Находки — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=58b4357a">
+<link rel="stylesheet" href="assets/style.css?v=67fe2086">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -86,7 +86,7 @@
 <p>Обозначения: <span class="chip fact">факт</span> — проверено на данных/коде; <span class="chip hypo">гипотеза</span> — вывод без прямого доказательства.</p>
 <hr />
 <h2 id="1">1. Исходный файл</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>параметр</th>
@@ -107,9 +107,9 @@
 <td><code>7fa60c178e946de2830b68f2f761ded8d711973880332d3212dd79df1d68ed68</code></td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p>Заголовок (0x80 байт, big-endian, формат из <code>yealink_rom.ksy</code> Synacktiv):</p>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>offset</th>
@@ -189,7 +189,7 @@
 <td><code>3</code> / <code>2</code></td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><span class="chip fact">факт</span> <code>length</code> = сумма <code>block_total</code> всех блоков (без 0x80-заголовка ROM).
 <span class="chip fact">факт</span> <code>header_crc</code> = zlib CRC32 по 0x80 байтам заголовка с обнулённым полем CRC. Проверено на 87.0.20 (0x73EB3213) и 86.0.118 (0xA707993C).
 <span class="chip fact">факт</span> CRC заголовка блока считается так же (проверено на всех блоках: <code>DAFEE477</code>, <code>CA4099CC</code>, <code>BABE346A</code>).</p>
@@ -200,7 +200,7 @@
 <li>Блок: <code>[0x80 заголовок][тело]</code>, <code>block_total = align32(0x80 + length)</code> (паддинг нулями/мусором, зашифрован вместе с блоком).</li>
 <li>Поле <code>cipher</code> в заголовке блока задаёт внутренний слой:</li>
 </ul>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>cipher</th>
@@ -230,7 +230,7 @@
 <td>внешний cypher3 → AES-256 (блок 16 Б), ключ = первые 32 Б RSA-расшифрованного трейлера</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <ul>
 <li><span class="chip fact">факт</span> <code>cipher=3</code> — ровно два слоя cypher3: <code>c3(c3(body))</code> даёт <code>LOADER</code> (MLO) + U-Boot.</li>
 <li><span class="chip fact">факт</span> <code>cipher=1</code> — LZMA в формате LZMA-alone, свойства <code>5D</code>, dict <code>0x00040000</code>, lc=3/lp=0/pb=2.</li>
@@ -238,7 +238,7 @@
 </ul>
 <hr />
 <h2 id="3-10887020">3. Структура 108.87.0.20</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>блок</th>
@@ -275,12 +275,12 @@
 <td>хвост <strong>512 Б</strong> вне цепочки блоков (0x2FFD400…0x2FFD600)</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p>Вложенный контейнер заполняет тело <code>app</code> ровно: <code>0x80 + 0x2F83AC0 = 0x2F83B40</code>, своего хвоста у него нет.</p>
 <p><strong>Хвост 512 Б:</strong> энтропия 7.62 бит/байт, 225 разных байт на 512, три нуля, два <code>0xFF</code>; дешифровка cypher3 даёт такой же мусор. <span class="chip fact">факт</span> отличить подпись от шифротекста без ключа нельзя. Политика: копировать побайтово.</p>
 <hr />
 <h2 id="4">4. Версии и что менялось</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>ROM</th>
@@ -320,7 +320,7 @@
 <td>AES + RSA + SHA1/256/512</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><span class="chip fact">факт</span> Хвост появился в 86.0.154, а не в V87. Привязка «хвост = V87 anti-tamper» неверна.</p>
 <hr />
 <h2 id="5-version-">5. Апдейтер (<code>version</code>-блок)</h2>
@@ -382,7 +382,7 @@ Hit any key to stop autoboot: %2d
 - Thumb <code>ADR</code> (0xA0xx) к этим строкам не ведёт.</p>
 <p>Вывод: ссылки на строки не являются простыми абсолютными литералами в этом файле. Для разбора нужен нормальный загрузчик в Ghidra (raw-import с выбором базы и режима по функциям) либо дамп/консоль устройства. Скан «base + stroff» по всему файлу даёт ложный сигнал (много мелких чисел совпадает с началами строк).</p>
 <p><strong>mtdparts (rk_nand):</strong></p>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>раздел</th>
@@ -432,7 +432,7 @@ Hit any key to stop autoboot: %2d
 <td>0x0C0000</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p>Загрузка: <code>ubi.mtd=8 root=ubi0:rootfs ro rootfstype=ubifs ... ubi part rfs; ubifsmount rootfs; ubifsload ...; bootm</code>. Есть ветки recovery: <code>boottftp</code> (<code>tftp ... ${phonename}.bin; bootm</code>), <code>bootstorage</code> (USB), <code>bootram</code>/<code>smrfs</code>.</p>
 <p><span class="chip fact">факт</span> <code>ubl</code> и <code>trust</code> в пакет не входят — пакет содержит только <code>version</code>, <code>rfs</code>, <code>bootloader</code>; <code>bootloader</code> пишется в <code>uboot</code> (+копия).</p>
 <hr />
@@ -451,7 +451,7 @@ Hit any key to stop autoboot: %2d
 <p><strong>Следствие:</strong> <code>ubifs crypto</code> — не «защита суперблока», а слой над почти всей ФС. Оффлайн-сборка rootfs невозможна без схемы и ключа (Holtek) либо без собственного U-Boot/драйвера, который этот слой снимает.</p>
 <hr />
 <h2 id="8-wsl-resamplesyealink-t4xu-e0aiyealink_t4xutools">8. Инструменты (WSL <code>~/re/samples/yealink-t4xu/</code>, копии в <code>E:\0ai\yealink_t4xu\tools</code>)</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>файл</th>
@@ -481,7 +481,7 @@ Hit any key to stop autoboot: %2d
 <td>identity <code>.118</code> = True; правка <code>bootloader</code> → payload читается обратно</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><span class="chip fact">факт</span> Ограничение: наш LZMA-поток для изменённого <code>rfs</code> валиден по формату, но не побайтово равен вендорскому (другой liblzma, +6041 Б).</p>
 <hr />
 <h2 id="9">9. Неизвестные</h2>
@@ -546,7 +546,7 @@ FUN_00082170(mmap + 0x100, 0x200, mmap[0x808])
 </details><details class="logentry" id="ubifs-crypto-2026-10-29"><summary><span>Слой ubifs crypto локализован, карта разделов флеша</span><span class="date">2026-10-29</span></summary>
 <p><span class="chip fact">факт</span> Строка <code>ubifs crypto invalid magic=0x%8x</code> лежит в загрузчике: файл <code>old/boot2.bin</code>, смещение <code>0x480c8</code>; в <code>uboot.elf</code> та же строка по виртуальному адресу <code>0x580c8</code>. То есть проверка слоя — в U-Boot, а не в ядре и не в апдейтере.</p>
 <p><span class="chip fact">факт</span> В том же образе найдена таблица разделов (<code>mtdparts=rk_nand:...</code>), флеш 128 МиБ:</p>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Раздел</th>
@@ -606,7 +606,7 @@ FUN_00082170(mmap + 0x100, 0x200, mmap[0x808])
 <td>конец флеша</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <figure class="fig">
 <svg viewBox="0 0 960 320" width="100%" role="img" aria-label="Карта флеша 128 МиБ: ubl, uboot, env, userenv, rfs, cfg, rfs2, klog">
   <g font-family="Segoe UI, sans-serif">
@@ -708,7 +708,9 @@ FUN_00082170(mmap + 0x100, 0x200, mmap[0x808])
 </footer>
 </main>
 </div>
+<div id="progress"></div>
+<button id="to-top" type="button" aria-label="Наверх">↑</button>
 
-<script src="assets/app.js?v=58b4357a" defer></script>
+<script src="assets/app.js?v=67fe2086" defer></script>
 </body>
 </html>

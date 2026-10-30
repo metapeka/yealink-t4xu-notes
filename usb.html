@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>USB и maskrom — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=58b4357a">
+<link rel="stylesheet" href="assets/style.css?v=67fe2086">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -121,7 +121,7 @@ rkdeveloptool rl 0 &lt;секторов&gt; out.bin
 <p><span class="chip fact">факт</span> Для maskrom не нужен ни UART, ни разборка дальше доступа к контактам.</p>
 <h2 id="_1">Где что на плате</h2>
 <p><img alt="Плата SIP-T43UMV17B с разметкой" src="assets/board-annotated.jpg" /></p>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>№</th>
@@ -151,7 +151,7 @@ rkdeveloptool rl 0 &lt;секторов&gt; out.bin
 <td>[гипотеза]; маркировка рядом не читается</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="_2">Что проверить мультиметром</h3>
 <ol>
 <li><strong>Общий провод:</strong> минус на экран или на конденсатор у разъёма питания.</li>
@@ -164,7 +164,7 @@ rkdeveloptool rl 0 &lt;секторов&gt; out.bin
 <p>Вынесено на отдельную страницу: <a href="sniff.html">Сниффинг шины SoC ↔ MCU</a> — точки подключения, порядок, как проверить полученный ключ.</p>
 <h3 id="_3">Карта разделов флеша</h3>
 <p>Взято из таблицы <code>mtdparts</code> самого загрузчика, флеш 128 МиБ:</p>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Раздел</th>
@@ -209,7 +209,7 @@ rkdeveloptool rl 0 &lt;секторов&gt; out.bin
 <td>768 КиБ</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p>Для дампа это главное: под <code>rfs</code> отведено 55,5 МиБ, плюс есть вторая копия <code>rfs2</code> — то есть на флеше лежат два тома, и оба стоит снять.</p>
 <h2 id="6-maskrom">6. Если maskrom не заводится</h2>
 <p>Возврат к обычному пути: UART-лог → консоль U-Boot → дамп командами <code>nand read</code> + отдельно OOB → либо выпайка TSOP-48 с чтением в программаторе.</p>
@@ -219,7 +219,9 @@ rkdeveloptool rl 0 &lt;секторов&gt; out.bin
 </footer>
 </main>
 </div>
+<div id="progress"></div>
+<button id="to-top" type="button" aria-label="Наверх">↑</button>
 
-<script src="assets/app.js?v=58b4357a" defer></script>
+<script src="assets/app.js?v=67fe2086" defer></script>
 </body>
 </html>

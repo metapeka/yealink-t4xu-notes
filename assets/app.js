@@ -52,6 +52,19 @@
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') document.querySelectorAll('.tm-item.open').forEach(function (o) { o.classList.remove('open'); });
   });
+
+  // полоса прогресса чтения + кнопка «наверх»
+  var bar = document.getElementById('progress');
+  var top = document.getElementById('to-top');
+  function onScroll() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    if (bar) bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+    if (top) top.classList.toggle('show', h.scrollTop > 600);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  if (top) top.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
   if (btn) {
     paint();
     btn.addEventListener('click', function () {
@@ -67,7 +80,7 @@
   var wrap = document.getElementById('palette-wrap');
   var input = document.getElementById('palette-input');
   var list = document.getElementById('palette-list');
-  var VER = '58b4357a';
+  var VER = '67fe2086';
   var data = null, items = [], sel = 0;
 
   function load() {

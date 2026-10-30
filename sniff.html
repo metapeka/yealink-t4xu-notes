@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Сниффинг шины — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=58b4357a">
+<link rel="stylesheet" href="assets/style.css?v=67fe2086">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -78,7 +78,7 @@
 <p>Файловая система на флеше зашифрована: в нашем пакете <code>108.86.14.4</code> из 342 блоков 324 помечены magic <code>38 26 90 05</code> (в <code>108.86.0.118</code> — 331 блок, 315 с этим заголовком). Ключ не лежит в прошивке пакета — по данным доклада WHY2025 его выводит микроконтроллер: процессор отправляет значение, MCU возвращает результат, из ответов собирается ключ. Шина между ними нешифрованная, значит её можно слушать.</p>
 <p><strong>Что это даёт:</strong> штатный том расшифровывается, и мы правим файлы, не трогая загрузчик.</p>
 <h2 id="_2">Что нужно</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Предмет</th>
@@ -113,10 +113,10 @@
 <td>телефон с макро или лупа</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h2 id="_3">Где точки</h2>
 <p><img alt="U16, площадки рядом и четыре контакта" src="assets/mcu-sniff.jpg" /></p>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Точка</th>
@@ -141,7 +141,7 @@
 <td>[гипотеза] это отдельные площадки, а не выводы микросхемы</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>Питание не подаём.</strong> Площадки — только для измерения и приёма сигнала; трубка питается от своего адаптера.</p>
 <h2 id="_4">Порядок</h2>
 <ol>
@@ -178,7 +178,9 @@
 </footer>
 </main>
 </div>
+<div id="progress"></div>
+<button id="to-top" type="button" aria-label="Наверх">↑</button>
 
-<script src="assets/app.js?v=58b4357a" defer></script>
+<script src="assets/app.js?v=67fe2086" defer></script>
 </body>
 </html>

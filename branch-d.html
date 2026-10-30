@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BRANCH_D — подмена rfs — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=58b4357a">
+<link rel="stylesheet" href="assets/style.css?v=67fe2086">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -73,7 +73,7 @@
 </blockquote>
 <h2 id="_1">Идея</h2>
 <p>Апдейтер пишет блоки в <code>/dev/mtdN</code> «как есть»: у него есть типы <code>none|bin|tool|file|nand-raw|nand-oob|nor</code> (строка справки в <code>version.elf</code>). В пакете <code>108.86.14.4</code> блоки размечены так:</p>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>блок</th>
@@ -102,7 +102,7 @@
 <td>cypher3 → LOADER + U-Boot</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><span class="chip hypo">гипотеза</span> <code>type 2</code> = <code>tool</code> (исполняемый образ), <code>type 4</code> = <code>nand-raw</code> (сырые страницы во флеш). Значит полезная нагрузка <code>rfs</code> пишется в раздел <strong>дословно</strong>, без переупаковки в UBIFS: апдейтер не знает про UBIFS и crypto, он просто копирует байты.</p>
 <p>Отсюда: если собрать пакет с <code>rfs</code>, внутри которого лежит <strong>обычный</strong> UBI/UBIFS (без обёртки <code>38 26 90 05</code>), апдейтер запишет его так же дословно.</p>
 <h2 id="_2">Что остаётся непроверенным</h2>
@@ -145,7 +145,9 @@
 </footer>
 </main>
 </div>
+<div id="progress"></div>
+<button id="to-top" type="button" aria-label="Наверх">↑</button>
 
-<script src="assets/app.js?v=58b4357a" defer></script>
+<script src="assets/app.js?v=67fe2086" defer></script>
 </body>
 </html>

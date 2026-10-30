@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Инструменты — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=58b4357a">
+<link rel="stylesheet" href="assets/style.css?v=67fe2086">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -124,7 +124,7 @@ python3 rebuild.py src.rom -o out.rom --replace bootloader=uboot_plain.bin
 </code></pre>
 <p>Печатает размер, версию, <code>length</code>, хвост, CRC заголовка и каждого блока, SHA-256 результата.</p>
 <p>Проверено (2026-10-29):</p>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>сборка</th>
@@ -149,7 +149,7 @@ python3 rebuild.py src.rom -o out.rom --replace bootloader=uboot_plain.bin
 <td>совпадает, хвост 512 Б сохранён</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p>То есть сборка детерминирована: один и тот же вход → один и тот же файл.</p>
 <h2 id="_1">Ограничения</h2>
 <ol>
@@ -172,7 +172,9 @@ python3 rebuild.py src.rom -o out.rom --replace bootloader=uboot_plain.bin
 </footer>
 </main>
 </div>
+<div id="progress"></div>
+<button id="to-top" type="button" aria-label="Наверх">↑</button>
 
-<script src="assets/app.js?v=58b4357a" defer></script>
+<script src="assets/app.js?v=67fe2086" defer></script>
 </body>
 </html>

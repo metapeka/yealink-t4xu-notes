@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Прошивка по сети — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=58b4357a">
+<link rel="stylesheet" href="assets/style.css?v=67fe2086">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -114,7 +114,7 @@
 <li>Прошивать без возможности восстановления: при ошибке понадобится программатор.</li>
 </ul>
 <h2 id="7">7. Сравнение с аппаратным путём</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Задача</th>
@@ -139,7 +139,7 @@
 <td>да, программатор</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h2 id="8">8. Удалённый доступ к трубке</h2>
 <p>Схема, два варианта (подсетевой маршрут и мост через <code>socat</code>) и ограничения — на отдельной странице <a href="remote.html">Удалённый доступ</a>.</p>
 <p>Порядок работ — <a href="plan.html">PLAN</a>, ветки — <a href="branches.html">BRANCHES</a>, что делать с аппаратом руками — <a href="instruction.html">Инструкция человеку</a>.</p>
@@ -180,7 +180,9 @@ static.auto_provision.rps.enable = 0
 </footer>
 </main>
 </div>
+<div id="progress"></div>
+<button id="to-top" type="button" aria-label="Наверх">↑</button>
 
-<script src="assets/app.js?v=58b4357a" defer></script>
+<script src="assets/app.js?v=67fe2086" defer></script>
 </body>
 </html>

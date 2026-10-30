@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ветки — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=58b4357a">
+<link rel="stylesheet" href="assets/style.css?v=67fe2086">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -75,7 +75,7 @@
 <hr />
 <h2 id="_2">Соответствие путям</h2>
 <p>С 2026-10-29 план описан двумя гейтами в <code>ACCESS_MAP.md</code>. Ветки ниже — детали этих путей.</p>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>Путь</th>
@@ -105,7 +105,7 @@
 <td>ветка <strong>D</strong></td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h2 id="_3">Кратко: что решает исход</h2>
 <p>Пакет заливает <strong>апдейтер, который уже стоит в трубке</strong>. Содержимое rootfs защищено слоем <code>ubifs crypto</code> (315 из 331 LEB), а вложенный ROM 87.x — AES-256, ключ которого берётся из 512-байтного трейлера через RSA.</p>
 <p>Отсюда три ветки.</p>
@@ -178,7 +178,7 @@
 <li>Rootfs <code>.118</code>: UBI/UBIFS, crypto-слой подтверждён.</li>
 </ul>
 <h2 id="_6">Критерий выбора</h2>
-<table>
+<div class="tw"><table>
 <thead>
 <tr>
 <th>условие</th>
@@ -199,13 +199,15 @@
 <td><strong>C</strong>, но без правок ФС</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <footer>
 <p class="mdlink">Исходник этой страницы: <a href="docs/BRANCHES.md">docs/BRANCHES.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
 </footer>
 </main>
 </div>
+<div id="progress"></div>
+<button id="to-top" type="button" aria-label="Наверх">↑</button>
 
-<script src="assets/app.js?v=58b4357a" defer></script>
+<script src="assets/app.js?v=67fe2086" defer></script>
 </body>
 </html>
