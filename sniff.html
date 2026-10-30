@@ -4,13 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Сниффинг шины — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=d2ec6d49">
+<link rel="stylesheet" href="assets/style.css?v=a909cf0e">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="index.html" title="На главную">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></a>
-  <nav class="topnav"><a href="index.html">Обзор</a><a href="access.html">Пути</a><a href="findings.html">Находки</a><a href="branches.html">Ветки</a><a href="plan.html">План</a><a href="publish.html">Публикация</a><a href="sources.html">Источники</a></nav>
   <div class="topact">
     <button id="open-search" type="button" aria-label="Поиск">Поиск <kbd>Ctrl K</kbd></button>
     <button id="toggle-theme" type="button" aria-label="Тема">☾</button>
@@ -20,23 +19,31 @@
 <div class="shell">
 <aside class="sidebar">
   <h4>Разделы</h4>
-  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
-    <li><a href="safety.html">Чего нельзя делать<small>запреты и предупреждения при работе с платой</small></a></li>
+  <ul><h4 class="grp">Старт</h4><ul>
+    <li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="safety.html">Чего нельзя делать <span class="lbl-bad">!</span><small>запреты и предупреждения при работе с платой</small></a></li>
     <li><a href="access.html">Что чем решается<small>какой способ что даёт и порядок шагов</small></a></li>
-    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
-    <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
-    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
-    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
-    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
-    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li>
+    </ul>
+    <h4 class="grp notfirst">Состояние работ</h4><ul>
+    <li><a href="findings.html"><span class="dot ok"></span>Находки<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a href="branches.html"><span class="dot warn"></span>Ветки<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html"><span class="dot warn"></span>План<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">Инструменты<small>инструменты и проверки</small></a></li>
+    </ul>
+    <h4 class="grp notfirst">Работа с аппаратом</h4><ul>
     <li><a href="usb.html">USB и maskrom<small>как определить пины, дамп без паяльника</small></a></li>
-    <li><a href="recovery.html">Восстановление<small>три уровня поломки и чек-лист донора</small></a></li>
+    <li><a class="active" href="sniff.html">Сниффинг шины<small>снять ключ с платы без выпайки</small></a></li>
     <li><a href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li>
+    <li><a href="recovery.html">Восстановление<small>три уровня поломки и чек-лист донора</small></a></li>
     <li><a href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a></li>
     <li><a href="security.html">Безопасность<small>изоляция, доступ, проверка после</small></a></li>
+    </ul>
+    <h4 class="grp notfirst">Отдельное</h4><ul>
+    <li><a href="branch-d.html"><span class="dot bad"></span>BRANCH_D — подмена rfs<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">Инструкция человеку<small>инструкция для человека с аппаратом</small></a></li>
     <li><a href="publish.html">Что публикуем<small>что выкладываем, что нет и почему</small></a></li>
-    <li><a class="active" href="sniff.html">Сниффинг шины<small>снять ключ с платы без выпайки</small></a></li>
-    <li><a href="sources.html">Как делали другие<small>Synacktiv и WHY2025: сравнение методов</small></a></li></ul>
+    <li><a href="sources.html">Как делали другие<small>Synacktiv и WHY2025: сравнение методов</small></a></li>
+    </ul></ul>
   <h4>На странице</h4>
   <div class="toc">
 <ul>
@@ -163,7 +170,7 @@
 <li>Проверить, не идёт ли обмен между процессором и другим чипом: возможно, MCU стоит не U16.</li>
 <li>Вернуться к пути 2 — свой загрузчик: <a href="usb.html">USB и maskrom</a>.</li>
 </ol>
-<p><strong>[гипотеза]</strong> Всё выше — методика, а не подтверждённая распиновка. Точные точки определяются за 15–20 минут с мультиметром и макро-снимком.</p>
+<p><span class="chip hypo">гипотеза</span> Всё выше — методика, а не подтверждённая распиновка. Точные точки определяются за 15–20 минут с мультиметром и макро-снимком.</p>
 <p>Связанное: <a href="access.html">Что чем решается</a> · <a href="sources.html">Как делали другие</a> · <a href="usb.html">USB и maskrom</a>.</p>
 <footer>
 <p class="mdlink">Исходник этой страницы: <a href="docs/SNIFF.md">docs/SNIFF.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
@@ -171,6 +178,6 @@
 </main>
 </div>
 
-<script src="assets/app.js?v=d2ec6d49" defer></script>
+<script src="assets/app.js?v=a909cf0e" defer></script>
 </body>
 </html>

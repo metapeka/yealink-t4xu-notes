@@ -3,14 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BRANCH_D — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=d2ec6d49">
+<title>BRANCH_D — подмена rfs — Yealink T4xU</title>
+<link rel="stylesheet" href="assets/style.css?v=a909cf0e">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="index.html" title="На главную">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></a>
-  <nav class="topnav"><a href="index.html">Обзор</a><a href="access.html">Пути</a><a href="findings.html">Находки</a><a href="branches.html">Ветки</a><a href="plan.html">План</a><a href="publish.html">Публикация</a><a href="sources.html">Источники</a></nav>
   <div class="topact">
     <button id="open-search" type="button" aria-label="Поиск">Поиск <kbd>Ctrl K</kbd></button>
     <button id="toggle-theme" type="button" aria-label="Тема">☾</button>
@@ -20,23 +19,31 @@
 <div class="shell">
 <aside class="sidebar">
   <h4>Разделы</h4>
-  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
-    <li><a href="safety.html">Чего нельзя делать<small>запреты и предупреждения при работе с платой</small></a></li>
+  <ul><h4 class="grp">Старт</h4><ul>
+    <li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="safety.html">Чего нельзя делать <span class="lbl-bad">!</span><small>запреты и предупреждения при работе с платой</small></a></li>
     <li><a href="access.html">Что чем решается<small>какой способ что даёт и порядок шагов</small></a></li>
-    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
-    <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
-    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
-    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
-    <li><a class="active" href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
-    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li>
+    </ul>
+    <h4 class="grp notfirst">Состояние работ</h4><ul>
+    <li><a href="findings.html"><span class="dot ok"></span>Находки<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a href="branches.html"><span class="dot warn"></span>Ветки<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html"><span class="dot warn"></span>План<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">Инструменты<small>инструменты и проверки</small></a></li>
+    </ul>
+    <h4 class="grp notfirst">Работа с аппаратом</h4><ul>
     <li><a href="usb.html">USB и maskrom<small>как определить пины, дамп без паяльника</small></a></li>
-    <li><a href="recovery.html">Восстановление<small>три уровня поломки и чек-лист донора</small></a></li>
+    <li><a href="sniff.html">Сниффинг шины<small>снять ключ с платы без выпайки</small></a></li>
     <li><a href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li>
+    <li><a href="recovery.html">Восстановление<small>три уровня поломки и чек-лист донора</small></a></li>
     <li><a href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a></li>
     <li><a href="security.html">Безопасность<small>изоляция, доступ, проверка после</small></a></li>
+    </ul>
+    <h4 class="grp notfirst">Отдельное</h4><ul>
+    <li><a class="active" href="branch-d.html"><span class="dot bad"></span>BRANCH_D — подмена rfs<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">Инструкция человеку<small>инструкция для человека с аппаратом</small></a></li>
     <li><a href="publish.html">Что публикуем<small>что выкладываем, что нет и почему</small></a></li>
-    <li><a href="sniff.html">Сниффинг шины<small>снять ключ с платы без выпайки</small></a></li>
-    <li><a href="sources.html">Как делали другие<small>Synacktiv и WHY2025: сравнение методов</small></a></li></ul>
+    <li><a href="sources.html">Как делали другие<small>Synacktiv и WHY2025: сравнение методов</small></a></li>
+    </ul></ul>
   <h4>На странице</h4>
   <div class="toc">
 <ul>
@@ -59,7 +66,7 @@
 </div>
 <main>
 <h1 id="d-rfs">Ветка D — подмена содержимого <code>rfs</code> без вендорского формата</h1>
-<p>Черновик проекта. Статус: <strong>[гипотеза]</strong>, проверяется только на доноре.</p>
+<p>Черновик проекта. Статус: <span class="chip hypo">гипотеза</span>, проверяется только на доноре.</p>
 <blockquote>
 <p><strong>Важно.</strong> Это <strong>не</strong> дешёвая альтернатива ветке B. Ядро <code>/uImage</code> лежит в том же томе <code>rootfs</code> (<code>ubifsload 0x00C00800 /uImage</code>), а том на 324 из 342 LEB зашифрован (<code>38 26 90 05</code>). Значит собрать загружаемый образ «с нуля» нельзя: нет ни содержимого ФС, ни ядра. Ветка D зависит от того же, что и ветка B — ключа Holtek или дампа флеша. Механику записи она упрощает (не нужен свой апдейтер), но не снимает зависимость.</p>
 </blockquote>
@@ -95,7 +102,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>[гипотеза]</strong> <code>type 2</code> = <code>tool</code> (исполняемый образ), <code>type 4</code> = <code>nand-raw</code> (сырые страницы во флеш). Значит полезная нагрузка <code>rfs</code> пишется в раздел <strong>дословно</strong>, без переупаковки в UBIFS: апдейтер не знает про UBIFS и crypto, он просто копирует байты.</p>
+<p><span class="chip hypo">гипотеза</span> <code>type 2</code> = <code>tool</code> (исполняемый образ), <code>type 4</code> = <code>nand-raw</code> (сырые страницы во флеш). Значит полезная нагрузка <code>rfs</code> пишется в раздел <strong>дословно</strong>, без переупаковки в UBIFS: апдейтер не знает про UBIFS и crypto, он просто копирует байты.</p>
 <p>Отсюда: если собрать пакет с <code>rfs</code>, внутри которого лежит <strong>обычный</strong> UBI/UBIFS (без обёртки <code>38 26 90 05</code>), апдейтер запишет его так же дословно.</p>
 <h2 id="_2">Что остаётся непроверенным</h2>
 <p>U-Boot в строке <code>ubifs crypto invalid magic=0x%8x</code> явно проверяет magic. Два исхода:</p>
@@ -138,6 +145,6 @@
 </main>
 </div>
 
-<script src="assets/app.js?v=d2ec6d49" defer></script>
+<script src="assets/app.js?v=a909cf0e" defer></script>
 </body>
 </html>

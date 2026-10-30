@@ -19,26 +19,38 @@ PROJECT = ROOT.parent                    # E:\0ai\yealink_t4xu
 DOCS_OUT = ROOT / "docs"
 SRC = ROOT / "src"
 
-# name in docs/ -> (page file, sidebar title, short description)
+# name in docs/ -> (page file, sidebar title, short description, group)
+# группы: "Старт" · "Состояние работ" · "Работа с аппаратом" · "Отдельное"
 PAGES = [
-    ("overview", "index.html", "Обзор", "статус, что сделано, что осталось"),
-    ("SAFETY", "safety.html", "Чего нельзя делать", "запреты и предупреждения при работе с платой"),
-    ("ACCESS_MAP", "access.html", "Что чем решается", "какой способ что даёт и порядок шагов"),
-    ("FINDINGS", "findings.html", "FINDINGS", "что установлено: факт / гипотеза"),
-    ("BRANCHES", "branches.html", "BRANCHES", "ветки и памятка по аппарату"),
-    ("PLAN", "plan.html", "PLAN", "порядок работ и гейты"),
-    ("TOOLS", "tools.html", "TOOLS", "инструменты и проверки"),
-    ("BRANCH_D", "branch-d.html", "BRANCH_D", "проект подмены rfs"),
-    ("INSTRUCTION_DUMP", "instruction.html", "INSTRUCTION_DUMP", "инструкция для человека"),
-    ("USB_MASKROM", "usb.html", "USB и maskrom", "как определить пины, дамп без паяльника"),
-    ("RECOVERY", "recovery.html", "Восстановление", "три уровня поломки и чек-лист донора"),
-    ("NETWORK_FLASH", "network.html", "Прошивка по сети", "веб-интерфейс трубки, без UART"),
-    ("REMOTE_ACCESS", "remote.html", "Удалённый доступ", "Tailscale: схема и два варианта"),
-    ("SECURITY", "security.html", "Безопасность", "изоляция, доступ, проверка после"),
-    ("PUBLISH", "publish.html", "Что публикуем", "что выкладываем, что нет и почему"),
-    ("SNIFF", "sniff.html", "Сниффинг шины", "снять ключ с платы без выпайки"),
-    ("REFERENCES", "sources.html", "Как делали другие", "Synacktiv и WHY2025: сравнение методов"),
+    ("overview", "index.html", "Обзор", "статус, что сделано, что осталось", "Старт"),
+    ("SAFETY", "safety.html", "Чего нельзя делать", "запреты и предупреждения при работе с платой", "Старт"),
+    ("ACCESS_MAP", "access.html", "Что чем решается", "какой способ что даёт и порядок шагов", "Старт"),
+    ("FINDINGS", "findings.html", "Находки", "что установлено: факт / гипотеза", "Состояние работ"),
+    ("BRANCHES", "branches.html", "Ветки", "ветки и памятка по аппарату", "Состояние работ"),
+    ("PLAN", "plan.html", "План", "порядок работ и гейты", "Состояние работ"),
+    ("TOOLS", "tools.html", "Инструменты", "инструменты и проверки", "Состояние работ"),
+    ("USB_MASKROM", "usb.html", "USB и maskrom", "как определить пины, дамп без паяльника", "Работа с аппаратом"),
+    ("SNIFF", "sniff.html", "Сниффинг шины", "снять ключ с платы без выпайки", "Работа с аппаратом"),
+    ("NETWORK_FLASH", "network.html", "Прошивка по сети", "веб-интерфейс трубки, без UART", "Работа с аппаратом"),
+    ("RECOVERY", "recovery.html", "Восстановление", "три уровня поломки и чек-лист донора", "Работа с аппаратом"),
+    ("REMOTE_ACCESS", "remote.html", "Удалённый доступ", "Tailscale: схема и два варианта", "Работа с аппаратом"),
+    ("SECURITY", "security.html", "Безопасность", "изоляция, доступ, проверка после", "Работа с аппаратом"),
+    ("BRANCH_D", "branch-d.html", "BRANCH_D — подмена rfs", "проект подмены rfs", "Отдельное"),
+    ("INSTRUCTION_DUMP", "instruction.html", "Инструкция человеку", "инструкция для человека с аппаратом", "Отдельное"),
+    ("PUBLISH", "publish.html", "Что публикуем", "что выкладываем, что нет и почему", "Отдельное"),
+    ("REFERENCES", "sources.html", "Как делали другие", "Synacktiv и WHY2025: сравнение методов", "Отдельное"),
 ]
+
+# порядок групп в сайдбаре
+GROUPS = ["Старт", "Состояние работ", "Работа с аппаратом", "Отдельное"]
+
+# точка-статус рядом с пунктом сайдбара: ok / warn / bad; единый источник статуса проекта
+STATUS_DOT = {
+    "FINDINGS": ("ok", "формат пакета и апдейтер разобраны"),
+    "PLAN": ("warn", "офлайн закрыт, дальше нужен аппарат"),
+    "BRANCHES": ("warn", "ждёт донор или доступ к железу"),
+    "BRANCH_D": ("bad", "блокер: ключ ФС"),
+}
 
 REDACT = [
     (r"24:9A:D8:25:3D:63", "24:9A:D8:**:**:**"),
@@ -65,6 +77,23 @@ a{color:var(--accent)}
 .sidebar a:hover{color:var(--fg);background:var(--hover)}
 .sidebar a.active{color:var(--fg);background:var(--active);box-shadow:inset 2px 0 0 var(--accent)}
 .sidebar a small{display:block;font-size:11px;color:var(--muted);margin-top:1px}
+.sidebar h4.grp{margin-top:0}
+.sidebar h4.grp.notfirst{margin-top:22px}
+.sidebar .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:1px;flex:none}
+.sidebar .dot.ok{background:var(--ok)} .sidebar .dot.warn{background:var(--warn)} .sidebar .dot.bad{background:var(--bad)}
+.sidebar .lbl-bad{display:inline-block;font-size:10px;font-weight:700;color:var(--bad);border:1px solid var(--bad);border-radius:999px;padding:0 5px;margin-left:5px;line-height:1.5;vertical-align:1px}
+/* чипы факт / гипотеза */
+.chip{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:0 8px;vertical-align:1px;line-height:1.7}
+.chip.fact{color:var(--ok);border:1px solid var(--ok);background:color-mix(in srgb, var(--ok) 9%, transparent)}
+.chip.hypo{color:var(--warn);border:1px solid var(--warn);background:color-mix(in srgb, var(--warn) 9%, transparent)}
+/* свёрнутые датированные записи в findings */
+details.logentry{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:10px 0;background:var(--card)}
+details.logentry summary{cursor:pointer;font-weight:600;font-size:14.5px;list-style:none;display:flex;align-items:center;gap:8px}
+details.logentry summary::-webkit-details-marker{display:none}
+details.logentry summary::before{content:"▸";color:var(--muted);transition:transform .15s}
+details.logentry[open] summary::before{transform:rotate(90deg)}
+details.logentry summary .date{font-size:12px;color:var(--muted);font-weight:400;margin-left:auto;white-space:nowrap}
+details.logentry > *:not(summary){margin-top:10px}
 .toc a{font-size:13px;padding:3px 8px}
 .toc ul ul a{padding-left:20px}
 main{flex:1;min-width:0;padding:40px 48px 96px;max-width:900px}
@@ -119,11 +148,6 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:v
 .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;height:57px;padding:0 20px;background:var(--panel);border-bottom:1px solid var(--line)}
 .topbar .brand{display:flex;align-items:baseline;gap:9px;text-decoration:none;color:var(--fg);font-weight:700;font-size:15px;white-space:nowrap}
 .topbar .brand span{font-weight:400;font-size:11.5px;color:var(--muted)}
-.topnav{display:flex;gap:2px;margin-left:6px;overflow-x:auto;scrollbar-width:none}
-.topnav::-webkit-scrollbar{display:none}
-.topnav a{font-size:13.5px;color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:7px;white-space:nowrap}
-.topnav a:hover{color:var(--fg);background:var(--hover)}
-.topnav a.active{color:var(--fg);background:var(--active);box-shadow:inset 0 -2px 0 var(--accent)}
 .topact{margin-left:auto;display:flex;gap:8px}
 .topact button{display:flex;align-items:center;gap:6px;background:var(--card);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:7px 11px;font:inherit;font-size:13px;cursor:pointer}
 .topact button:hover{color:var(--fg);border-color:var(--accent)}
@@ -163,7 +187,6 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:v
 .topact .navbtn{display:none}
 @media(max-width:860px){
   .shell{flex-direction:column}
-  .topnav{display:none}
   .topbar{padding:0 12px;gap:8px}
   .topbar .brand span{display:none}
   .topact kbd{display:none}
@@ -373,7 +396,6 @@ TEMPLATE = """<!DOCTYPE html>
 <body>
 <header class="topbar">
   <a class="brand" href="index.html" title="На главную">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></a>
-  <nav class="topnav">{topnav}</nav>
   <div class="topact">
     <button id="open-search" type="button" aria-label="Поиск">Поиск <kbd>Ctrl K</kbd></button>
     <button id="toggle-theme" type="button" aria-label="Тема">☾</button>
@@ -412,40 +434,69 @@ def redact(text):
     return text
 
 
-TOPNAV = [
-    ("index.html", "Обзор"),
-    ("access.html", "Пути"),
-    ("findings.html", "Находки"),
-    ("branches.html", "Ветки"),
-    ("plan.html", "План"),
-    ("publish.html", "Публикация"),
-    ("sources.html", "Источники"),
-]
-
-
-def build_topnav(active):
-    items = []
-    for page, label in TOPNAV:
-        cls = ' class="active"' if page == active else ""
-        items.append(f'<a{cls} href="{page}">{label}</a>')
-    return "".join(items)
-
-
 def build_nav(active):
-    items = []
-    for key, page, title, desc in PAGES:
-        cls = ' class="active"' if page == active else ""
-        items.append(f'<li><a{cls} href="{page}">{title}<small>{desc}</small></a></li>')
-    return "\n    ".join(items)
+    """Sidebar grouped by GROUPS; status dot on pages whose doc state differs."""
+    parts = []
+    for gi, group in enumerate(GROUPS):
+        parts.append(f'<h4 class="grp{"" if gi == 0 else " notfirst"}">{group}</h4><ul>')
+        for key, page, title, desc, grp in PAGES:
+            if grp != group:
+                continue
+            cls = ' class="active"' if page == active else ""
+            dot = STATUS_DOT.get(key, "")
+            dot_html = f'<span class="dot {dot[0]}"></span>' if dot else ""
+            warn = ' <span class="lbl-bad">!</span>' if key == "SAFETY" else ""
+            parts.append(f'<li><a{cls} href="{page}">{dot_html}{title}{warn}<small>{desc}</small></a></li>')
+        parts.append("</ul>")
+    return "\n    ".join(parts)
 
 
 def tiles_html(active):
     parts = []
-    for key, page, title, desc in PAGES:
+    for key, page, title, desc, group in PAGES:
         if page == active:
             continue
         parts.append(f'<a class="tile" href="{page}"><b>{title}</b><span>{desc}</span></a>')
     return '<div class="tiles">' + "".join(parts) + "</div>"
+
+
+def fold_dated_sections(body):
+    """Свернуть секции с датой в заголовке (2026-…) в <details class="logentry">.
+
+    Заголовок h2 теряется из toc — в summary кладём полный текст, а в toc
+    остаётся один пункт «Хронология» на весь свёрнутый блок.
+    """
+    parts = re.split(r'(<h2 id="[^"]+">.*?</h2>)', body, flags=re.S)
+    # parts: [до, заголовок, тело, заголовок, тело, ...]
+    out, cur = [], None  # cur: [heading_html, [chunks]]
+    def flush():
+        nonlocal cur
+        if cur:
+            title = re.sub(r"<[^>]+>", "", cur[0])
+            m = re.search(r"\((\d{4}-\d{2}-\d{2})\)", title)
+            date = m.group(1) if m else ""
+            title_short = re.sub(r"\s*\(\d{4}-\d{2}-\d{2}\)", "", title)
+            inner = "".join(cur[1])
+            out.append(
+                '<details class="logentry"><summary>'
+                f'<span>{html.escape(title_short)}</span><span class="date">{date}</span>'
+                f"</summary>{inner}</details>"
+            )
+            cur = None
+    for chunk in parts:
+        if re.fullmatch(r'<h2 id="[^"]+">.*?</h2>', chunk or "", flags=re.S):
+            flush()
+            if re.search(r"\(\d{4}-\d{2}-\d{2}\)", chunk):
+                cur = [chunk, []]  # датированная — собираем
+            else:
+                out.append(chunk)  # обычная — как было
+        else:
+            if cur is not None:
+                cur[1].append(chunk)
+            else:
+                out.append(chunk)
+    flush()
+    return "".join(out)
 
 
 def render(md_text, md_name, active_page, title):
@@ -466,6 +517,14 @@ def render(md_text, md_name, active_page, title):
         body = body.replace(f"<p>MERMAIDBLOCK{i}END</p>", f'<div class="mermaid">\n{escaped}\n</div>')
         body = body.replace(f"MERMAIDBLOCK{i}END", f'<div class="mermaid">\n{escaped}\n</div>')
 
+    # метки факт/гипотеза/следствие/инструмент -> цветные чипы (после markdown: <strong>[факт]</strong>)
+    body = body.replace("<strong>[факт]</strong>", '<span class="chip fact">факт</span>')
+    body = body.replace("<strong>[гипотеза]</strong>", '<span class="chip hypo">гипотеза</span>')
+    body = body.replace("<strong>[следствие]</strong>", '<span class="chip fact">следствие</span>')
+    body = body.replace("<strong>[инструмент]</strong>", '<span class="chip fact">инструмент</span>')
+    body = body.replace("<strong>[открыто]</strong>", '<span class="chip hypo">открыто</span>')
+    body = body.replace("<strong>Вывод [факт]:</strong>", '<span class="chip fact">факт</span> <strong>Вывод:</strong>')
+
     toc_html = md.toc or ""
     tocblock = f'<h4>На странице</h4>\n  {toc_html}' if len(toc_html) > 80 else ""
     mermaid_js = MERMAID_JS if blocks else ""
@@ -473,10 +532,11 @@ def render(md_text, md_name, active_page, title):
         body = body.replace("<p><!-- TILES --></p>", tiles_html(active_page)).replace("<!-- TILES -->", tiles_html(active_page))
     if "<!-- PIPELINE -->" in body:
         body = body.replace("<p><!-- PIPELINE --></p>", pipeline_html()).replace("<!-- PIPELINE -->", pipeline_html())
+    if md_name == "FINDINGS.md":
+        body = fold_dated_sections(body)
     return TEMPLATE.format(
         ver=ASSET_VER,
         title=title,
-        topnav=build_topnav(active_page),
         nav=build_nav(active_page),
         tocblock=tocblock,
         body=body,
@@ -511,7 +571,7 @@ def main():
         say(f"{'tools/':18} <- {len(list(tools_dst.glob('*.py')))} scripts")
 
     # 1. copy project docs into docs/ with redaction
-    for key, page, title, desc in PAGES:
+    for key, page, title, desc, group in PAGES:
         if key == "overview":
             continue
         src = PROJECT / f"{key}.md"
@@ -525,7 +585,7 @@ def main():
     DOCS_OUT.joinpath("overview.md").write_text(overview, encoding="utf-8")
 
     # 3. render every page
-    for key, page, title, desc in PAGES:
+    for key, page, title, desc, group in PAGES:
         md_path = DOCS_OUT / f"{key}.md"
         text = md_path.read_text(encoding="utf-8")
         page_html = render(text, md_path.name, page, title)
@@ -534,7 +594,7 @@ def main():
 
     # 4. search index for the Ctrl+K palette
     entries = []
-    for key, page, title, desc in PAGES:
+    for key, page, title, desc, group in PAGES:
         html_page = (ROOT / page).read_text(encoding="utf-8")
         heads = []
         for m in re.finditer(r'<h([23]) id="([^"]+)">(.*?)</h\1>', html_page, re.S):

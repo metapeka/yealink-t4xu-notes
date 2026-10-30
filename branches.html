@@ -3,14 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BRANCHES — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=d2ec6d49">
+<title>Ветки — Yealink T4xU</title>
+<link rel="stylesheet" href="assets/style.css?v=a909cf0e">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="index.html" title="На главную">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></a>
-  <nav class="topnav"><a href="index.html">Обзор</a><a href="access.html">Пути</a><a href="findings.html">Находки</a><a class="active" href="branches.html">Ветки</a><a href="plan.html">План</a><a href="publish.html">Публикация</a><a href="sources.html">Источники</a></nav>
   <div class="topact">
     <button id="open-search" type="button" aria-label="Поиск">Поиск <kbd>Ctrl K</kbd></button>
     <button id="toggle-theme" type="button" aria-label="Тема">☾</button>
@@ -20,23 +19,31 @@
 <div class="shell">
 <aside class="sidebar">
   <h4>Разделы</h4>
-  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
-    <li><a href="safety.html">Чего нельзя делать<small>запреты и предупреждения при работе с платой</small></a></li>
+  <ul><h4 class="grp">Старт</h4><ul>
+    <li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="safety.html">Чего нельзя делать <span class="lbl-bad">!</span><small>запреты и предупреждения при работе с платой</small></a></li>
     <li><a href="access.html">Что чем решается<small>какой способ что даёт и порядок шагов</small></a></li>
-    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
-    <li><a class="active" href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
-    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
-    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
-    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
-    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li>
+    </ul>
+    <h4 class="grp notfirst">Состояние работ</h4><ul>
+    <li><a href="findings.html"><span class="dot ok"></span>Находки<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a class="active" href="branches.html"><span class="dot warn"></span>Ветки<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html"><span class="dot warn"></span>План<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">Инструменты<small>инструменты и проверки</small></a></li>
+    </ul>
+    <h4 class="grp notfirst">Работа с аппаратом</h4><ul>
     <li><a href="usb.html">USB и maskrom<small>как определить пины, дамп без паяльника</small></a></li>
-    <li><a href="recovery.html">Восстановление<small>три уровня поломки и чек-лист донора</small></a></li>
+    <li><a href="sniff.html">Сниффинг шины<small>снять ключ с платы без выпайки</small></a></li>
     <li><a href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li>
+    <li><a href="recovery.html">Восстановление<small>три уровня поломки и чек-лист донора</small></a></li>
     <li><a href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a></li>
     <li><a href="security.html">Безопасность<small>изоляция, доступ, проверка после</small></a></li>
+    </ul>
+    <h4 class="grp notfirst">Отдельное</h4><ul>
+    <li><a href="branch-d.html"><span class="dot bad"></span>BRANCH_D — подмена rfs<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">Инструкция человеку<small>инструкция для человека с аппаратом</small></a></li>
     <li><a href="publish.html">Что публикуем<small>что выкладываем, что нет и почему</small></a></li>
-    <li><a href="sniff.html">Сниффинг шины<small>снять ключ с платы без выпайки</small></a></li>
-    <li><a href="sources.html">Как делали другие<small>Synacktiv и WHY2025: сравнение методов</small></a></li></ul>
+    <li><a href="sources.html">Как делали другие<small>Synacktiv и WHY2025: сравнение методов</small></a></li>
+    </ul></ul>
   <h4>На странице</h4>
   <div class="toc">
 <ul>
@@ -125,25 +132,25 @@
 <p><strong>Что можно:</strong> собрать пакет с <strong>структурными</strong> правками (версия, пересжатие, порядок блоков) — апдейтер <code>.118</code> проверяет только magic/CRC/размеры.
 <strong>Чего нельзя:</strong> добавить свой код в ФС — она всё равно в <code>ubifs crypto</code>, загрузчик её не прочитает.
 <strong>Итог:</strong> проверка приёма пакета и подготовка, но «свои функции» требуют <code>rfs</code> в vendor-формате.
-<strong>Статус:</strong> <strong>[факт]</strong> для трубки на <code>108.86.14.4</code> маршрут применим (апдейтер байт в байт равен <code>.118</code>); пакет-проба <code>test_108.86.14.99.rom</code> собран.</p>
+<strong>Статус:</strong> <span class="chip fact">факт</span> для трубки на <code>108.86.14.4</code> маршрут применим (апдейтер байт в байт равен <code>.118</code>); пакет-проба <code>test_108.86.14.99.rom</code> собран.</p>
 <hr />
 <h2 id="d-rfs">Ветка D — подмена <code>rfs</code> без вендорского формата (идея, не проверено)</h2>
 <p>Подробности, порядок проверки и ограничения — <code>BRANCH_D.md</code>.</p>
-<p><strong>[факт]</strong> Блок <code>version</code> — обычный ELF (<code>cipher 0</code>), а апдейтер не проверяет ни подписи, ни ключей: только magic, CRC, размеры. Значит в пакет можно положить <strong>свой</strong> бинарь <code>version</code>.</p>
+<p><span class="chip fact">факт</span> Блок <code>version</code> — обычный ELF (<code>cipher 0</code>), а апдейтер не проверяет ни подписи, ни ключей: только magic, CRC, размеры. Значит в пакет можно положить <strong>свой</strong> бинарь <code>version</code>.</p>
 <p><strong>Что это даёт:</strong> свой апдейтер сам пишет в раздел <code>rfs</code> что угодно и в любом формате — вендорский <code>ubifs crypto</code> воспроизводить не нужно (это снимает необходимость ключа Holtek для правок ФС).</p>
 <p><strong>Что остаётся:</strong> загрузчик. В U-Boot есть проверка <code>ubifs crypto invalid magic=0x%8x</code>.
-<strong>[гипотеза]</strong> если слой включается по magic <code>38 26 90 05</code> в каждом LEB, то обычный (plaintext) UBIFS он прочитает без патча загрузчика.
+<span class="chip hypo">гипотеза</span> если слой включается по magic <code>38 26 90 05</code> в каждом LEB, то обычный (plaintext) UBIFS он прочитает без патча загрузчика.
 <strong>[риск]</strong> если слой обязателен или включён <code>secure boot check</code> — аппарат не загрузится. Проверять только на доноре.</p>
 <p><strong>Почему это не дешевле ветки B:</strong> ядро <code>/uImage</code> лежит в том же томе <code>rootfs</code>, а он зашифрован — без ключа Holtek или дампа флеша загружаемый образ не собрать. Ветка D упрощает только механику записи (не нужен свой апдейтер), но не зависимость.</p>
 <hr />
 <h2 id="2026-10-29">Факты об устройстве (2026-10-29)</h2>
 <ul>
-<li><strong>[факт]</strong> Модель <strong>SIP-T43U</strong>, прошивка <strong>108.86.14.4</strong>, сборка <code>107.1.0.0.3.1.0</code>, MAC <code>24:9A:D8:**:**:**</code>, phone ID <code>2022********</code>, plate ID <code>2208SN******</code>. Плата <code>SIP-T43UMV17B</code>, дата <code>2021-11-12</code>, SoC <strong>RK3308H</strong>, рядом DDR3 и SPI NAND.</li>
-<li><strong>[факт]</strong> Пакет <code>108.86.14.4</code> скачан с сайта дилера (<code>atsvtule.ru</code>), sha256 <code>c7c3f779…</code>; структура как у <code>86.0.118</code>: три блока (<code>version</code>/<code>rfs</code>/<code>bootloader</code>), <code>crypto 0x3</code>, <strong>трейлера 512 Б нет</strong>.</li>
-<li><strong>[факт]</strong> <code>version.elf</code> из <code>108.86.14.4</code> <strong>байт в байт</strong> равен <code>version.elf</code> из <code>108.86.0.118</code> (sha256 <code>0ccc8614…</code>), статически слинкован, крипто-импортов нет, только <code>invalid rom hdr crc</code> / <code>invalid blk hdr crc</code> / <code>unpack size invalid</code>.</li>
-<li><strong>[следствие]</strong> Маршрут «без ключей» на этой трубке <strong>жив</strong>: её апдейтер не проверяет RSA/AES.</li>
-<li><strong>[факт]</strong> Пересборка <code>108.86.14.4</code> identity-совпала побайтово; собран пакет-проба <code>old/test_108.86.14.99.rom</code> (только строка версии, sha256 <code>0d9f221a…</code>).</li>
-<li><strong>[факт]</strong> На сайте дилера указано: «при установке на ТА возврат к v85 невозможен» — то есть откат ограничен снизу; ставить пробу надо с версией <strong>выше</strong> текущей.</li>
+<li><span class="chip fact">факт</span> Модель <strong>SIP-T43U</strong>, прошивка <strong>108.86.14.4</strong>, сборка <code>107.1.0.0.3.1.0</code>, MAC <code>24:9A:D8:**:**:**</code>, phone ID <code>2022********</code>, plate ID <code>2208SN******</code>. Плата <code>SIP-T43UMV17B</code>, дата <code>2021-11-12</code>, SoC <strong>RK3308H</strong>, рядом DDR3 и SPI NAND.</li>
+<li><span class="chip fact">факт</span> Пакет <code>108.86.14.4</code> скачан с сайта дилера (<code>atsvtule.ru</code>), sha256 <code>c7c3f779…</code>; структура как у <code>86.0.118</code>: три блока (<code>version</code>/<code>rfs</code>/<code>bootloader</code>), <code>crypto 0x3</code>, <strong>трейлера 512 Б нет</strong>.</li>
+<li><span class="chip fact">факт</span> <code>version.elf</code> из <code>108.86.14.4</code> <strong>байт в байт</strong> равен <code>version.elf</code> из <code>108.86.0.118</code> (sha256 <code>0ccc8614…</code>), статически слинкован, крипто-импортов нет, только <code>invalid rom hdr crc</code> / <code>invalid blk hdr crc</code> / <code>unpack size invalid</code>.</li>
+<li><span class="chip fact">следствие</span> Маршрут «без ключей» на этой трубке <strong>жив</strong>: её апдейтер не проверяет RSA/AES.</li>
+<li><span class="chip fact">факт</span> Пересборка <code>108.86.14.4</code> identity-совпала побайтово; собран пакет-проба <code>old/test_108.86.14.99.rom</code> (только строка версии, sha256 <code>0d9f221a…</code>).</li>
+<li><span class="chip fact">факт</span> На сайте дилера указано: «при установке на ТА возврат к v85 невозможен» — то есть откат ограничен снизу; ставить пробу надо с версией <strong>выше</strong> текущей.</li>
 </ul>
 <hr />
 <h2 id="_4">Памятка человеку с трубкой</h2>
@@ -198,6 +205,6 @@
 </main>
 </div>
 
-<script src="assets/app.js?v=d2ec6d49" defer></script>
+<script src="assets/app.js?v=a909cf0e" defer></script>
 </body>
 </html>

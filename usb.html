@@ -4,13 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>USB и maskrom — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=d2ec6d49">
+<link rel="stylesheet" href="assets/style.css?v=a909cf0e">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="index.html" title="На главную">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></a>
-  <nav class="topnav"><a href="index.html">Обзор</a><a href="access.html">Пути</a><a href="findings.html">Находки</a><a href="branches.html">Ветки</a><a href="plan.html">План</a><a href="publish.html">Публикация</a><a href="sources.html">Источники</a></nav>
   <div class="topact">
     <button id="open-search" type="button" aria-label="Поиск">Поиск <kbd>Ctrl K</kbd></button>
     <button id="toggle-theme" type="button" aria-label="Тема">☾</button>
@@ -20,23 +19,31 @@
 <div class="shell">
 <aside class="sidebar">
   <h4>Разделы</h4>
-  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
-    <li><a href="safety.html">Чего нельзя делать<small>запреты и предупреждения при работе с платой</small></a></li>
+  <ul><h4 class="grp">Старт</h4><ul>
+    <li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="safety.html">Чего нельзя делать <span class="lbl-bad">!</span><small>запреты и предупреждения при работе с платой</small></a></li>
     <li><a href="access.html">Что чем решается<small>какой способ что даёт и порядок шагов</small></a></li>
-    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
-    <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
-    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
-    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
-    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
-    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li>
+    </ul>
+    <h4 class="grp notfirst">Состояние работ</h4><ul>
+    <li><a href="findings.html"><span class="dot ok"></span>Находки<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a href="branches.html"><span class="dot warn"></span>Ветки<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html"><span class="dot warn"></span>План<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">Инструменты<small>инструменты и проверки</small></a></li>
+    </ul>
+    <h4 class="grp notfirst">Работа с аппаратом</h4><ul>
     <li><a class="active" href="usb.html">USB и maskrom<small>как определить пины, дамп без паяльника</small></a></li>
-    <li><a href="recovery.html">Восстановление<small>три уровня поломки и чек-лист донора</small></a></li>
+    <li><a href="sniff.html">Сниффинг шины<small>снять ключ с платы без выпайки</small></a></li>
     <li><a href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li>
+    <li><a href="recovery.html">Восстановление<small>три уровня поломки и чек-лист донора</small></a></li>
     <li><a href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a></li>
     <li><a href="security.html">Безопасность<small>изоляция, доступ, проверка после</small></a></li>
+    </ul>
+    <h4 class="grp notfirst">Отдельное</h4><ul>
+    <li><a href="branch-d.html"><span class="dot bad"></span>BRANCH_D — подмена rfs<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">Инструкция человеку<small>инструкция для человека с аппаратом</small></a></li>
     <li><a href="publish.html">Что публикуем<small>что выкладываем, что нет и почему</small></a></li>
-    <li><a href="sniff.html">Сниффинг шины<small>снять ключ с платы без выпайки</small></a></li>
-    <li><a href="sources.html">Как делали другие<small>Synacktiv и WHY2025: сравнение методов</small></a></li></ul>
+    <li><a href="sources.html">Как делали другие<small>Synacktiv и WHY2025: сравнение методов</small></a></li>
+    </ul></ul>
   <h4>На странице</h4>
   <div class="toc">
 <ul>
@@ -61,7 +68,7 @@
 <main>
 <h1 id="usb-maskrom">USB-пины и режим maskrom</h1>
 <p>Как определить назначение четырёх контактов USB на плате и как попробовать снять дамп флеша <strong>без паяльника</strong> через режим maskrom SoC Rockchip.</p>
-<p><strong>[факт]</strong> SoC: <code>RK3308H</code>. Rockchip поддерживает загрузку в режиме maskrom по USB, при этом <code>rkdeveloptool</code> умеет читать и записывать флеш.</p>
+<p><span class="chip fact">факт</span> SoC: <code>RK3308H</code>. Rockchip поддерживает загрузку в режиме maskrom по USB, при этом <code>rkdeveloptool</code> умеет читать и записывать флеш.</p>
 <div class="stop">
 <b>Работа без паяльника — но с оговорками</b>
 <ul><li>Питание на контакты не подаём: режим maskrom включается кнопкой/замыканием, а не напряжением с переходника.</li><li>Читать дамп можно, записывать в maskrom без снятой копии — нельзя.</li><li>Паяльник к плате — только если без него никак, и не в одиночку.</li></ul>
@@ -109,8 +116,8 @@ rkdeveloptool rl 0 &lt;секторов&gt; out.bin
 <p>Пример: флеш на 128 МиБ = 134 217 728 байт → <code>134217728 / 512 = 262144</code>:</p>
 <pre><code class="language-bash">rkdeveloptool rl 0 262144 out.bin
 </code></pre>
-<p><strong>[гипотеза]</strong> Способ входа в maskrom на этой плате не проверен: у Rockchip это обычно кнопка восстановления, замыкание определённых контактов флеша или подача питания при подключённом USB. Если maskrom работает — дамп снимается по USB и <strong>выпаивать TSOP-48 не нужно</strong>.</p>
-<p><strong>[факт]</strong> Для maskrom не нужен ни UART, ни разборка дальше доступа к контактам.</p>
+<p><span class="chip hypo">гипотеза</span> Способ входа в maskrom на этой плате не проверен: у Rockchip это обычно кнопка восстановления, замыкание определённых контактов флеша или подача питания при подключённом USB. Если maskrom работает — дамп снимается по USB и <strong>выпаивать TSOP-48 не нужно</strong>.</p>
+<p><span class="chip fact">факт</span> Для maskrom не нужен ни UART, ни разборка дальше доступа к контактам.</p>
 <h2 id="_1">Где что на плате</h2>
 <p><img alt="Плата SIP-T43UMV17B с разметкой" src="assets/board-annotated.jpg" /></p>
 <table>
@@ -151,7 +158,7 @@ rkdeveloptool rl 0 &lt;секторов&gt; out.bin
 <li><strong>Порядок щупов:</strong> сначала измеряем напряжение, только потом подключаем USB-UART, и обязательно с общим проводом между платой и переходником.</li>
 <li><strong>MCU:</strong> нужен макро-снимок маркировки U16 и соседних QFN — по фото на 1200 px текст не читается. Как только маркировка видна, ищем даташит и распиновку шины к SoC.</li>
 </ol>
-<p><strong>[гипотеза]</strong> Если пэды окажутся UART, консоль загрузчика — самый дешёвый вход: без пайки и без программатора.</p>
+<p><span class="chip hypo">гипотеза</span> Если пэды окажутся UART, консоль загрузчика — самый дешёвый вход: без пайки и без программатора.</p>
 <h2 id="mcu">Сниффинг шины MCU</h2>
 <p>Вынесено на отдельную страницу: <a href="sniff.html">Сниффинг шины SoC ↔ MCU</a> — точки подключения, порядок, как проверить полученный ключ.</p>
 <h3 id="_3">Карта разделов флеша</h3>
@@ -212,6 +219,6 @@ rkdeveloptool rl 0 &lt;секторов&gt; out.bin
 </main>
 </div>
 
-<script src="assets/app.js?v=d2ec6d49" defer></script>
+<script src="assets/app.js?v=a909cf0e" defer></script>
 </body>
 </html>
