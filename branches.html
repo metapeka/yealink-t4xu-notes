@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ветки — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=c8e8afbd">
+<link rel="stylesheet" href="assets/style.css?v=f899089f">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -75,22 +75,27 @@
 <hr />
 <h2 id="_2">Соответствие путям</h2>
 <p>С 2026-10-29 план описан двумя гейтами в <code>ACCESS_MAP.md</code>. Ветки ниже — детали этих путей.</p>
-<div class="mermaid">
+<figure class="mermaid mmzoom" tabindex="0" role="button" aria-label="Схема: нажмите, чтобы открыть на весь экран">
 flowchart LR
-  P["Пакет ✓ пересборка&lt;br/>байт-в-байт"] --> G1["Гейт 1:&lt;br/>трубка принимает пакет"]
+  P["Пакет ✓ пересобран&lt;br/>байт-в-байт"] --> G1["Гейт 1:&lt;br/>трубка принимает пакет"]
   G1 -->|"структурные правки"| C["ветка C: приём пакета&lt;br/>проба собрана, без правок ФС"]
-  G1 --> G2["Гейт 2:&lt;br/>доступ к ФС"]
-  G2 -->|"эмуляция, 50/50"| A["ветка A: эмулятор ключа 87.x&lt;br/>без железа"]
-  G2 -->|"сниффинг шины"| S["сниффинг SoC ↔ MCU&lt;br/>анализатор, без пайки"]
-  G2 -->|"свой загрузчик"| B["ветка B: дамп флеша,&lt;br/>свой U-Boot"]
+  G1 -.->|"дальше нужен&lt;br/>доступ к ФС"| G2["Гейт 2: доступ к ФС"]
+
+</figure>
+<figure class="mermaid mmzoom" tabindex="0" role="button" aria-label="Схема: нажмите, чтобы открыть на весь экран">
+flowchart TB
+  G2["Гейт 2: доступ к ФС"]
+  G2 -->|"эмуляция, 50/50&lt;br/>без железа"| A["ветка A: эмулятор&lt;br/>ключа 87.x"]
+  G2 -->|"сниффинг шины&lt;br/>анализатор, без пайки"| S["сниффинг&lt;br/>SoC ↔ MCU"]
+  G2 -->|"свой загрузчик&lt;br/>человек + железо"| B["ветка B: дамп флеша,&lt;br/>свой U-Boot"]
   S -.->|"B2: ключ не снялся"| B
   A -->|"DER → AES"| FS["ФС открыта"]
   S -->|"ключ Holtek"| FS
   B -->|"патч U-Boot"| FS
-  D["ветка D: свой version.elf&lt;br/>пишет rfs без вендор-формата"] -.->|"нужен доступ к ФС (гейт 2)"| FS
+  D["ветка D: свой version.elf&lt;br/>пишет rfs без вендор-формата"] -.->|"нужен доступ к ФС"| FS
   FS --> R["свои функции&lt;br/>в прошивке"]
 
-</div>
+</figure>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -223,11 +228,12 @@ flowchart LR
 </div>
 <div id="progress"></div>
 <button id="to-top" type="button" aria-label="Наверх">↑</button>
+<div id="mmoverlay" aria-hidden="true"><div class="mmbox"><button class="mmclose" type="button" aria-label="Закрыть">✕</button><div class="mmcontent"></div><div class="mmtip">ESC или клик вне схемы — закрыть</div></div></div>
 <script type="module">
 import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
 const light = document.documentElement.getAttribute('data-theme') === 'light';
 mermaid.initialize({ startOnLoad: true, theme: light ? 'default' : 'dark', themeVariables: { fontFamily: 'Segoe UI, sans-serif' } });
 </script>
-<script src="assets/app.js?v=c8e8afbd" defer></script>
+<script src="assets/app.js?v=f899089f" defer></script>
 </body>
 </html>

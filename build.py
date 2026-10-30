@@ -137,6 +137,16 @@ em{color:var(--muted)}
 hr{border:0;border-top:1px solid var(--line);margin:32px 0}
 .mermaid{background:var(--mesh);border:1px solid var(--line);border-radius:12px;padding:18px;margin:20px 0;text-align:center;overflow-x:auto}
 .mermaid svg{max-width:100%;height:auto}
+figure.mermaid.mmzoom{cursor:zoom-in;position:relative}
+figure.mermaid.mmzoom:hover{border-color:var(--accent)}
+figure.mermaid.mmzoom:after{content:"⛶";position:absolute;top:8px;right:12px;font-size:15px;color:var(--muted);opacity:.7}
+#mmoverlay{position:fixed;inset:0;background:rgba(6,8,12,.9);z-index:100;display:none;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+#mmoverlay.open{display:flex}
+#mmoverlay .mmbox{background:var(--mesh);border:1px solid var(--line);border-radius:14px;padding:28px;max-width:min(1400px,96vw);max-height:92vh;overflow:auto;position:relative}
+#mmoverlay .mmbox svg{max-width:100%;height:auto;min-height:60vh}
+#mmoverlay .mmclose{position:absolute;top:10px;right:14px;background:none;border:0;color:var(--muted);font-size:22px;cursor:pointer}
+#mmoverlay .mmclose:hover{color:var(--fg)}
+#mmoverlay .mmtip{position:absolute;bottom:12px;left:0;right:0;text-align:center;color:var(--muted);font-size:12px}
 .fig{margin:22px 0;padding:16px 16px 10px;background:var(--mesh);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
 .fig svg{display:block;min-width:640px}
 .fig figcaption{margin-top:10px;font-size:13px;color:var(--muted);line-height:1.5}
@@ -321,6 +331,25 @@ APP_JS = """(function () {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
   if (top) top.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+  // фуллскрин-просмотр mermaid-схем
+  var overlay = document.getElementById('mmoverlay');
+  var mmbox = overlay.querySelector('.mmcontent');
+  function closeMm() { overlay.classList.remove('open'); overlay.setAttribute('aria-hidden', 'true'); }
+  document.querySelectorAll('.mmzoom').forEach(function (fig) {
+    function open() {
+      var svg = fig.querySelector('svg');
+      if (!svg) return;
+      mmbox.innerHTML = '';
+      mmbox.appendChild(svg.cloneNode(true));
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+    fig.addEventListener('click', open);
+    fig.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+  });
+  overlay.addEventListener('click', function (e) { if (e.target === overlay || e.target.closest('.mmclose')) closeMm(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMm(); });
   if (btn) {
     paint();
     btn.addEventListener('click', function () {
@@ -512,6 +541,7 @@ TEMPLATE = """<!DOCTYPE html>
 </div>
 <div id="progress"></div>
 <button id="to-top" type="button" aria-label="Наверх">↑</button>
+<div id="mmoverlay" aria-hidden="true"><div class="mmbox"><button class="mmclose" type="button" aria-label="Закрыть">✕</button><div class="mmcontent"></div><div class="mmtip">ESC или клик вне схемы — закрыть</div></div></div>
 {mermaid}
 <script src="assets/app.js?v={ver}" defer></script>
 </body>
@@ -630,8 +660,8 @@ def render(md_text, md_name, active_page, title):
 
     for i, code in enumerate(blocks):
         escaped = code.replace("&", "&amp;").replace("<", "&lt;")
-        body = body.replace(f"<p>MERMAIDBLOCK{i}END</p>", f'<div class="mermaid">\n{escaped}\n</div>')
-        body = body.replace(f"MERMAIDBLOCK{i}END", f'<div class="mermaid">\n{escaped}\n</div>')
+        body = body.replace(f"<p>MERMAIDBLOCK{i}END</p>", f'<figure class="mermaid mmzoom" tabindex="0" role="button" aria-label="Схема: нажмите, чтобы открыть на весь экран">\n{escaped}\n</figure>')
+        body = body.replace(f"MERMAIDBLOCK{i}END", f'<figure class="mermaid mmzoom" tabindex="0" role="button" aria-label="Схема: нажмите, чтобы открыть на весь экран">\n{escaped}\n</figure>')
 
     # метки факт/гипотеза/следствие/инструмент -> цветные чипы (после markdown: <strong>[факт]</strong>)
     body = body.replace("<strong>[факт]</strong>", '<span class="chip fact">факт</span>')

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Что чем решается — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=c8e8afbd">
+<link rel="stylesheet" href="assets/style.css?v=f899089f">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -75,14 +75,14 @@
   <li class="now"><span class="n">2</span><span>Файловая система читается и пишется</span><span class="st">закрыт</span></li>
 </ol>
 
-<div class="mermaid">
+<figure class="mermaid mmzoom" tabindex="0" role="button" aria-label="Схема: нажмите, чтобы открыть на весь экран">
 flowchart LR
   G["Гейт 2"] --> K["Ключ MCU"]
   G --> B["Свой загрузчик"]
   K --> R["Своя прошивка"]
   B --> R
 
-</div>
+</figure>
 <p>Оба пути ведут к одной цели и различаются только тем, что даёт доступ: ключ или свой загрузчик.</p>
 <h2 id="_2">Что реально ведёт к результату</h2>
 <div class="tw"><table>
@@ -158,11 +158,12 @@ flowchart LR
 </div>
 <div id="progress"></div>
 <button id="to-top" type="button" aria-label="Наверх">↑</button>
+<div id="mmoverlay" aria-hidden="true"><div class="mmbox"><button class="mmclose" type="button" aria-label="Закрыть">✕</button><div class="mmcontent"></div><div class="mmtip">ESC или клик вне схемы — закрыть</div></div></div>
 <script type="module">
 import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
 const light = document.documentElement.getAttribute('data-theme') === 'light';
 mermaid.initialize({ startOnLoad: true, theme: light ? 'default' : 'dark', themeVariables: { fontFamily: 'Segoe UI, sans-serif' } });
 </script>
-<script src="assets/app.js?v=c8e8afbd" defer></script>
+<script src="assets/app.js?v=f899089f" defer></script>
 </body>
 </html>

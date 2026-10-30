@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Обзор — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=c8e8afbd">
+<link rel="stylesheet" href="assets/style.css?v=f899089f">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -156,7 +156,7 @@
 </tbody>
 </table></div>
 <p>Отсюда порядок: сначала донор и приём пакета, ключ — на следующем шаге.</p>
-<div class="mermaid">
+<figure class="mermaid mmzoom" tabindex="0" role="button" aria-label="Схема: нажмите, чтобы открыть на весь экран">
 flowchart LR
   M["MCU Holtek"] -->|"ключ по шине"| S["SoC RK3308H"]
   S --> U["U-Boot:&lt;br/>слой ubifs crypto"]
@@ -166,7 +166,7 @@ flowchart LR
   X2["из MAC и серийника&lt;br/>не выводится"] -.-> U
   X3["ключ появляется&lt;br/>только в рантайме"] -.-> M
 
-</div>
+</figure>
 <h2 id="_5">Что сделано</h2>
 <h3 id="_6">Формат пакета</h3>
 <p>Заголовок 128 Б, big-endian. Блоки: <code>version</code> (ELF), <code>rfs</code> (LZMA), <code>bootloader</code> (cypher3). Поле <code>cipher</code>: 0 — как есть, 1 — LZMA, 3 — cypher3, <code>0x83</code> — AES-256.</p>
@@ -174,7 +174,7 @@ flowchart LR
 <h3 id="_7">Апдейтер</h3>
 <p><code>version.elf</code> из <code>108.86.14.4</code> <strong>байт в байт</strong> равен апдейтеру <code>108.86.0.118</code>: статическая сборка, крипто-импортов нет, проверяются только magic, CRC заголовка и блоков, размер распаковки.</p>
 <p>Следствие: подпись содержимого не проверяется, ключи для 86.x не нужны.</p>
-<div class="mermaid">
+<figure class="mermaid mmzoom" tabindex="0" role="button" aria-label="Схема: нажмите, чтобы открыть на весь экран">
 flowchart LR
   P["пакет .rom"] --> H{"magic и CRC&lt;br/>заголовка"}
   H -->|"не сходится"| E["отказ:&lt;br/>ничего не пишется"]
@@ -183,7 +183,7 @@ flowchart LR
   B -->|"ок"| W["запись в /dev/mtdN&lt;br/>содержимым как есть"]
   G["подпись содержимого&lt;br/>не проверяется"] -.-> W
 
-</div>
+</figure>
 <h3 id="_8">Слой ФС</h3>
 <p>Rootfs — UBI (PEB 128 КиБ, LEB 124 КиБ). Цифры зависят от пакета: в нашем <code>108.86.14.4</code> — <strong>342 блока, из них 324</strong> с vendor-заголовком <code>38 26 90 05</code> (9 обычных UBIFS-узлов, 6 стёртых, 3 прочих); в <code>108.86.0.118</code> — 333 PEB, том <code>rootfs</code> 331 LEB, из них 315 с тем же заголовком.</p>
 <p>Ядро <code>/uImage</code> лежит в том же томе, то есть тоже внутри зашифрованной части.</p>
@@ -299,11 +299,12 @@ flowchart LR
 </div>
 <div id="progress"></div>
 <button id="to-top" type="button" aria-label="Наверх">↑</button>
+<div id="mmoverlay" aria-hidden="true"><div class="mmbox"><button class="mmclose" type="button" aria-label="Закрыть">✕</button><div class="mmcontent"></div><div class="mmtip">ESC или клик вне схемы — закрыть</div></div></div>
 <script type="module">
 import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
 const light = document.documentElement.getAttribute('data-theme') === 'light';
 mermaid.initialize({ startOnLoad: true, theme: light ? 'default' : 'dark', themeVariables: { fontFamily: 'Segoe UI, sans-serif' } });
 </script>
-<script src="assets/app.js?v=c8e8afbd" defer></script>
+<script src="assets/app.js?v=f899089f" defer></script>
 </body>
 </html>

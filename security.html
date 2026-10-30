@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Безопасность — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=c8e8afbd">
+<link rel="stylesheet" href="assets/style.css?v=f899089f">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -68,13 +68,13 @@
 <main>
 <h1 id="_1">Безопасность: как давать доступ агенту</h1>
 <p>Принцип простой: <strong>доступ агента = ровно то, что видит машина, на которой он запущен</strong>. Поэтому ограничивать надо машину, а не обещания.</p>
-<div class="mermaid">
+<figure class="mermaid mmzoom" tabindex="0" role="button" aria-label="Схема: нажмите, чтобы открыть на весь экран">
 flowchart LR
   P["Трубка T43U"] ---|"Ethernet, напрямую"| VM["Изолированная VM&lt;br/>или отдельный ПК"]
   VM -->|"интернет: только модель"| NET["Гостевая сеть / мобильная точка"]
   VM -.- CORP["Корпоративная сеть&lt;br/>НЕ подключена"]
 
-</div>
+</figure>
 <h2 id="_2">Правильный воркфлоу</h2>
 <ol>
 <li><strong>Отдельная машина или VM.</strong> VM лучше: снапшот до работы, откат после — это проверяемо, а не «на слово».</li>
@@ -145,11 +145,12 @@ flowchart LR
 </div>
 <div id="progress"></div>
 <button id="to-top" type="button" aria-label="Наверх">↑</button>
+<div id="mmoverlay" aria-hidden="true"><div class="mmbox"><button class="mmclose" type="button" aria-label="Закрыть">✕</button><div class="mmcontent"></div><div class="mmtip">ESC или клик вне схемы — закрыть</div></div></div>
 <script type="module">
 import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
 const light = document.documentElement.getAttribute('data-theme') === 'light';
 mermaid.initialize({ startOnLoad: true, theme: light ? 'default' : 'dark', themeVariables: { fontFamily: 'Segoe UI, sans-serif' } });
 </script>
-<script src="assets/app.js?v=c8e8afbd" defer></script>
+<script src="assets/app.js?v=f899089f" defer></script>
 </body>
 </html>

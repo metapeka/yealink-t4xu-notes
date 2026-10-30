@@ -65,6 +65,25 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
   if (top) top.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+  // фуллскрин-просмотр mermaid-схем
+  var overlay = document.getElementById('mmoverlay');
+  var mmbox = overlay.querySelector('.mmcontent');
+  function closeMm() { overlay.classList.remove('open'); overlay.setAttribute('aria-hidden', 'true'); }
+  document.querySelectorAll('.mmzoom').forEach(function (fig) {
+    function open() {
+      var svg = fig.querySelector('svg');
+      if (!svg) return;
+      mmbox.innerHTML = '';
+      mmbox.appendChild(svg.cloneNode(true));
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+    fig.addEventListener('click', open);
+    fig.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+  });
+  overlay.addEventListener('click', function (e) { if (e.target === overlay || e.target.closest('.mmclose')) closeMm(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMm(); });
   if (btn) {
     paint();
     btn.addEventListener('click', function () {
@@ -80,7 +99,7 @@
   var wrap = document.getElementById('palette-wrap');
   var input = document.getElementById('palette-input');
   var list = document.getElementById('palette-list');
-  var VER = 'c8e8afbd';
+  var VER = 'f899089f';
   var data = null, items = [], sel = 0;
 
   function load() {

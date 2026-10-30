@@ -75,6 +75,16 @@ em{color:var(--muted)}
 hr{border:0;border-top:1px solid var(--line);margin:32px 0}
 .mermaid{background:var(--mesh);border:1px solid var(--line);border-radius:12px;padding:18px;margin:20px 0;text-align:center;overflow-x:auto}
 .mermaid svg{max-width:100%;height:auto}
+figure.mermaid.mmzoom{cursor:zoom-in;position:relative}
+figure.mermaid.mmzoom:hover{border-color:var(--accent)}
+figure.mermaid.mmzoom:after{content:"⛶";position:absolute;top:8px;right:12px;font-size:15px;color:var(--muted);opacity:.7}
+#mmoverlay{position:fixed;inset:0;background:rgba(6,8,12,.9);z-index:100;display:none;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+#mmoverlay.open{display:flex}
+#mmoverlay .mmbox{background:var(--mesh);border:1px solid var(--line);border-radius:14px;padding:28px;max-width:min(1400px,96vw);max-height:92vh;overflow:auto;position:relative}
+#mmoverlay .mmbox svg{max-width:100%;height:auto;min-height:60vh}
+#mmoverlay .mmclose{position:absolute;top:10px;right:14px;background:none;border:0;color:var(--muted);font-size:22px;cursor:pointer}
+#mmoverlay .mmclose:hover{color:var(--fg)}
+#mmoverlay .mmtip{position:absolute;bottom:12px;left:0;right:0;text-align:center;color:var(--muted);font-size:12px}
 .fig{margin:22px 0;padding:16px 16px 10px;background:var(--mesh);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
 .fig svg{display:block;min-width:640px}
 .fig figcaption{margin-top:10px;font-size:13px;color:var(--muted);line-height:1.5}
