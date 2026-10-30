@@ -151,6 +151,27 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:v
 .topact{margin-left:auto;display:flex;gap:8px}
 .topact button{display:flex;align-items:center;gap:6px;background:var(--card);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:7px 11px;font:inherit;font-size:13px;cursor:pointer}
 .topact button:hover{color:var(--fg);border-color:var(--accent)}
+/* ===== ВЕРХНЕЕ МЕНЮ (дропдауны по группам) ===== */
+.topmenu{display:flex;gap:2px;margin-left:10px;align-self:stretch;align-items:stretch}
+/* полный список страниц в сайдбаре — только для мобильного меню «Меню» */
+.pagegroups{display:none}
+.tm-item{position:relative;display:flex;align-items:center}
+.tm-item>a{display:flex;align-items:center;gap:5px;font-size:13.5px;color:var(--muted);text-decoration:none;padding:6px 11px;border-radius:7px;white-space:nowrap;cursor:pointer}
+.tm-item>a:hover{color:var(--fg);background:var(--hover)}
+.tm-item>a i{font-style:normal;font-size:10px;transition:transform .15s}
+.tm-item.open>a i{transform:rotate(180deg)}
+.tm-item>a.cur{color:var(--fg);background:var(--active);box-shadow:inset 0 -2px 0 var(--accent)}
+.tm-drop{position:absolute;top:100%;left:0;min-width:290px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,.45);padding:6px;display:none;z-index:60}
+.tm-item.open .tm-drop{display:block}
+.tm-drop a{display:block;padding:8px 11px;border-radius:8px;text-decoration:none;color:var(--fg);font-size:13.5px;line-height:1.35}
+.tm-drop a:hover{background:var(--hover)}
+.tm-drop a.active{background:var(--active);box-shadow:inset 2px 0 0 var(--accent)}
+.tm-drop a small{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
+.tm-drop .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.tm-drop .dot.ok{background:var(--ok)} .tm-drop .dot.warn{background:var(--warn)} .tm-drop .dot.bad{background:var(--bad)}
+.tm-drop .lbl-bad{display:inline-block;font-size:10px;font-weight:700;color:var(--bad);border:1px solid var(--bad);border-radius:999px;padding:0 5px;margin-left:5px;line-height:1.5}
+.topact .gh{display:flex;align-items:center;gap:5px;color:var(--muted);text-decoration:none;font-size:13px;border:1px solid var(--line);border-radius:8px;padding:7px 11px}
+.topact .gh:hover{color:var(--fg);border-color:var(--accent)}
 .tools{display:flex;gap:8px;margin:14px 0 0}
 .tools button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--card);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;cursor:pointer;font-family:inherit}
 .tools button:hover{color:var(--fg);border-color:var(--accent)}
@@ -189,9 +210,12 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:v
   .shell{flex-direction:column}
   .topbar{padding:0 12px;gap:8px}
   .topbar .brand span{display:none}
+  .topmenu{display:none}
+  .topact .gh{display:none}
   .topact kbd{display:none}
   .sidebar{display:none;position:static;width:auto;flex:none;height:auto;border-right:0;border-bottom:1px solid var(--line)}
   .sidebar.nav-open{display:block}
+  .pagegroups{display:block}
   .sidebar ul{display:flex;flex-wrap:wrap;gap:6px}
   .sidebar a{padding:6px 10px}
   .sidebar a small{display:none}
@@ -247,6 +271,24 @@ APP_JS = """(function () {
   }
   window.addEventListener('hashchange', openForHash);
   openForHash();
+
+  // дропдауны верхнего меню: клик открывает, клик вне — закрывает
+  document.querySelectorAll('.tm-item').forEach(function (item) {
+    item.querySelector(':scope > a').addEventListener('click', function (e) {
+      e.preventDefault();
+      var was = item.classList.contains('open');
+      document.querySelectorAll('.tm-item.open').forEach(function (o) { o.classList.remove('open'); });
+      if (!was) item.classList.add('open');
+    });
+  });
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.tm-item')) {
+      document.querySelectorAll('.tm-item.open').forEach(function (o) { o.classList.remove('open'); });
+    }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') document.querySelectorAll('.tm-item.open').forEach(function (o) { o.classList.remove('open'); });
+  });
   if (btn) {
     paint();
     btn.addEventListener('click', function () {
@@ -410,7 +452,9 @@ TEMPLATE = """<!DOCTYPE html>
 <body>
 <header class="topbar">
   <a class="brand" href="index.html" title="На главную">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></a>
+  <nav class="topmenu">{topmenu}</nav>
   <div class="topact">
+    <a class="gh" href="https://github.com/metapeka/yealink-t4xu-notes" title="Репозиторий" aria-label="GitHub">⌂ GitHub</a>
     <button id="open-search" type="button" aria-label="Поиск">Поиск <kbd>Ctrl K</kbd></button>
     <button id="toggle-theme" type="button" aria-label="Тема">☾</button>
     <button class="navbtn" id="toggle-nav" type="button">Меню</button>
@@ -418,8 +462,7 @@ TEMPLATE = """<!DOCTYPE html>
 </header>
 <div class="shell">
 <aside class="sidebar">
-  <h4>Разделы</h4>
-  <ul>{nav}</ul>
+  <div class="pagegroups">{nav}</div>
   {tocblock}
 </aside>
 <div class="overlay" id="palette-wrap">
@@ -448,8 +491,31 @@ def redact(text):
     return text
 
 
+def build_topmenu(active):
+    """Верхнее меню: 4 дропдауна по группам сайдбара + важно в «Состоянии работ»."""
+    parts = []
+    for group in GROUPS:
+        pages = [(t, p, d, k) for k, p, t, d, g in PAGES if g == group]
+        # активный дропдаун — тот, где лежит текущая страница
+        cur = next((p for t, p, d, k in pages if p == active), None)
+        cls = ' class="cur"' if cur else ""
+        label = group if group != "Состояние работ" else "Состояние"
+        items = []
+        for t, p, d, k in pages:
+            a_cls = ' class="active"' if p == active else ""
+            dot = STATUS_DOT.get(k, "")
+            dot_html = f'<span class="dot {dot[0]}"></span>' if dot else ""
+            warn = ' <span class="lbl-bad">!</span>' if k == "SAFETY" else ""
+            items.append(f'<a{a_cls} href="{p}">{dot_html}{t}{warn}<small>{d}</small></a>')
+        parts.append(
+            f'<div class="tm-item{"" if cur is None else " open-cur"}"><a{cls} href="{pages[0][1]}" '
+            f'aria-haspopup="true">{label} <i>▾</i></a><div class="tm-drop">{"".join(items)}</div></div>'
+        )
+    return "".join(parts)
+
+
 def build_nav(active):
-    """Sidebar grouped by GROUPS; status dot on pages whose doc state differs."""
+    """Сгруппированный список страниц; на десктопе скрыт CSS (.pagegroups), на мобильных — это меню «Меню»."""
     parts = []
     for gi, group in enumerate(GROUPS):
         parts.append(f'<h4 class="grp{"" if gi == 0 else " notfirst"}">{group}</h4><ul>')
@@ -553,6 +619,7 @@ def render(md_text, md_name, active_page, title):
     return TEMPLATE.format(
         ver=ASSET_VER,
         title=title,
+        topmenu=build_topmenu(active_page),
         nav=build_nav(active_page),
         tocblock=tocblock,
         body=body,

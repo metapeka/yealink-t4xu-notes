@@ -34,6 +34,24 @@
   }
   window.addEventListener('hashchange', openForHash);
   openForHash();
+
+  // дропдауны верхнего меню: клик открывает, клик вне — закрывает
+  document.querySelectorAll('.tm-item').forEach(function (item) {
+    item.querySelector(':scope > a').addEventListener('click', function (e) {
+      e.preventDefault();
+      var was = item.classList.contains('open');
+      document.querySelectorAll('.tm-item.open').forEach(function (o) { o.classList.remove('open'); });
+      if (!was) item.classList.add('open');
+    });
+  });
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.tm-item')) {
+      document.querySelectorAll('.tm-item.open').forEach(function (o) { o.classList.remove('open'); });
+    }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') document.querySelectorAll('.tm-item.open').forEach(function (o) { o.classList.remove('open'); });
+  });
   if (btn) {
     paint();
     btn.addEventListener('click', function () {
@@ -49,7 +67,7 @@
   var wrap = document.getElementById('palette-wrap');
   var input = document.getElementById('palette-input');
   var list = document.getElementById('palette-list');
-  var VER = '738e2195';
+  var VER = '58b4357a';
   var data = null, items = [], sel = 0;
 
   function load() {

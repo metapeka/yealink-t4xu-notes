@@ -4,13 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Чего нельзя делать — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=738e2195">
+<link rel="stylesheet" href="assets/style.css?v=58b4357a">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="index.html" title="На главную">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></a>
+  <nav class="topmenu"><div class="tm-item open-cur"><a class="cur" href="index.html" aria-haspopup="true">Старт <i>▾</i></a><div class="tm-drop"><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a><a class="active" href="safety.html">Чего нельзя делать <span class="lbl-bad">!</span><small>запреты и предупреждения при работе с платой</small></a><a href="access.html">Что чем решается<small>какой способ что даёт и порядок шагов</small></a></div></div><div class="tm-item"><a href="findings.html" aria-haspopup="true">Состояние <i>▾</i></a><div class="tm-drop"><a href="findings.html"><span class="dot ok"></span>Находки<small>что установлено: факт / гипотеза</small></a><a href="branches.html"><span class="dot warn"></span>Ветки<small>ветки и памятка по аппарату</small></a><a href="plan.html"><span class="dot warn"></span>План<small>порядок работ и гейты</small></a><a href="tools.html">Инструменты<small>инструменты и проверки</small></a></div></div><div class="tm-item"><a href="usb.html" aria-haspopup="true">Работа с аппаратом <i>▾</i></a><div class="tm-drop"><a href="usb.html">USB и maskrom<small>как определить пины, дамп без паяльника</small></a><a href="sniff.html">Сниффинг шины<small>снять ключ с платы без выпайки</small></a><a href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a><a href="recovery.html">Восстановление<small>три уровня поломки и чек-лист донора</small></a><a href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a><a href="security.html">Безопасность<small>изоляция, доступ, проверка после</small></a></div></div><div class="tm-item"><a href="branch-d.html" aria-haspopup="true">Отдельное <i>▾</i></a><div class="tm-drop"><a href="branch-d.html"><span class="dot bad"></span>BRANCH_D — подмена rfs<small>проект подмены rfs</small></a><a href="instruction.html">Инструкция человеку<small>инструкция для человека с аппаратом</small></a><a href="publish.html">Что публикуем<small>что выкладываем, что нет и почему</small></a><a href="sources.html">Как делали другие<small>Synacktiv и WHY2025: сравнение методов</small></a></div></div></nav>
   <div class="topact">
+    <a class="gh" href="https://github.com/metapeka/yealink-t4xu-notes" title="Репозиторий" aria-label="GitHub">⌂ GitHub</a>
     <button id="open-search" type="button" aria-label="Поиск">Поиск <kbd>Ctrl K</kbd></button>
     <button id="toggle-theme" type="button" aria-label="Тема">☾</button>
     <button class="navbtn" id="toggle-nav" type="button">Меню</button>
@@ -18,8 +20,7 @@
 </header>
 <div class="shell">
 <aside class="sidebar">
-  <h4>Разделы</h4>
-  <ul><h4 class="grp">Старт</h4><ul>
+  <div class="pagegroups"><h4 class="grp">Старт</h4><ul>
     <li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
     <li><a class="active" href="safety.html">Чего нельзя делать <span class="lbl-bad">!</span><small>запреты и предупреждения при работе с платой</small></a></li>
     <li><a href="access.html">Что чем решается<small>какой способ что даёт и порядок шагов</small></a></li>
@@ -43,7 +44,7 @@
     <li><a href="instruction.html">Инструкция человеку<small>инструкция для человека с аппаратом</small></a></li>
     <li><a href="publish.html">Что публикуем<small>что выкладываем, что нет и почему</small></a></li>
     <li><a href="sources.html">Как делали другие<small>Synacktiv и WHY2025: сравнение методов</small></a></li>
-    </ul></ul>
+    </ul></div>
   <h4>На странице</h4>
   <div class="toc">
 <ul>
@@ -147,6 +148,6 @@
 </main>
 </div>
 
-<script src="assets/app.js?v=738e2195" defer></script>
+<script src="assets/app.js?v=58b4357a" defer></script>
 </body>
 </html>
