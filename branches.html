@@ -75,6 +75,22 @@
 <hr />
 <h2 id="_2">Соответствие путям</h2>
 <p>С 2026-10-29 план описан двумя гейтами в <code>ACCESS_MAP.md</code>. Ветки ниже — детали этих путей.</p>
+<div class="mermaid">
+flowchart LR
+  P["Пакет ✓ пересборка&lt;br/>байт-в-байт"] --> G1["Гейт 1:&lt;br/>трубка принимает пакет"]
+  G1 -->|"структурные правки"| C["ветка C: приём пакета&lt;br/>проба собрана, без правок ФС"]
+  G1 --> G2["Гейт 2:&lt;br/>доступ к ФС"]
+  G2 -->|"эмуляция, 50/50"| A["ветка A: эмулятор ключа 87.x&lt;br/>без железа"]
+  G2 -->|"сниффинг шины"| S["сниффинг SoC ↔ MCU&lt;br/>анализатор, без пайки"]
+  G2 -->|"свой загрузчик"| B["ветка B: дамп флеша,&lt;br/>свой U-Boot"]
+  S -.->|"B2: ключ не снялся"| B
+  A -->|"DER → AES"| FS["ФС открыта"]
+  S -->|"ключ Holtek"| FS
+  B -->|"патч U-Boot"| FS
+  D["ветка D: свой version.elf&lt;br/>пишет rfs без вендор-формата"] -.->|"нужен доступ к ФС (гейт 2)"| FS
+  FS --> R["свои функции&lt;br/>в прошивке"]
+
+</div>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -207,7 +223,11 @@
 </div>
 <div id="progress"></div>
 <button id="to-top" type="button" aria-label="Наверх">↑</button>
-
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const light = document.documentElement.getAttribute('data-theme') === 'light';
+mermaid.initialize({ startOnLoad: true, theme: light ? 'default' : 'dark', themeVariables: { fontFamily: 'Segoe UI, sans-serif' } });
+</script>
 <script src="assets/app.js?v=c8e8afbd" defer></script>
 </body>
 </html>
