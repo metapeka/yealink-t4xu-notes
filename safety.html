@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Чего нельзя делать — Yealink T4xU</title>
+<link rel="stylesheet" href="assets/style.css?v=d2ec6d49">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html" title="На главную">Yealink T4xU<span>разбор прошивки · T43U · 108.86.14.4</span></a>
+  <nav class="topnav"><a href="index.html">Обзор</a><a href="access.html">Пути</a><a href="findings.html">Находки</a><a href="branches.html">Ветки</a><a href="plan.html">План</a><a href="publish.html">Публикация</a><a href="sources.html">Источники</a></nav>
+  <div class="topact">
+    <button id="open-search" type="button" aria-label="Поиск">Поиск <kbd>Ctrl K</kbd></button>
+    <button id="toggle-theme" type="button" aria-label="Тема">☾</button>
+    <button class="navbtn" id="toggle-nav" type="button">Меню</button>
+  </div>
+</header>
+<div class="shell">
+<aside class="sidebar">
+  <h4>Разделы</h4>
+  <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a class="active" href="safety.html">Чего нельзя делать<small>запреты и предупреждения при работе с платой</small></a></li>
+    <li><a href="access.html">Что чем решается<small>какой способ что даёт и порядок шагов</small></a></li>
+    <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
+    <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
+    <li><a href="plan.html">PLAN<small>порядок работ и гейты</small></a></li>
+    <li><a href="tools.html">TOOLS<small>инструменты и проверки</small></a></li>
+    <li><a href="branch-d.html">BRANCH_D<small>проект подмены rfs</small></a></li>
+    <li><a href="instruction.html">INSTRUCTION_DUMP<small>инструкция для человека</small></a></li>
+    <li><a href="usb.html">USB и maskrom<small>как определить пины, дамп без паяльника</small></a></li>
+    <li><a href="recovery.html">Восстановление<small>три уровня поломки и чек-лист донора</small></a></li>
+    <li><a href="network.html">Прошивка по сети<small>веб-интерфейс трубки, без UART</small></a></li>
+    <li><a href="remote.html">Удалённый доступ<small>Tailscale: схема и два варианта</small></a></li>
+    <li><a href="security.html">Безопасность<small>изоляция, доступ, проверка после</small></a></li>
+    <li><a href="publish.html">Что публикуем<small>что выкладываем, что нет и почему</small></a></li>
+    <li><a href="sniff.html">Сниффинг шины<small>снять ключ с платы без выпайки</small></a></li>
+    <li><a href="sources.html">Как делали другие<small>Synacktiv и WHY2025: сравнение методов</small></a></li></ul>
+  <h4>На странице</h4>
+  <div class="toc">
+<ul>
+<li><a href="#_2">Чем работаем и чего с этим нельзя</a></li>
+<li><a href="#_3">Категорически</a></li>
+<li><a href="#_4">Где это важно</a></li>
+<li><a href="#_5">Если сомневаетесь</a></li>
+</ul>
+</div>
+
+</aside>
+<div class="overlay" id="palette-wrap">
+  <div class="palette">
+    <input id="palette-input" type="text" placeholder="Страница или раздел…" autocomplete="off" spellcheck="false">
+    <ul id="palette-list"></ul>
+  </div>
+</div>
+<main>
+<h1 id="_1">Чего нельзя делать</h1>
+<p>Страница-предупреждение. Всё остальное можно читать как отчёт, а это — как технику безопасности: коротко, без оговорок.</p>
+<div class="stop">
+<b>Три правила, которые закрывают почти все способы испортить аппарат</b>
+<ul>
+<li><b>Питание не подаём.</b> Трубка работает от своего адаптера; переходник даёт только землю и сигнал.</li>
+<li><b>Сначала только приём.</b> К неизвестному контакту подключаем вход приёмника, а не выход передатчика.</li>
+<li><b>Уровень проверяем у переходника, а не по надписи.</b> «Модуль на 3,3 В» — про питание модуля; у многих CH340 на TX по умолчанию 5 В.</li>
+</ul>
+</div>
+
+<h2 id="_2">Чем работаем и чего с этим нельзя</h2>
+<table>
+<thead>
+<tr>
+<th>Инструмент</th>
+<th>Нельзя</th>
+<th>Чем кончится</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Питание 3,3 В / 5 В</td>
+<td>подавать на тест-площадки</td>
+<td>сгоревший MCU — тот самый, что выдаёт ключ</td>
+</tr>
+<tr>
+<td>Мультиметр, щупы</td>
+<td>касаться двух выводов сразу</td>
+<td>замыкание, мёртвая плата</td>
+</tr>
+<tr>
+<td>USB-UART переходник</td>
+<td>подключать до найденной земли</td>
+<td>сигнал уходит в питание</td>
+</tr>
+<tr>
+<td>USB-UART переходник</td>
+<td>подавать 5 В с TX в линию телефона</td>
+<td>выгоревшая приёмная линия</td>
+</tr>
+<tr>
+<td>Паяльник</td>
+<td>выпаивать NAND без опыта</td>
+<td>оторванные площадки, плата в мусор</td>
+</tr>
+<tr>
+<td>Консоль U-Boot</td>
+<td><code>nand erase</code>, <code>nand write</code>, <code>saveenv</code>, <code>mw</code>, <code>cp.b</code></td>
+<td>стёртый загрузчик, телефон не включается</td>
+</tr>
+<tr>
+<td>Пакет прошивки</td>
+<td>заливать, пока копия флеша не снята и не сверена</td>
+<td>откатываться некуда</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">Категорически</h2>
+<ol>
+<li><strong>Не подавать питание на тест-площадки.</strong> Ни 3,3 В, ни 5 В. Никогда.</li>
+<li><strong>Не подключать TX переходника, не измерив его уровень.</strong> Проверка: мультиметр между TX модуля и GND без нагрузки, должно быть около 3,3 В.</li>
+<li><strong>Не вводить в консоль загрузчика команды записи.</strong> Набор работает только на чтение; всё, что меняет флеш, — отдельное решение и отдельный разговор.</li>
+<li><strong>Не прошивать пакет, пока не снята и не сверена копия флеша.</strong></li>
+<li><strong>Не выпаивать микросхему памяти</strong> без программатора и опыта: сорванные площадки не восстанавливаются.</li>
+<li><strong>Не оставлять трубку в консоли загрузчика.</strong> В конце — <code>reset</code>, иначе при следующем включении она покажется мёртвой.</li>
+</ol>
+<h2 id="_4">Где это важно</h2>
+<ul>
+<li><a href="access.html">Что чем решается</a> — порядок доступа и что даёт каждый способ.</li>
+<li><a href="usb.html">USB и maskrom</a> — определение контактов, попытка дампа без паяльника.</li>
+<li><a href="sniff.html">Сниффинг шины</a> — работа щупами по плате.</li>
+<li><a href="instruction.html">Инструкция для человека</a> — пошаговая работа у трубки.</li>
+<li><a href="network.html">Прошивка по сети</a> — заливка пакета через веб-интерфейс.</li>
+<li><a href="recovery.html">Восстановление</a> — что делать, если уже сломалось.</li>
+</ul>
+<h2 id="_5">Если сомневаетесь</h2>
+<p>Остановитесь и напишите. Пропущенный шаг стоит одного дня, сожжённая плата — всего проекта: донорских аппаратов у нас не бесконечно.</p>
+<footer>
+<p class="mdlink">Исходник этой страницы: <a href="docs/SAFETY.md">docs/SAFETY.md</a> · <a href="https://github.com/metapeka/yealink-t4xu-notes">репозиторий</a></p>
+</footer>
+</main>
+</div>
+
+<script src="assets/app.js?v=d2ec6d49" defer></script>
+</body>
+</html>

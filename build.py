@@ -22,6 +22,7 @@ SRC = ROOT / "src"
 # name in docs/ -> (page file, sidebar title, short description)
 PAGES = [
     ("overview", "index.html", "Обзор", "статус, что сделано, что осталось"),
+    ("SAFETY", "safety.html", "Чего нельзя делать", "запреты и предупреждения при работе с платой"),
     ("ACCESS_MAP", "access.html", "Что чем решается", "какой способ что даёт и порядок шагов"),
     ("FINDINGS", "findings.html", "FINDINGS", "что установлено: факт / гипотеза"),
     ("BRANCHES", "branches.html", "BRANCHES", "ветки и памятка по аппарату"),
@@ -77,6 +78,11 @@ th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;le
 code{background:var(--code);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:13.5px}
 pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:14px;overflow:auto;font-size:13.5px}
 pre code{border:0;padding:0;background:none}
+.stop{border:2px solid var(--bad);border-left-width:6px;border-radius:12px;padding:14px 18px;margin:20px 0;background:rgba(255,92,92,.08)}
+.stop b{color:var(--bad)}
+.stop ul{margin:8px 0 0;padding-left:20px}
+.stop li{margin:5px 0}
+html[data-theme="light"] .stop{background:#fff1f1}
 blockquote{margin:14px 0;padding:10px 16px;border-left:3px solid var(--warn);background:var(--quote-bg);border-radius:0 8px 8px 0;color:var(--quote-fg)}
 img{max-width:100%;border-radius:10px;border:1px solid var(--line);display:block;margin:18px 0 6px}
 em{color:var(--muted)}

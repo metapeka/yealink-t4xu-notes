@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Восстановление — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=fe5c3133">
+<link rel="stylesheet" href="assets/style.css?v=d2ec6d49">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -21,6 +21,7 @@
 <aside class="sidebar">
   <h4>Разделы</h4>
   <ul><li><a href="index.html">Обзор<small>статус, что сделано, что осталось</small></a></li>
+    <li><a href="safety.html">Чего нельзя делать<small>запреты и предупреждения при работе с платой</small></a></li>
     <li><a href="access.html">Что чем решается<small>какой способ что даёт и порядок шагов</small></a></li>
     <li><a href="findings.html">FINDINGS<small>что установлено: факт / гипотеза</small></a></li>
     <li><a href="branches.html">BRANCHES<small>ветки и памятка по аппарату</small></a></li>
@@ -60,6 +61,12 @@
 <p>Что делать, если трубка перестала загружаться, и что подготовить до первой записи.</p>
 <h2 id="_1">Золотое правило</h2>
 <p><strong>Сначала дамп, потом записи.</strong> Любая запись без снятого образа — рулетка: откатить будет нечем. Дамп снимается один раз и лежит рядом, пока идут эксперименты.</p>
+<div class="stop">
+<b>Чего делать нельзя даже при поломке</b>
+<ul><li>Заливать пакет, пока не снята и не сверена копия флеша.</li><li>Выпаивать микросхему памяти без программатора и опыта — сорванные площадки не восстанавливаются.</li><li>Вводить в консоль загрузчика <code>nand erase</code>, <code>nand write</code>, <code>saveenv</code>.</li></ul>
+<p style="margin:8px 0 0">Подробнее — <a href="safety.html">Чего нельзя делать</a>.</p>
+</div>
+
 <h2 id="_2">Три уровня поломки</h2>
 <table>
 <thead>
@@ -133,6 +140,6 @@
 </main>
 </div>
 
-<script src="assets/app.js?v=fe5c3133" defer></script>
+<script src="assets/app.js?v=d2ec6d49" defer></script>
 </body>
 </html>
