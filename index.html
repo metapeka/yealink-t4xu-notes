@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Обзор — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=a909cf0e">
+<link rel="stylesheet" href="assets/style.css?v=738e2195">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -55,7 +55,8 @@
 <li><a href="#_10">Что осталось и почему стоим</a></li>
 <li><a href="#_11">Как устроен пакет</a></li>
 <li><a href="#_12">Инструкция человеку с аппаратом</a></li>
-<li><a href="#_13">Ветки</a></li>
+<li><a href="#_13">Плата</a></li>
+<li><a href="#_14">Ветки</a></li>
 </ul>
 </div>
 
@@ -237,7 +238,28 @@ flowchart LR
 <li><strong>Если консоли нет</strong> — фото маркировки чипа; ничего не выпаивать до подтверждения модели.</li>
 <li><strong>Снять дважды</strong> и сравнить SHA-256.</li>
 </ol>
-<h2 id="_13">Ветки</h2>
+<h2 id="_13">Плата</h2>
+<figure><img src="assets/board.jpg" alt="Плата SIP-T43UMV17B" width="420"><figcaption>Плата T43U: RK3308H слева, микросхема памяти по центру под наклейкой (наклейка размыта)</figcaption></figure>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="RK3308H" src="assets/soc.jpg" /></td>
+<td><img alt="Микросхема памяти" src="assets/nand.jpg" /></td>
+</tr>
+<tr>
+<td><em>SoC <code>RK3308H</code>, маркировка <code>NFAUK0901B 2228</code></em></td>
+<td><em>Кандидат в NAND — TSOP-48, маркировку закрывает наклейка</em></td>
+</tr>
+</tbody>
+</table>
+<h2 id="_14">Ветки</h2>
 <table>
 <thead>
 <tr>
@@ -279,6 +301,6 @@ import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.mi
 const light = document.documentElement.getAttribute('data-theme') === 'light';
 mermaid.initialize({ startOnLoad: true, theme: light ? 'default' : 'dark', themeVariables: { fontFamily: 'Segoe UI, sans-serif' } });
 </script>
-<script src="assets/app.js?v=a909cf0e" defer></script>
+<script src="assets/app.js?v=738e2195" defer></script>
 </body>
 </html>

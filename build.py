@@ -233,6 +233,20 @@ APP_JS = """(function () {
       document.querySelector('.sidebar').classList.toggle('nav-open');
     });
   }
+
+  // якорь внутри свёрнутого <details> — раскрыть перед скроллом
+  function openForHash() {
+    var h = window.location.hash && window.location.hash.slice(1);
+    if (!h) return;
+    var el = document.getElementById(h);
+    var d = el && el.closest ? el.closest('details.logentry') : null;
+    if (d) {
+      d.open = true;
+      setTimeout(function () { d.scrollIntoView({ block: 'start' }); }, 30);
+    }
+  }
+  window.addEventListener('hashchange', openForHash);
+  openForHash();
   if (btn) {
     paint();
     btn.addEventListener('click', function () {
@@ -476,9 +490,11 @@ def fold_dated_sections(body):
             m = re.search(r"\((\d{4}-\d{2}-\d{2})\)", title)
             date = m.group(1) if m else ""
             title_short = re.sub(r"\s*\(\d{4}-\d{2}-\d{2}\)", "", title)
+            hid = re.search(r'id="([^"]+)"', cur[0])
+            id_attr = f' id="{hid.group(1)}"' if hid else ""
             inner = "".join(cur[1])
             out.append(
-                '<details class="logentry"><summary>'
+                f'<details class="logentry"{id_attr}><summary>'
                 f'<span>{html.escape(title_short)}</span><span class="date">{date}</span>'
                 f"</summary>{inner}</details>"
             )

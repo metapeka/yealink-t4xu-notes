@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Находки — Yealink T4xU</title>
-<link rel="stylesheet" href="assets/style.css?v=a909cf0e">
+<link rel="stylesheet" href="assets/style.css?v=738e2195">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -492,7 +492,7 @@ Hit any key to stop autoboot: %2d
 <li>Условие включения <code>secure boot check</code> в U-Boot (фьюзы / env / флаг образа).</li>
 </ol>
 <hr />
-<details class="logentry"><summary><span>10. Прошивка трубки 108.86.14.4</span><span class="date">2026-10-29</span></summary>
+<details class="logentry" id="10-10886144-2026-10-29"><summary><span>10. Прошивка трубки 108.86.14.4</span><span class="date">2026-10-29</span></summary>
 <p><span class="chip fact">факт</span> Устройство: <strong>SIP-T43U</strong>, ПО <code>108.86.14.4</code>, сборка <code>107.1.0.0.3.1.0</code>, MAC <code>24:9A:D8:**:**:**</code>, phone ID <code>2022********</code>. Плата <code>SIP-T43UMV17B</code> (2021-11-12): <strong>RK3308H</strong>, DDR3, SPI NAND.</p>
 <p><span class="chip fact">факт</span> Пакет <code>T46U(T43U,T46U,T41U,T48U,T42U)-108.86.14.4.rom</code> (37 628 464 Б, sha256 <code>c7c3f779c2b58c39ac3ed6c49763a55974f0034a8ce965ba660663e85b8efcb4</code>) взят с <code>atsvtule.ru</code>; структура идентична <code>86.0.118</code>:</p>
 <pre><code>ver 108.86.14.4  crypto 0x3  len 0x23E29B0  tail 0
@@ -506,7 +506,7 @@ Hit any key to stop autoboot: %2d
 <p><span class="chip fact">факт</span> <code>rfs</code> этой прошивки распакован (cipher 1 → LZMA → 44 834 816 Б, начинается с <code>UBI#</code>). UBI: PEB <code>0x20000</code>, <code>vid_hdr_offset 0x800</code>, <code>data_offset 0x1000</code>, LEB <code>0x1F000</code>, 342 PEB. Классификация LEB: <strong>324 crypto</strong> (<code>38 26 90 05</code>), 9 обычных UBIFS-узлов (типы 7×2, 10×1, 9×6), 6 стёртых, 3 прочих. То есть слой <code>ubifs crypto</code> в <code>86.14.4</code> тот же, что в <code>86.0.118</code>.</p>
 <p><span class="chip fact">факт</span> В <code>version.elf</code> нет строк вида «older/downgrade/newer» — проверка версии, если есть, живёт в прикладном ПО rootfs (<code>version</code>, <code>blk version</code> — это про CLI-опции самого апдейтера).</p>
 <hr />
-</details><details class="logentry"><summary><span>11. Эмулятор апдейтера: откуда берётся публичный ключ</span><span class="date">2026-10-29</span></summary>
+</details><details class="logentry" id="11-2026-10-29"><summary><span>11. Эмулятор апдейтера: откуда берётся публичный ключ</span><span class="date">2026-10-29</span></summary>
 <p>Работа велась на <code>version.elf</code> 108.87.0.20 (sha256 <code>2747b898…</code>) в Unicorn. Инструменты: <code>tools/emu.py</code> (загрузка PIE, резолв импортов через <code>.rel.plt</code> → sentinel-GOT, хуки libc/OpenSSL), <code>tools/disasm.py</code>, <code>tools/funcs.py</code>, <code>tools/probe_*.py</code>.</p>
 <p><strong>Адреса.</strong> <span class="chip fact">факт</span> Адреса Ghidra = файловые + <code>0x10000</code>. Проверено по телу: Ghidra <code>FUN_00082170</code> = файл <code>0x72170</code>, длина 2404 Б, конец <code>0x72ad4</code> — совпало с базой функций Ghidra.</p>
 <p><strong>Алгоритм <code>FUN_00082170(blob, 0x200, type)</code>.</strong> <span class="chip fact">факт</span> Возвращает 550-байтный DER SubjectPublicKeyInfo (<code>30 82 02 22</code>); сборка:</p>
@@ -533,7 +533,7 @@ FUN_00082170(mmap + 0x100, 0x200, mmap[0x808])
 <p><strong>Следствие.</strong> Оффлайн-путь упирается в 512 Б + 1 байт с устройства — на порядок дешевле полного дампа флеша: при наличии root достаточно <code>dd if=/dev/mem bs=1 skip=256 count=512</code> и чтения байта <code>0x808</code>.</p>
 <p><strong>Открытый вопрос.</strong> <span class="chip hypo">гипотеза</span> Возможное расхождение эмуляции: не выполняются конструкторы (<code>.init_array</code>), не проверены значения <code>DAT_00099074</code> / <code>DAT_000990a0</code> / <code>DAT_00099220</code> из <code>.data</code>, на которых стоят opaque-предикаты OLLVM.</p>
 <hr />
-</details><details class="logentry"><summary><span>Шифрование тома rfs измерено на пакете</span><span class="date">2026-10-29</span></summary>
+</details><details class="logentry" id="rfs-2026-10-29"><summary><span>Шифрование тома rfs измерено на пакете</span><span class="date">2026-10-29</span></summary>
 <p><span class="chip fact">факт</span> Прогнал <code>tools/ubi_probe.py</code> по <code>rfs</code> из пакета <code>86.0.118</code> (этот том идентичен по структуре тому <code>86.14.4</code>): 333 PEB, из них <strong>315 с magic <code>38 26 90 05</code></strong>, 18 обычных (volume table + суперблок UBIFS).</p>
 <p><span class="chip fact">факт</span> Шифрование настоящее: в 315 зашифрованных блоках нет ни одной строки — 0 совпадений по <code>ELF</code>, <code>/etc/</code>, <code>busybox</code>, <code>.lua</code>.</p>
 <p><span class="chip fact">факт</span> Проверка на «сжатый plaintext»: байты <code>78 9c</code> встречаются в 59 из 60 проверенных блоков, но ни один поток не распаковывается — значит это совпадения в шифротексте, а не zlib.</p>
@@ -542,7 +542,7 @@ FUN_00082170(mmap + 0x100, 0x200, mmap[0x808])
 <p><span class="chip fact">факт</span> Перед зашифрованными данными лежит открытый служебный заголовок: после <code>38 26 90 05</code> идут поля вида <code>sqnum</code> / <code>len</code> / тип узла и метки времени (<code>0x633550 83</code> — октябрь 2022). То есть метаданные читаются, содержимое — нет.</p>
 <p><span class="chip fact">следствие</span> Ключ обязателен: читать файлы из пакета без него нельзя. И тот же пакет годится для <strong>проверки</strong> добытого ключа офлайн — шифротекст уже есть.</p>
 <p><span class="chip fact">инструмент</span> <code>tools/ubi_probe.py</code> — классификация PEB, поиск повторов блоков, энтропия, поиск утечек plaintext.</p>
-</details><details class="logentry"><summary><span>Слой ubifs crypto локализован, карта разделов флеша</span><span class="date">2026-10-29</span></summary>
+</details><details class="logentry" id="ubifs-crypto-2026-10-29"><summary><span>Слой ubifs crypto локализован, карта разделов флеша</span><span class="date">2026-10-29</span></summary>
 <p><span class="chip fact">факт</span> Строка <code>ubifs crypto invalid magic=0x%8x</code> лежит в загрузчике: файл <code>old/boot2.bin</code>, смещение <code>0x480c8</code>; в <code>uboot.elf</code> та же строка по виртуальному адресу <code>0x580c8</code>. То есть проверка слоя — в U-Boot, а не в ядре и не в апдейтере.</p>
 <p><span class="chip fact">факт</span> В том же образе найдена таблица разделов (<code>mtdparts=rk_nand:...</code>), флеш 128 МиБ:</p>
 <table>
@@ -659,44 +659,44 @@ FUN_00082170(mmap + 0x100, 0x200, mmap[0x808])
 <p><span class="chip fact">факт</span> AES в коде есть и в апдейтере, и в U-Boot: сигнатура таблицы S-боксов <code>63 7c 77 7b …</code> встречается по одному разу в <code>version.elf</code>, <code>uboot.elf</code> и <code>boot2.bin</code>. Значит шифр программный, без крипто-движка.</p>
 <p><span class="chip fact">факт</span> Блоки <code>bootloader</code> из пакетов после нашего разбора всё ещё не читаются: у <code>108.86.0.118</code> и <code>108.86.14.4</code> начало <code>bb 03 33 1d …</code>, энтропия высокая, сигнатур <code>LOADER</code>/<code>RKFW</code> нет. Настоящий образ загрузчика у нас есть отдельно — <code>boot2.bin</code> (начинается с <code>LOADER</code>).</p>
 <p><span class="chip fact">факт</span> В пакете <code>108.86.0.154</code> блока загрузчика нет вовсе: только <code>version</code> и <code>app</code> (другая модель/ветка).</p>
-</details><details class="logentry"><summary><span>Экстрактор UBI собран</span><span class="date">2026-10-29</span></summary>
+</details><details class="logentry" id="ubi-2026-10-29"><summary><span>Экстрактор UBI собран</span><span class="date">2026-10-29</span></summary>
 <p><span class="chip fact">факт</span> <code>tools/ubi_extract.py</code> собирает тома из <code>rfs</code>-блока: на <code>108.86.0.118</code> разобрано 333 PEB, том <code>rootfs</code> — 331 LEB по <code>0x1F000</code> байт (315 с crypto-заголовком), плюс служебный том <code>0x7FFFFFFF</code> на 2 LEB. Выход: 42 029 056 байт.</p>
 <p><span class="chip fact">факт</span> LEB 0 начинается с <code>38 26 90 05</code> — то есть даже первый узел тома зашифрован, метаданных без ключа не получить.</p>
 <p><span class="chip fact">следствие</span> Когда появится ключ, разбор занимает минуты: распакованный том уже собирается, останется снять заголовки и отдать образ в <code>ubireader</code>/<code>ubifs</code>-парсер.</p>
-</details><details class="logentry"><summary><span>Режим шифрования тома: ECB с общим ключом</span><span class="date">2026-10-29</span></summary>
+</details><details class="logentry" id="ecb-2026-10-29"><summary><span>Режим шифрования тома: ECB с общим ключом</span><span class="date">2026-10-29</span></summary>
 <p><span class="chip fact">факт</span> Блок <code>31d5a465 d4e99db1 e5147773 0c7a3525</code> встречается 246 раз внутри LEB 0 и ещё 4 раза в LEB 253; повторяется блок середины данных, а не первый.</p>
 <p><span class="chip hypo">гипотеза</span> Это указывает на <strong>ECB с одним ключом на том</strong>: одинаковый открытый текст даёт одинаковый шифротекст, а в CBC повторы середины невозможны. Альтернатива, которую нельзя исключить по статистике: этот участок не шифруется вовсе и повторяется как есть.</p>
 <p><span class="chip fact">факт</span> Области <code>0xFF</code> остаются <code>0xFF</code> — слой не трогает незаписанное место.</p>
 <p><strong>[условие проверки]</strong> Гипотеза подтверждается только ключом: расшифровать LEB 0 в ECB и увидеть сигнатуру узла UBIFS <code>31 18 10 06</code>. Если после расшифровки структура читается — режим верный; если нет — проверять CBC и участок, который слой не шифрует.</p>
 <p><strong>[снято]</strong> Режим AES для блоков <code>0x83</code> (V87) на нашей ветке не нужен: в пакетах 86.x таких блоков нет.</p>
-</details><details class="logentry"><summary><span>AES подтверждён по таблицам</span><span class="date">2026-10-29</span></summary>
+</details><details class="logentry" id="aes-2026-10-29"><summary><span>AES подтверждён по таблицам</span><span class="date">2026-10-29</span></summary>
 <p><span class="chip fact">факт</span> В <code>version.elf</code> по файловому смещению <code>0x9a40c</code> (адрес <code>0xba40c</code>) лежит <strong>полная</strong> стандартная таблица S-боксов AES — все 256 байт, а не префикс.</p>
 <p><span class="chip fact">факт</span> В <code>uboot.elf</code> есть и прямой S-бокс (<code>0x4e500</code>), и <strong>обратный</strong> (<code>0x4ac24</code>) — значит AES используется и для шифрования, и для расшифровки, таблица не декоративная.</p>
 <p><strong>[отрицательно]</strong> Поиск обращений к таблицам по литералу и по <code>adr</code>/<code>movw</code>-парам в U-Boot ничего не дал: адресация идёт через переставляемую таблицу, поэтому ручной байтовый скан не подходит — нужен Ghidra XREF.</p>
-</details><details class="logentry"><summary><span>Экстрактор: уточнения по заголовкам</span><span class="date">2026-10-29</span></summary>
+</details><details class="logentry" id="2026-10-29"><summary><span>Экстрактор: уточнения по заголовкам</span><span class="date">2026-10-29</span></summary>
 <p><span class="chip fact">факт</span> <code>data_size</code> в VID-заголовке лежит по смещению 20 (по 24 — <code>used_ebs</code>); в томах Yealink это поле нулевое, поэтому размер LEB берётся как весь блок <code>0x1F000</code>.</p>
 <p><span class="chip fact">факт</span> <code>lnum</code> реальные: том 0 — 331 блок, номера 0…330 без разрывов. На всякий случай экстрактор теперь пишет по индексу <code>lnum</code> и заполняет пропуски, если они появятся.</p>
-</details><details class="logentry"><summary><span>Поиск готового ключа в прошивке: отрицательный</span><span class="date">2026-10-29</span></summary>
+</details><details class="logentry" id="2026-10-29_1"><summary><span>Поиск готового ключа в прошивке: отрицательный</span><span class="date">2026-10-29</span></summary>
 <p><span class="chip fact">факт</span> Проверил версию «ключ лежит в бинарях»: собрал все 16- и 32-байтные окна с неповторяющимися байтами из <code>version.elf</code>, <code>uboot.elf</code> и <code>boot2.bin</code> — 27 352 кандидата. Расшифровал ими начало LEB 0 в ECB (128 байт на кандидата).</p>
 <p><span class="chip fact">факт</span> Ни один кандидат не дал сигнатуру узла UBIFS <code>31 18 10 06</code>. Строгий фильтр по 12 печатным символам подряд дал 18 совпадений — это шум: при таком объёме его и ожидается порядка десяти.</p>
 <p><strong>[вывод]</strong> Ключ не хранится в прошивке в готовом виде. Это согласуется с докладом WHY2025: ключ выводит MCU, а не код.</p>
 <p><span class="chip fact">инструмент</span> <code>tools/ubi_trykey.py</code> — проверка любого кандидата: расшифровывает LEB 0 в ECB, ищет <code>31 18 10 06</code> и выносит вердикт. Проверен на синтетическом случае (верный ключ → <code>MATCH</code>) и на заведомо неверном (→ <code>key rejected</code>).</p>
-</details><details class="logentry"><summary><span>Как апдейтер пишет rfs</span><span class="date">2026-10-29</span></summary>
+</details><details class="logentry" id="rfs-2026-10-29_1"><summary><span>Как апдейтер пишет rfs</span><span class="date">2026-10-29</span></summary>
 <p><span class="chip fact">факт</span> Апдейтер работает с MTD напрямую: в строках есть <code>nand-raw</code>, <code>nand-oob</code>, <code>MTD Erase failure</code>, <code>MTD write failure</code>, <code>MTD writeoob failure</code>, обработка плохих блоков (<code>Skipping bad block at 0x%08x</code>), <code>MEMGETINFO</code>, <code>BLKGETSIZE64</code>, <code>MEMGETOOBSEL</code>.</p>
 <p><span class="chip fact">факт</span> Он стирает блок и пишет <strong>содержимое блока как есть</strong> на свой MTD-смещение: сообщения вида <code>erase write2, mtdoffset: 0x%08x</code>. Пере-шифрования ФС и форматирования тома в апдейтере нет.</p>
 <p><span class="chip fact">следствие</span> Значит <code>rfs</code> из пакета — это точная копия раздела: то, что мы собрали экстрактором, совпадает с тем, что окажется на флеше. Ветка D (свой <code>version.elf</code> пишет свою ФС) на уровне записи выполнима: преграда остаётся одна — прочитает ли загрузчик незашифрованный том.</p>
 <p><span class="chip fact">факт</span> AES-примитивы в апдейтере есть: полная таблица S-боксов, строки <code>encrypt blk data</code>, <code>decrypt blk data</code>, <code>decrypt V4 hdr failed</code>. Не поддержан не шифр, а <strong>тип блока</strong> <code>0x83</code>: строка <code>ROM_BLK_CT_AES NOT support just now,reset to none!</code> говорит, что при встрече с ним тип сбрасывается в <code>none</code>. Для нашей трубки это значит, что блоки <code>0x83</code> в пакет класть нельзя — апдейтер их не обработает.</p>
-</details><details class="logentry"><summary><span>Производные ключи от идентификаторов: отрицательно</span><span class="date">2026-10-29</span></summary>
+</details><details class="logentry" id="2026-10-29_2"><summary><span>Производные ключи от идентификаторов: отрицательно</span><span class="date">2026-10-29</span></summary>
 <p><span class="chip fact">факт</span> Проверил версию «ключ выводится из данных устройства»: 90 кандидатов из MAC (три записи), серийника и номера-идентификатора — MD5, SHA1, SHA256, усечённые и дополненные, повторённые до 16 и 32 байт. Расшифровка LEB 0 в ECB не дала ни одной сигнатуры UBIFS.</p>
 <p><strong>[вывод]</strong> Простая деривация из идентификаторов не подходит. Ключ приходит из MCU в рантайме — это согласуется и с докладом, и с неудачей поиска констант в бинарях.</p>
 <p><strong>[заметка]</strong> Сами идентификаторы в публикуемые файлы не попадают: тест выполняется локально, в отчёте остаётся только результат.</p>
-</details><details class="logentry"><summary><span>ubifs crypto в U-Boot: что даёт статика</span><span class="date">2026-10-29</span></summary>
+</details><details class="logentry" id="ubifs-crypto-u-boot-2026-10-29"><summary><span>ubifs crypto в U-Boot: что даёт статика</span><span class="date">2026-10-29</span></summary>
 <p><span class="chip fact">факт</span> Ghidra headless по <code>uboot.elf</code> (781 функция, 21–58 с анализ) нашла в образе полную реализацию UBIFS: строки <code>ubifs_read_node</code>, <code>ubifs_check_node</code>, <code>ubifs_scan</code>, <code>ubifs_recover_leb</code>, <code>ubifs_decompress</code> и ещё 15 таких же.</p>
 <p><span class="chip fact">факт</span> Ссылок на эти строки в образе <strong>нет</strong> (<code>refs=0</code> у всех 20), хотя это имена функций отладки — значит таблица ссылок собирается при релокации и в файле её нет.</p>
 <p><span class="chip fact">факт</span> Константы <code>0x05902638</code>, <code>0x3826</code>, <code>0x9005</code> в инструкциях не встречаются вовсе (<code>scalar hits=0</code>), а байтовая последовательность <code>38 26 90 05</code> отсутствует и в <code>uboot.elf</code>, и в <code>boot2.bin</code>.</p>
 <p><span class="chip fact">следствие</span> Проверка слоя, скорее всего, не сравнивает magic с константой в коде: сообщение <code>ubifs crypto invalid magic=0x%8x</code> просто печатает то, что прочитано. Точный код проверки без динамики не получить — нужен лог UART с живой трубки или анализ с учётом релокации.</p>
 <p><strong>[ограничение]</strong> MCP-сеанс REA отваливается по 30-секундному таймауту; Ghidra headless (<code>analyzeHeadless</code> + скрипт) отрабатывает за 30–90 с и решает ту же задачу.</p>
-</details><details class="logentry"><summary><span>Статические ссылки в uboot.elf не разрешаются: проверено без ограничений</span><span class="date">2026-10-29</span></summary>
+</details><details class="logentry" id="ubootelf-2026-10-29"><summary><span>Статические ссылки в uboot.elf не разрешаются: проверено без ограничений</span><span class="date">2026-10-29</span></summary>
 <p><span class="chip fact">факт</span> Поиск по памяти без лимита совпадений: строка <code>ubifs crypto invalid magic</code> найдена ровно в одном месте — <code>0x580c8</code>; <code>ubifs_read_node</code> — в <code>0x54224</code>. Ссылок на обе — <strong>ноль</strong>.</p>
 <p><span class="chip fact">факт</span> Литерала <code>0x580c8</code> (4 байта LE) в памяти нет ни одного: адрес нигде не используется как абсолютное значение.</p>
 <p><span class="chip fact">факт</span> Байты <code>38 26 90 05</code> и обратный порядок <code>05 90 26 38</code> в <code>uboot.elf</code> отсутствуют вовсе. Строки <code>hit any key</code> в образе тоже нет.</p>
@@ -708,6 +708,6 @@ FUN_00082170(mmap + 0x100, 0x200, mmap[0x808])
 </main>
 </div>
 
-<script src="assets/app.js?v=a909cf0e" defer></script>
+<script src="assets/app.js?v=738e2195" defer></script>
 </body>
 </html>

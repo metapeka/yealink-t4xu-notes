@@ -20,6 +20,20 @@
       document.querySelector('.sidebar').classList.toggle('nav-open');
     });
   }
+
+  // якорь внутри свёрнутого <details> — раскрыть перед скроллом
+  function openForHash() {
+    var h = window.location.hash && window.location.hash.slice(1);
+    if (!h) return;
+    var el = document.getElementById(h);
+    var d = el && el.closest ? el.closest('details.logentry') : null;
+    if (d) {
+      d.open = true;
+      setTimeout(function () { d.scrollIntoView({ block: 'start' }); }, 30);
+    }
+  }
+  window.addEventListener('hashchange', openForHash);
+  openForHash();
   if (btn) {
     paint();
     btn.addEventListener('click', function () {
@@ -35,7 +49,7 @@
   var wrap = document.getElementById('palette-wrap');
   var input = document.getElementById('palette-input');
   var list = document.getElementById('palette-list');
-  var VER = 'a909cf0e';
+  var VER = '738e2195';
   var data = null, items = [], sel = 0;
 
   function load() {
