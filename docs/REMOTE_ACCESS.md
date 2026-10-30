@@ -5,7 +5,7 @@
 ```mermaid
 flowchart LR
   P["Трубка T43U<br/>192.168.x.y"] --- B["ПК человека<br/>192.168.x.z"]
-  B -->|"Tailscale: subnet route"| T["Эта машина<br/>100.108.127.76"]
+  B -->|"Tailscale: subnet route"| T["Эта машина<br/>100.168.*.*"]
   B -.->|"Tailscale: serve через socat"| T
   T --> W["Я: curl / браузер"]
 ```
